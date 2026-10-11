@@ -1,0 +1,6 @@
+TEAM_ID=
+BUNDLE_ID=com.kevin.memoverse
+APP_NAME=MEMOVERSE
+
+// Le framework Kotlin est statique : l'app doit lier SQLite elle-même (driver SQLDelight natif).
+OTHER_LDFLAGS = $(inherited) -lsqlite3

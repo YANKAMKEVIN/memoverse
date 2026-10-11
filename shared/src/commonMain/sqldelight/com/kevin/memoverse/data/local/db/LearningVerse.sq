@@ -1,0 +1,30 @@
+-- Un verset que l'utilisateur a choisi d'apprendre, avec sa progression dans le stade actuel
+-- (règles de croissance : domain/growth/GrowthRules.kt).
+CREATE TABLE LearningVerseEntity (
+    verseId TEXT NOT NULL PRIMARY KEY,
+    themeId TEXT NOT NULL,
+    stage TEXT NOT NULL,
+    addedAtEpochMillis INTEGER NOT NULL,
+    successCount INTEGER NOT NULL DEFAULT 0,
+    successDays INTEGER NOT NULL DEFAULT 0,
+    lastSuccessEpochDay INTEGER,
+    consecutiveFailures INTEGER NOT NULL DEFAULT 0,
+    reviewStep INTEGER NOT NULL DEFAULT 0,
+    dueAtEpochMillis INTEGER NOT NULL DEFAULT 0
+);
+
+selectAll:
+SELECT * FROM LearningVerseEntity ORDER BY addedAtEpochMillis, verseId;
+
+insertIfAbsent:
+INSERT OR IGNORE INTO LearningVerseEntity(verseId, themeId, stage, addedAtEpochMillis, dueAtEpochMillis)
+VALUES (?, ?, ?, ?, ?);
+
+updateProgress:
+UPDATE LearningVerseEntity
+SET stage = ?, successCount = ?, successDays = ?, lastSuccessEpochDay = ?, consecutiveFailures = ?,
+    reviewStep = ?, dueAtEpochMillis = ?
+WHERE verseId = ?;
+
+deleteAll:
+DELETE FROM LearningVerseEntity;

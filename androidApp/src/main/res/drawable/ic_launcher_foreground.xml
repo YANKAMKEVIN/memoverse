@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Placeholder sprout icon until the real brand icon is designed. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path
+        android:fillColor="#00000000"
+        android:strokeColor="#FBF8F1"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"
+        android:pathData="M54,74 L54,48" />
+    <path
+        android:fillColor="#FBF8F1"
+        android:pathData="M54,52 C54,40 46,32 34,32 C34,44 42,52 54,52 Z" />
+    <path
+        android:fillColor="#E8A33D"
+        android:pathData="M54,46 C54,34 62,28 74,28 C74,40 66,46 54,46 Z" />
+</vector>

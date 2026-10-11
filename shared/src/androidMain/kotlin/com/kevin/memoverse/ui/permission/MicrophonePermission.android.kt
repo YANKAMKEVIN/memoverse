@@ -1,0 +1,28 @@
+package com.kevin.memoverse.ui.permission
+
+import android.Manifest
+import android.content.pm.PackageManager
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+
+@Composable
+actual fun rememberMicrophonePermissionRequest(onResult: (granted: Boolean) -> Unit): () -> Unit {
+    val context = LocalContext.current
+    val currentOnResult by rememberUpdatedState(onResult)
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) { currentOnResult(it) }
+    return remember(launcher) {
+        {
+            if (ContextCompat.checkSelfPermission(context, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) {
+                currentOnResult(true)
+            } else {
+                launcher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
+}

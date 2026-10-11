@@ -1,0 +1,550 @@
+// Banque de versets MEMOVERSE — source de vérité éditable.
+// Format : "# id | Nom | Famille" puis une ligne par verset "Référence | contexte".
+// Un verset déjà décrit dans un thème précédent peut être repris sans contexte ("Référence |").
+// Les textes sont extraits automatiquement de la Louis Segond 1910 (numérotation LSG).
+
+# foi | Foi | Relation avec Dieu
+Hébreux 11:1 | L’auteur de l’épître aux Hébreux définit la foi avant d’en donner de grands exemples.
+Hébreux 11:6 | Au milieu de la liste des héros de la foi, à propos d’Énoch.
+Romains 10:17 | Paul explique aux chrétiens de Rome comment naît la foi.
+Éphésiens 2:8-9 | Paul rappelle aux Éphésiens que le salut est un don de Dieu.
+Marc 11:24 | Jésus enseigne ses disciples après le figuier desséché.
+Marc 9:23 | Jésus répond au père d’un enfant tourmenté qui lui dit : « Si tu peux ».
+2 Corinthiens 5:7 | Paul parle de la vie présente, dans l’attente de la demeure céleste.
+Jean 11:40 | Jésus parle à Marthe devant le tombeau de Lazare.
+1 Jean 5:4 | Jean écrit aux croyants sur la victoire de ceux qui sont nés de Dieu.
+Jacques 1:6 | Jacques parle de demander la sagesse à Dieu.
+Romains 5:1 | Paul conclut que le croyant est justifié par la foi.
+Matthieu 17:20 | Jésus répond aux disciples qui n’ont pas pu guérir un enfant.
+
+# amour-de-dieu | Amour de Dieu | Relation avec Dieu
+Jean 3:16 | Jésus parle de nuit avec Nicodème, un chef des Juifs.
+Romains 5:8 | Paul montre jusqu’où va l’amour de Dieu pour les pécheurs.
+1 Jean 4:8 | Jean appelle les croyants à s’aimer les uns les autres.
+1 Jean 4:19 | Jean explique d’où vient notre capacité à aimer.
+Psaumes 136:1 | Psaume litanie qui célèbre la bonté de Dieu.
+Jérémie 31:3 | Dieu promet de restaurer son peuple après l’exil.
+Sophonie 3:17 | Promesse de joie pour Jérusalem restaurée.
+1 Jean 3:1 | Jean s’émerveille d’être appelé enfant de Dieu.
+Jean 15:13 | Jésus parle à ses disciples la veille de sa mort.
+1 Jean 4:10 | Jean définit ce qu’est le véritable amour.
+
+# grace | Grâce | Relation avec Dieu
+Éphésiens 2:8-9 |
+2 Corinthiens 12:9 | Dieu répond à Paul qui lui demandait d’ôter son épreuve.
+Tite 2:11 | Paul rappelle à Tite ce que la grâce enseigne.
+Romains 3:23-24 | Paul montre que tous ont besoin de la grâce.
+Hébreux 4:16 | Invitation à s’approcher de Dieu grâce à Jésus, le grand-prêtre.
+Jean 1:16 | Jean-Baptiste et l’évangéliste parlent de la plénitude du Christ.
+Romains 6:14 | Paul explique la vie nouvelle sous la grâce.
+2 Corinthiens 8:9 | Paul encourage les Corinthiens à la générosité.
+Jacques 4:6 | Jacques parle des querelles et de l’orgueil.
+Romains 5:20 | Paul compare le rôle de la loi et celui de la grâce.
+
+# salut | Salut | Relation avec Dieu
+Actes 4:12 | Pierre parle devant le sanhédrin après la guérison d’un boiteux.
+Romains 10:9 | Paul explique comment on est sauvé.
+Romains 6:23 | Paul oppose le salaire du péché et le don de Dieu.
+Jean 14:6 | Jésus répond à Thomas qui demande le chemin.
+Actes 16:31 | Paul et Silas répondent au geôlier de Philippes.
+Tite 3:5 | Paul rappelle à Tite comment Dieu nous a sauvés.
+Romains 10:10 | Paul explique comment on est sauvé.
+Romains 10:13 | Paul cite le prophète Joël.
+Jean 5:24 | Jésus parle de la vie éternelle.
+1 Timothée 1:15 | Paul témoigne de sa propre conversion.
+
+# priere | Prière | Relation avec Dieu
+Matthieu 7:7 | Jésus enseigne dans le sermon sur la montagne.
+1 Thessaloniciens 5:16-18 | Dernières recommandations de Paul aux Thessaloniciens.
+Jérémie 33:3 | Dieu parle à Jérémie emprisonné.
+Matthieu 6:6 | Jésus enseigne comment prier, dans le sermon sur la montagne.
+1 Jean 5:14 | Jean parle de l’assurance du croyant dans la prière.
+Jean 15:7 | Jésus parle de la vigne et des sarments.
+Matthieu 18:20 | Jésus parle de l’accord des croyants dans la prière.
+Romains 8:26 | Paul parle de l’aide du Saint-Esprit.
+Matthieu 21:22 | Jésus enseigne ses disciples après le figuier desséché.
+Philippiens 4:6-7 | Paul écrit de prison aux chrétiens de Philippes.
+
+# louange | Louange et adoration | Relation avec Dieu
+Psaumes 150:6 | Dernier verset du livre des Psaumes.
+Psaumes 34:2 | Psaume de David, après sa fuite devant Abimélec.
+Psaumes 100:4 | Psaume d’action de grâces pour entrer dans le temple.
+Hébreux 13:15 | Exhortations finales de l’épître aux Hébreux.
+Psaumes 95:6 | Psaume d’invitation à l’adoration.
+Jean 4:24 | Jésus parle avec la femme samaritaine au puits.
+Psaumes 145:3 | Psaume de louange de David.
+Psaumes 118:24 | Psaume de fête et d’action de grâces.
+Apocalypse 4:11 | Les anciens adorent Dieu autour du trône.
+Psaumes 103:1 | David invite son âme à bénir l’Éternel.
+
+# saint-esprit | Saint-Esprit | Relation avec Dieu
+Actes 1:8 | Dernières paroles de Jésus avant son ascension.
+Galates 5:22-23 | Paul décrit le fruit de l’Esprit.
+Jean 14:26 | Jésus annonce la venue du Consolateur.
+Romains 8:14 | Paul parle de la vie conduite par l’Esprit.
+1 Corinthiens 6:19 | Paul parle de la pureté du corps.
+Jean 16:13 | Jésus annonce l’Esprit de vérité.
+Éphésiens 5:18 | Paul décrit la vie des enfants de lumière.
+Ézéchiel 36:27 | Dieu promet un cœur nouveau à son peuple.
+Zacharie 4:6 | Message de Dieu à Zorobabel, qui reconstruit le temple.
+2 Timothée 1:7 | Paul encourage Timothée à ne pas avoir honte de l’Évangile.
+
+# parole-de-dieu | Parole de Dieu | Relation avec Dieu
+Psaumes 119:105 | Le grand psaume consacré à la Parole de Dieu.
+2 Timothée 3:16-17 | Paul rappelle à Timothée la valeur des Écritures.
+Hébreux 4:12 | L’auteur de l’épître parle de la puissance de la Parole.
+Josué 1:8 | Dieu parle à Josué au moment de conduire Israël.
+Psaumes 119:11 | Le grand psaume consacré à la Parole de Dieu.
+Matthieu 4:4 | Jésus répond au diable dans le désert.
+Ésaïe 40:8 | Message de consolation au peuple de Dieu.
+Jean 1:1 | Début de l’Évangile de Jean.
+Matthieu 24:35 | Jésus parle de la fin des temps.
+Jacques 1:22 | Jacques appelle à mettre la Parole en pratique.
+
+# fidelite-de-dieu | Fidélité de Dieu | Promesses de Dieu
+Lamentations 3:22-23 | Jérémie pleure Jérusalem détruite, mais garde espoir.
+Deutéronome 7:9 | Moïse rappelle à Israël l’alliance de Dieu.
+2 Timothée 2:13 | Paul encourage Timothée à tenir bon.
+1 Thessaloniciens 5:24 | Bénédiction finale de Paul aux Thessaloniciens.
+Hébreux 10:23 | Exhortation à garder l’espérance.
+Nombres 23:19 | Balaam, appelé pour maudire Israël, prononce une bénédiction.
+Psaumes 36:6 | Psaume de David sur la bonté de Dieu.
+Philippiens 1:6 | Paul remercie Dieu pour les chrétiens de Philippes.
+Hébreux 13:5 | Exhortations finales de l’épître aux Hébreux.
+Josué 21:45 | Bilan de la conquête du pays promis.
+
+# protection | Protection | Promesses de Dieu
+Psaumes 91:1-2 | Psaume de confiance sous la protection de Dieu.
+Psaumes 121:7-8 | Cantique des pèlerins montant à Jérusalem.
+Proverbes 18:10 | Proverbe de Salomon.
+Psaumes 46:2 | Psaume de confiance au milieu des bouleversements.
+2 Thessaloniciens 3:3 | Paul demande la prière des Thessaloniciens.
+Ésaïe 54:17 | Promesse faite à Jérusalem restaurée.
+Psaumes 27:1 | Psaume de confiance de David.
+Psaumes 34:8 | Psaume de David, après sa fuite devant Abimélec.
+Psaumes 23:4 | Le psaume du bon berger.
+Ésaïe 43:2 | Dieu rassure Israël, son peuple racheté.
+
+# provision | Provision | Promesses de Dieu
+Philippiens 4:19 | Paul remercie les Philippiens pour leur don.
+Matthieu 6:33 | Jésus parle des soucis dans le sermon sur la montagne.
+Psaumes 23:1 | Le psaume du bon berger.
+Matthieu 6:26 | Jésus parle des soucis dans le sermon sur la montagne.
+Psaumes 37:25 | Psaume de David, dans sa vieillesse.
+2 Corinthiens 9:8 | Paul encourage les Corinthiens à donner.
+Psaumes 34:11 | Psaume de David, après sa fuite devant Abimélec.
+Matthieu 7:11 | Jésus compare Dieu à un père qui donne à ses enfants.
+Psaumes 84:12 | Psaume des pèlerins qui aiment la maison de Dieu.
+Genèse 22:14 | Abraham nomme le lieu où Dieu a pourvu un bélier à la place d’Isaac.
+
+# guerison | Guérison | Promesses de Dieu
+Ésaïe 53:5 | Prophétie du serviteur souffrant.
+Jérémie 17:14 | Prière de Jérémie au milieu de l’opposition.
+Psaumes 103:2-3 | David invite son âme à bénir l’Éternel.
+Jacques 5:16 | Jacques parle de la prière pour les malades.
+1 Pierre 2:24 | Pierre parle des souffrances du Christ.
+Jérémie 30:17 | Promesse de restauration pour Israël.
+Psaumes 147:3 | Psaume de louange pour Dieu qui relève Jérusalem.
+Malachie 4:2 | Annonce du jour de l’Éternel.
+Matthieu 8:17 | Matthieu cite Ésaïe après les guérisons de Jésus à Capernaüm.
+Marc 5:34 | Jésus parle à la femme guérie d’une perte de sang.
+Psaumes 107:20 | Psaume sur ceux que Dieu délivre de leur détresse.
+3 Jean 1:2 | Souhait de l’apôtre Jean pour son ami Gaïus.
+
+# delivrance | Délivrance | Promesses de Dieu
+Jean 8:36 | Jésus parle de la vraie liberté.
+Psaumes 34:18 | Psaume de David, après sa fuite devant Abimélec.
+Galates 5:1 | Paul appelle les Galates à rester libres.
+Psaumes 50:15 | Dieu parle à son peuple.
+Luc 4:18 | Jésus lit le prophète Ésaïe dans la synagogue de Nazareth.
+2 Corinthiens 3:17 | Paul parle de la nouvelle alliance.
+Psaumes 18:3 | Cantique de David délivré de ses ennemis.
+Colossiens 1:13 | Paul rend grâce pour ce que Dieu a fait.
+Psaumes 107:6 | Psaume sur ceux que Dieu délivre de leur détresse.
+Romains 8:2 | Paul parle de la vie par l’Esprit.
+
+# victoire | Victoire | Promesses de Dieu
+Romains 8:37 | Conclusion de Paul sur l’amour de Christ.
+1 Corinthiens 15:57 | Paul parle de la résurrection.
+Philippiens 4:13 | Paul parle de son contentement en toute situation.
+1 Jean 4:4 | Jean parle du discernement face aux faux prophètes.
+2 Corinthiens 2:14 | Paul rend grâce pour son ministère.
+Deutéronome 20:4 | Paroles du prêtre au peuple avant le combat.
+Romains 8:31 | Conclusion de Paul sur l’amour de Dieu.
+Apocalypse 12:11 | La victoire des croyants sur l’accusateur.
+Proverbes 21:31 | Proverbe de Salomon.
+2 Chroniques 20:15 | Message de Dieu au roi Josaphat face à une grande armée.
+
+# benediction | Bénédiction | Promesses de Dieu
+Nombres 6:24-26 | La bénédiction que les prêtres prononcent sur Israël.
+Éphésiens 1:3 | Début de la lettre de Paul aux Éphésiens.
+Deutéronome 28:2 | Moïse annonce les bénédictions de l’obéissance.
+Proverbes 10:22 | Proverbe de Salomon.
+Psaumes 1:1 | Premier verset du livre des Psaumes.
+Jérémie 17:7 | Jérémie oppose celui qui se confie en l’homme et celui qui se confie en Dieu.
+Genèse 12:2 | Dieu appelle Abram à quitter son pays.
+Psaumes 128:1 | Cantique des pèlerins sur le bonheur de celui qui craint Dieu.
+Jacques 1:17 | Jacques parle des dons parfaits qui viennent de Dieu.
+Psaumes 84:13 | Psaume des pèlerins qui aiment la maison de Dieu.
+
+# paix | Paix | Vie intérieure
+Jean 14:27 | Jésus parle à ses disciples la veille de sa mort.
+Philippiens 4:6-7 |
+Ésaïe 26:3 | Cantique du peuple de Dieu célébrant sa ville forte.
+Matthieu 11:28 | Jésus invite les foules à venir à lui.
+Colossiens 3:15 | Paul décrit la vie nouvelle des croyants.
+Jean 16:33 | Dernières paroles de Jésus à ses disciples avant son arrestation.
+1 Pierre 5:7 | Pierre exhorte les croyants à l’humilité devant Dieu.
+Nombres 6:24-26 |
+Romains 15:13 | Souhait de Paul pour les chrétiens de Rome.
+2 Thessaloniciens 3:16 | Salutation finale de Paul aux Thessaloniciens.
+Matthieu 5:9 | Les béatitudes, dans le sermon sur la montagne.
+Psaumes 4:9 | Prière du soir de David.
+
+# joie | Joie | Vie intérieure
+Néhémie 8:10 | Néhémie parle au peuple après la lecture de la loi.
+Philippiens 4:4 | Paul écrit de prison aux Philippiens.
+Psaumes 16:11 | Psaume de confiance de David.
+Jean 15:11 | Jésus parle de la vigne et des sarments.
+Psaumes 118:24 |
+Jacques 1:2-3 | Début de la lettre de Jacques.
+Psaumes 30:6 | Psaume de David pour l’inauguration de la maison.
+Psaumes 126:3 | Cantique du retour de l’exil.
+Habacuc 3:18 | Prière d’Habacuc, joyeux malgré la disette.
+Jean 16:24 | Jésus parle de la prière en son nom.
+
+# esperance | Espérance | Vie intérieure
+Jérémie 29:11 | Lettre de Jérémie aux exilés à Babylone.
+Romains 15:13 |
+Ésaïe 40:31 | Message de consolation au peuple de Dieu.
+Romains 5:5 | Paul parle de ce que produisent les épreuves.
+Hébreux 6:19 | L’auteur de l’épître parle de la promesse faite à Abraham.
+Lamentations 3:25-26 | Jérémie pleure Jérusalem détruite, mais garde espoir.
+Psaumes 42:12 | Psaume d’un fidèle loin du temple.
+Romains 8:28 | Paul parle de l’œuvre de Dieu dans la vie des croyants.
+1 Pierre 1:3 | Début de la première lettre de Pierre.
+Proverbes 23:18 | Proverbe de Salomon.
+
+# confiance | Confiance | Vie intérieure
+Proverbes 3:5-6 | Conseils d’un père à son fils.
+Psaumes 56:4 | Psaume de David, captif des Philistins à Gath.
+Ésaïe 26:4 | Cantique du peuple de Dieu célébrant sa ville forte.
+Psaumes 37:5 | Psaume de David.
+Psaumes 20:8 | Prière pour le roi avant le combat.
+Psaumes 9:11 | Psaume de David.
+Psaumes 62:9 | Psaume de David.
+Psaumes 125:1 | Cantique des pèlerins montant à Jérusalem.
+Nahum 1:7 | Le prophète Nahum décrit la bonté et la justice de Dieu.
+Psaumes 28:7 | Psaume de David exaucé.
+
+# force-et-courage | Force et courage | Vie intérieure
+Josué 1:9 | Dieu parle à Josué au moment de conduire Israël.
+Ésaïe 41:10 | Dieu rassure Israël, son serviteur.
+Deutéronome 31:6 | Moïse encourage le peuple avant sa mort.
+2 Timothée 1:7 |
+Psaumes 27:14 | Psaume de confiance de David.
+1 Corinthiens 16:13 | Recommandations finales de Paul aux Corinthiens.
+Ésaïe 40:29 | Message de consolation au peuple de Dieu.
+Psaumes 31:25 | Psaume de David.
+Éphésiens 6:10 | Paul introduit l’armure de Dieu.
+Habacuc 3:19 | Fin de la prière d’Habacuc.
+
+# consolation | Consolation | Vie intérieure
+2 Corinthiens 1:3 | Début de la deuxième lettre de Paul aux Corinthiens.
+Matthieu 5:4 | Les béatitudes, dans le sermon sur la montagne.
+Psaumes 34:19 | Psaume de David, après sa fuite devant Abimélec.
+Jean 14:18 | Jésus parle à ses disciples la veille de sa mort.
+Ésaïe 66:13 | Promesse de Dieu à Jérusalem.
+Apocalypse 21:4 | Vision de la nouvelle Jérusalem.
+Psaumes 94:19 | Psaume d’appel à la justice de Dieu.
+Psaumes 147:3 | Psaume de louange pour Dieu qui relève Jérusalem.
+Romains 8:18 | Paul compare les souffrances présentes et la gloire à venir.
+Ésaïe 40:1 | Début du message de consolation au peuple de Dieu.
+
+# patience | Patience | Vie intérieure
+Psaumes 37:7 | Psaume de David.
+Psaumes 40:2 | Psaume de David.
+Romains 12:12 | Paul décrit la vie chrétienne.
+Galates 6:9 | Paul encourage les Galates à faire le bien.
+Ecclésiaste 3:1 | Le temps de toute chose.
+Ecclésiaste 7:8 | Réflexion du sage.
+Hébreux 10:36 | Exhortation à la persévérance.
+Michée 7:7 | Le prophète Michée attend le secours de Dieu.
+Romains 8:25 | Paul parle de l’espérance.
+Jacques 5:8 | Jacques encourage à attendre le retour du Seigneur.
+
+# sagesse | Sagesse | Vie intérieure
+Jacques 1:5 | Début de la lettre de Jacques.
+Proverbes 9:10 | La sagesse appelle les hommes.
+Proverbes 2:6 | Conseils d’un père à son fils.
+Psaumes 111:10 | Psaume de louange.
+Proverbes 4:7 | Conseils d’un père à son fils.
+Psaumes 90:12 | Prière de Moïse.
+Jacques 3:17 | Jacques compare deux sortes de sagesse.
+Proverbes 16:16 | Proverbe de Salomon.
+Proverbes 3:13 | Éloge de la sagesse.
+Proverbes 1:7 | Introduction du livre des Proverbes.
+
+# saintete | Sainteté | Vie chrétienne
+1 Pierre 1:15-16 | Pierre appelle les croyants à une vie sainte.
+Hébreux 12:14 | Exhortation à la paix et à la sainteté.
+Romains 12:1 | Paul introduit la partie pratique de sa lettre.
+1 Thessaloniciens 4:7 | Paul parle de la pureté.
+2 Corinthiens 7:1 | Paul appelle à se purifier.
+Psaumes 24:3-4 | Psaume d’entrée dans le sanctuaire.
+Matthieu 5:8 | Les béatitudes, dans le sermon sur la montagne.
+Romains 12:2 | Paul appelle à ne pas se conformer au monde.
+1 Thessaloniciens 5:23 | Bénédiction finale de Paul aux Thessaloniciens.
+Psaumes 119:9 | Le grand psaume consacré à la Parole de Dieu.
+
+# obeissance | Obéissance | Vie chrétienne
+Jean 14:15 | Jésus parle à ses disciples la veille de sa mort.
+Jacques 1:22 |
+1 Samuel 15:22 | Samuel reprend le roi Saül qui a désobéi.
+Luc 11:28 | Jésus répond à une femme dans la foule.
+Matthieu 7:24 | Fin du sermon sur la montagne : la maison bâtie sur le roc.
+1 Jean 5:3 | Jean parle de l’amour de Dieu.
+Actes 5:29 | Pierre et les apôtres devant le sanhédrin.
+Jean 15:10 | Jésus parle de la vigne et des sarments.
+Deutéronome 5:33 | Moïse rappelle les dix commandements.
+Michée 6:8 | Le prophète Michée résume ce que Dieu demande.
+
+# humilite | Humilité | Vie chrétienne
+Jacques 4:10 | Jacques appelle à revenir à Dieu.
+1 Pierre 5:6 | Pierre exhorte les croyants à l’humilité devant Dieu.
+Philippiens 2:3 | Paul appelle à l’unité et à l’humilité.
+Proverbes 22:4 | Proverbe de Salomon.
+Matthieu 23:12 | Jésus met en garde contre l’orgueil des pharisiens.
+Proverbes 11:2 | Proverbe de Salomon.
+Jacques 4:6 |
+Proverbes 16:18 | Proverbe de Salomon.
+Colossiens 3:12 | Paul décrit la vie nouvelle des croyants.
+Matthieu 11:29 | Jésus invite les foules à venir à lui.
+
+# pardon | Pardon | Vie chrétienne
+Éphésiens 4:32 | Paul décrit la vie nouvelle des croyants.
+Colossiens 3:13 | Paul décrit la vie nouvelle des croyants.
+Matthieu 6:14 | Jésus commente le Notre Père.
+1 Jean 1:9 | Jean parle de la marche dans la lumière.
+Psaumes 103:12 | David célèbre la bonté de Dieu.
+Matthieu 18:21-22 | Pierre demande combien de fois pardonner.
+Marc 11:25 | Jésus enseigne ses disciples sur la prière.
+Luc 6:37 | Jésus enseigne dans la plaine.
+Ésaïe 1:18 | Dieu appelle son peuple à revenir à lui.
+Psaumes 32:1 | Psaume de David sur le bonheur du pardon.
+
+# repentance | Repentance | Vie chrétienne
+Actes 3:19 | Pierre parle à la foule au temple.
+2 Chroniques 7:14 | Dieu répond à Salomon après la dédicace du temple.
+Psaumes 51:12 | Prière de David après son péché avec Bath-Schéba.
+Proverbes 28:13 | Proverbe de Salomon.
+Luc 15:7 | Jésus raconte la parabole de la brebis perdue.
+Joël 2:13 | Le prophète Joël appelle le peuple à revenir à Dieu.
+Ésaïe 55:7 | Dieu invite le méchant à revenir à lui.
+2 Pierre 3:9 | Pierre explique pourquoi le Seigneur patiente.
+Luc 5:32 | Jésus répond aux pharisiens chez Lévi.
+2 Corinthiens 7:10 | Paul parle de la tristesse selon Dieu.
+
+# tentation | Tentation | Vie chrétienne
+1 Corinthiens 10:13 | Paul tire les leçons de l’histoire d’Israël.
+Jacques 1:12 | Jacques parle de l’épreuve et de la tentation.
+Jacques 4:7 | Jacques appelle à revenir à Dieu.
+Matthieu 26:41 | Jésus à ses disciples endormis à Gethsémané.
+Hébreux 2:18 | L’auteur de l’épître parle de Jésus, semblable à ses frères.
+Hébreux 4:15 | L’auteur de l’épître présente Jésus, le grand-prêtre.
+1 Pierre 5:8 | Pierre met en garde contre l’adversaire.
+Galates 5:16 | Paul oppose la chair et l’Esprit.
+Éphésiens 6:11 | Paul introduit l’armure de Dieu.
+Psaumes 119:11 |
+
+# perseverance | Persévérance | Vie chrétienne
+Hébreux 12:1 | Après la liste des héros de la foi, l’appel à courir.
+Philippiens 3:13-14 | Paul parle de son but.
+1 Corinthiens 15:58 | Conclusion de Paul sur la résurrection.
+2 Timothée 4:7 | Paul, en fin de vie, fait le bilan de sa course.
+Romains 5:3-4 | Paul parle de ce que produisent les épreuves.
+Matthieu 24:13 | Jésus parle de la fin des temps.
+Apocalypse 2:10 | Message à l’Église de Smyrne.
+Galates 6:9 |
+Hébreux 10:36 |
+Jacques 1:4 | Début de la lettre de Jacques.
+
+# service | Service | Vie chrétienne
+Marc 10:45 | Jésus répond aux disciples qui se disputent la première place.
+Galates 5:13 | Paul parle du bon usage de la liberté.
+1 Pierre 4:10 | Pierre parle des dons de chacun.
+Matthieu 25:40 | Jésus parle du jugement des nations.
+Josué 24:15 | Josué parle au peuple à la fin de sa vie.
+Romains 12:11 | Paul décrit la vie chrétienne.
+Jean 13:14 | Jésus vient de laver les pieds de ses disciples.
+Matthieu 20:26 | Jésus répond aux disciples qui se disputent la première place.
+Hébreux 6:10 | L’auteur de l’épître encourage ses lecteurs.
+Jean 12:26 | Jésus annonce sa mort.
+
+# amour-du-prochain | Amour du prochain | Relations
+Jean 13:34 | Jésus donne un commandement nouveau à ses disciples.
+Jean 13:35 | Jésus donne un commandement nouveau à ses disciples.
+1 Corinthiens 13:4 | Le chapitre de Paul sur l’amour.
+1 Corinthiens 13:7 | Le chapitre de Paul sur l’amour.
+Matthieu 22:39 | Jésus répond à la question du plus grand commandement.
+Romains 13:10 | Paul résume la loi.
+1 Jean 4:7 | Jean appelle les croyants à s’aimer les uns les autres.
+1 Pierre 4:8 | Pierre exhorte les croyants à la fin des temps.
+1 Jean 3:18 | Jean appelle à aimer en actes.
+1 Corinthiens 13:13 | Conclusion du chapitre de Paul sur l’amour.
+
+# famille | Famille et mariage | Relations
+Proverbes 22:6 | Proverbe de Salomon.
+Éphésiens 5:25 | Paul parle du mariage.
+Genèse 2:24 | Création de la femme.
+Psaumes 127:3 | Cantique de Salomon.
+Exode 20:12 | Les dix commandements.
+Éphésiens 6:4 | Paul parle de la vie de famille.
+Proverbes 31:10 | Éloge de la femme vertueuse.
+Psaumes 127:1 | Cantique de Salomon.
+Ecclésiaste 4:12 | Réflexion du sage sur la force de l’union.
+Josué 24:15 |
+
+# amitie | Amitié | Relations
+Proverbes 17:17 | Proverbe de Salomon.
+Proverbes 18:24 | Proverbe de Salomon.
+Jean 15:13 |
+Jean 15:14 | Jésus parle à ses disciples la veille de sa mort.
+Ecclésiaste 4:9-10 | Réflexion du sage sur la force de l’union.
+Jean 15:15 | Jésus parle à ses disciples la veille de sa mort.
+Proverbes 27:9 | Proverbe de Salomon.
+Proverbes 13:20 | Proverbe de Salomon.
+1 Corinthiens 15:33 | Paul met en garde les Corinthiens.
+Proverbes 27:6 | Proverbe de Salomon.
+
+# paroles | Paroles | Relations
+Éphésiens 4:29 | Paul décrit la vie nouvelle des croyants.
+Proverbes 15:1 | Proverbe de Salomon.
+Jacques 1:19 | Jacques appelle à écouter avant de parler.
+Proverbes 18:21 | Proverbe de Salomon.
+Colossiens 4:6 | Recommandations finales de Paul aux Colossiens.
+Psaumes 19:15 | Fin du psaume de David sur la création et la loi.
+Proverbes 12:18 | Proverbe de Salomon.
+Psaumes 141:3 | Prière du soir de David.
+Matthieu 12:36 | Jésus répond aux pharisiens.
+Proverbes 16:24 | Proverbe de Salomon.
+
+# generosite | Générosité | Relations
+2 Corinthiens 9:7 | Paul encourage les Corinthiens à donner.
+Actes 20:35 | Paul fait ses adieux aux anciens d’Éphèse.
+Luc 6:38 | Jésus enseigne dans la plaine.
+Proverbes 11:25 | Proverbe de Salomon.
+Proverbes 19:17 | Proverbe de Salomon.
+Proverbes 22:9 | Proverbe de Salomon.
+Hébreux 13:16 | Exhortations finales de l’épître aux Hébreux.
+1 Jean 3:17 | Jean appelle à aimer en actes.
+Proverbes 3:9 | Conseils d’un père à son fils.
+2 Corinthiens 9:6 | Paul encourage les Corinthiens à donner.
+
+# unite | Unité | Relations
+Psaumes 133:1 | Cantique de David sur l’unité des frères.
+Éphésiens 4:3 | Paul appelle à l’unité de l’Église.
+Jean 17:21 | Prière de Jésus pour ses disciples.
+1 Corinthiens 1:10 | Paul s’adresse à une Église divisée.
+Colossiens 3:14 | Paul décrit la vie nouvelle des croyants.
+Philippiens 2:2 | Paul appelle à l’unité et à l’humilité.
+Romains 15:5 | Paul parle de l’accueil mutuel.
+1 Pierre 3:8 | Pierre résume la vie fraternelle.
+Hébreux 10:24 | Exhortation à s’encourager mutuellement.
+Galates 3:28 | Paul parle de l’unité en Christ.
+
+# peur-et-anxiete | Peur et anxiété | Moments de vie
+Matthieu 6:34 | Jésus parle des soucis dans le sermon sur la montagne.
+Jean 14:1 | Jésus parle à ses disciples la veille de sa mort.
+Psaumes 34:5 | Psaume de David, après sa fuite devant Abimélec.
+1 Jean 4:18 | Jean parle de l’amour qui chasse la crainte.
+Psaumes 118:6 | Psaume de fête et d’action de grâces.
+Matthieu 6:27 | Jésus parle des soucis dans le sermon sur la montagne.
+Ésaïe 41:10 |
+1 Pierre 5:7 |
+Philippiens 4:6-7 |
+Ésaïe 35:4 | Annonce du retour joyeux du peuple de Dieu.
+
+# epreuves | Épreuves | Moments de vie
+2 Corinthiens 4:16 | Paul parle de ses souffrances d’apôtre.
+2 Corinthiens 4:8-9 | Paul parle de ses souffrances d’apôtre.
+Psaumes 34:20 | Psaume de David, après sa fuite devant Abimélec.
+1 Pierre 4:12 | Pierre écrit à des chrétiens persécutés.
+Romains 8:28 |
+Jacques 1:2-3 |
+Ésaïe 43:2 |
+Jean 16:33 |
+2 Corinthiens 12:9 |
+Psaumes 46:2 |
+
+# deuil | Deuil | Moments de vie
+Jean 11:25-26 | Jésus parle à Marthe après la mort de Lazare.
+Apocalypse 21:4 |
+1 Thessaloniciens 4:13 | Paul parle des croyants décédés.
+1 Thessaloniciens 4:14 | Paul parle des croyants décédés.
+Matthieu 5:4 |
+Psaumes 23:4 |
+2 Corinthiens 5:8 | Paul parle de la demeure céleste.
+Philippiens 1:21 | Paul, en prison, parle de la vie et de la mort.
+1 Corinthiens 15:55 | Paul parle de la résurrection.
+Jean 14:2 | Jésus parle à ses disciples la veille de sa mort.
+
+# solitude | Solitude | Moments de vie
+Hébreux 13:5 |
+Deutéronome 31:8 | Moïse encourage Josué avant sa mort.
+Matthieu 28:20 | Dernières paroles de Jésus à ses disciples.
+Psaumes 27:10 | Psaume de confiance de David.
+Psaumes 68:7 | Psaume de David sur la victoire de Dieu.
+Jean 14:18 |
+Psaumes 139:9-10 | Psaume de David sur la présence de Dieu partout.
+Psaumes 25:16 | Prière de David.
+Ésaïe 49:15 | Dieu répond à Sion qui se croit abandonnée.
+Josué 1:5 | Dieu parle à Josué au moment de conduire Israël.
+
+# travail | Travail | Moments de vie
+Colossiens 3:23-24 | Paul s’adresse aux serviteurs.
+Proverbes 16:3 | Proverbe de Salomon.
+Psaumes 90:17 | Prière de Moïse.
+1 Corinthiens 10:31 | Paul parle de la liberté chrétienne.
+Proverbes 14:23 | Proverbe de Salomon.
+Ecclésiaste 9:10 | Réflexion du sage.
+2 Thessaloniciens 3:10 | Paul reprend ceux qui vivent dans l’oisiveté.
+Proverbes 22:29 | Proverbe de Salomon.
+Proverbes 12:11 | Proverbe de Salomon.
+Proverbes 10:4 | Proverbe de Salomon.
+
+# identite-en-christ | Identité en Christ | Moments de vie
+Galates 2:20 | Paul parle de sa vie en Christ.
+1 Pierre 2:9 | Pierre décrit le peuple de Dieu.
+Éphésiens 2:10 | Paul parle du salut par grâce.
+Psaumes 139:14 | Psaume de David sur Dieu qui nous a formés.
+Romains 8:1 | Paul parle de la vie par l’Esprit.
+Colossiens 3:3 | Paul décrit la vie nouvelle des croyants.
+Jean 15:16 | Jésus parle à ses disciples la veille de sa mort.
+Galates 3:26 | Paul explique aux Galates qu’ils sont fils de Dieu par la foi.
+1 Jean 3:1 |
+Romains 8:16 | Paul parle de l’adoption des enfants de Dieu.
+
+# nouveau-depart | Nouveau départ | Moments de vie
+2 Corinthiens 5:17 | Paul parle de la nouvelle création.
+Ésaïe 43:18-19 | Dieu annonce une chose nouvelle à son peuple.
+Lamentations 3:22-23 |
+Philippiens 3:13-14 |
+Apocalypse 21:5 | Vision de la nouvelle Jérusalem.
+Ézéchiel 36:26 | Dieu promet un cœur nouveau à son peuple.
+Psaumes 51:12 |
+Romains 6:4 | Paul parle du baptême.
+Jérémie 29:11 |
+Joël 2:25 | Promesse de restauration après l’invasion des sauterelles.
+
+# temoignage | Témoignage | Mission
+Matthieu 28:19-20 | Dernières paroles de Jésus à ses disciples.
+Marc 16:15 | Jésus ressuscité envoie ses disciples.
+Actes 1:8 |
+Matthieu 5:14 | Le sermon sur la montagne.
+Matthieu 5:16 | Le sermon sur la montagne.
+Romains 1:16 | Début de la lettre de Paul aux Romains.
+1 Pierre 3:15 | Pierre écrit à des chrétiens persécutés.
+2 Timothée 4:2 | Dernière exhortation de Paul à Timothée.
+Romains 10:15 | Paul cite le prophète Ésaïe.
+Ésaïe 6:8 | Vision d’Ésaïe dans le temple.

@@ -1,0 +1,3 @@
+-- v2 → v3 : répétition espacée (cran sur l'échelle et date du prochain arrosage).
+ALTER TABLE LearningVerseEntity ADD COLUMN reviewStep INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE LearningVerseEntity ADD COLUMN dueAtEpochMillis INTEGER NOT NULL DEFAULT 0;

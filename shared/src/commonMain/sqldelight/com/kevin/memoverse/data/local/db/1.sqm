@@ -1,0 +1,5 @@
+-- v1 → v2 : progression dans le stade (séances d'arrosage).
+ALTER TABLE LearningVerseEntity ADD COLUMN successCount INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE LearningVerseEntity ADD COLUMN successDays INTEGER NOT NULL DEFAULT 0;
+ALTER TABLE LearningVerseEntity ADD COLUMN lastSuccessEpochDay INTEGER;
+ALTER TABLE LearningVerseEntity ADD COLUMN consecutiveFailures INTEGER NOT NULL DEFAULT 0;
