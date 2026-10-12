@@ -14,6 +14,9 @@ import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
 import com.kevin.memoverse.domain.speech.SpeechRecognitionService
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
 import com.kevin.memoverse.domain.usecase.ResetGardenUseCase
+import com.kevin.memoverse.domain.usecase.ObserveTypefaceUseCase
+import com.kevin.memoverse.domain.usecase.SelectTypefaceUseCase
+import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -30,4 +33,7 @@ val domainModule = module {
     factory { BuildWateringSessionUseCase(get(), get(), get(), get()) }
     factory { RecordExerciseResultUseCase(get(), get()) }
     factory { CheckAnswerUseCase() }
+    factory { ObserveTypefaceUseCase(get()) }
+    factory { SelectTypefaceUseCase(get()) }
+    factory { ClaimNotificationPermissionRequestUseCase(get()) }
 }

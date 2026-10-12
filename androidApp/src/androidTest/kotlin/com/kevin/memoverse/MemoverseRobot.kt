@@ -10,6 +10,9 @@ import androidx.compose.ui.test.junit4.ComposeTestRule
 import androidx.compose.ui.test.onAllNodesWithText
 import androidx.compose.ui.test.onLast
 import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
+import androidx.compose.ui.test.hasAnyAncestor
+import androidx.compose.ui.test.hasScrollAction
 import androidx.compose.ui.test.performClick
 import androidx.compose.ui.test.performScrollToNode
 import androidx.compose.ui.semantics.SemanticsProperties
@@ -29,7 +32,12 @@ class MemoverseRobot(private val rule: ComposeTestRule) {
 
     fun tap(text: String, substring: Boolean = false) {
         waitForText(text, substring)
-        rule.onAllNodesWithText(text, substring = substring).filterToOne(hasClickAction()).performClick()
+        // Un élément sous le bas de l'écran (Profil qui défile) doit d'abord être amené à l'écran.
+        val node = rule.onAllNodesWithText(text, substring = substring).filterToOne(hasClickAction())
+        if (rule.onAllNodes(hasText(text, substring = substring) and hasClickAction() and hasAnyAncestor(hasScrollAction())).fetchSemanticsNodes().isNotEmpty()) {
+            node.performScrollTo()
+        }
+        node.performClick()
         rule.waitForIdle()
     }
 

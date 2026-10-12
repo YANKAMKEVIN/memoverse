@@ -167,5 +167,18 @@
     <string name="profile_reset_confirm">Réinitialiser</string>
     <string name="profile_reset_cancel">Annuler</string>
     <string name="profile_reset_done">Ton jardin est vide. Tu peux planter de nouveaux versets.</string>
+    <string name="profile_typeface_title">Police</string>
+    <string name="profile_typeface_sample">Le jardin de ton cœur</string>
+    <string name="profile_typeface_save_failed">La police n’a pas pu être enregistrée.</string>
+    <string name="typeface_jardin_name">Instrument · Newsreader</string>
+    <string name="typeface_jardin_mood">Fine et moderne (d’origine)</string>
+    <string name="typeface_fraunces_name">Fraunces · Figtree</string>
+    <string name="typeface_fraunces_mood">Organique et chaleureuse</string>
+    <string name="typeface_cormorant_name">Cormorant · Manrope</string>
+    <string name="typeface_cormorant_mood">Littéraire et élancée</string>
+    <string name="typeface_gloock_name">Gloock · Source Serif</string>
+    <string name="typeface_gloock_mood">Éditoriale et affirmée</string>
+    <string name="typeface_garamond_name">EB Garamond · Geist</string>
+    <string name="typeface_garamond_mood">Classique, comme une Bible imprimée</string>
     <string name="profile_offline">Tout reste sur ton téléphone : pas de compte, pas de collecte de données.</string>
 </resources>

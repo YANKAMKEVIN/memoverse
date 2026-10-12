@@ -1,0 +1,11 @@
+-- Réglages de l'utilisateur, en clé → valeur (ex. la police choisie).
+CREATE TABLE PreferenceEntity (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);
+
+selectValue:
+SELECT value FROM PreferenceEntity WHERE key = ?;
+
+upsert:
+INSERT OR REPLACE INTO PreferenceEntity(key, value) VALUES (?, ?);

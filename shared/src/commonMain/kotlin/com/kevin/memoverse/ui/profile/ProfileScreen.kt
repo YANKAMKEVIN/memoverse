@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
@@ -28,6 +30,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kevin.memoverse.presentation.profile.ProfileEvent
 import com.kevin.memoverse.presentation.profile.ProfileUiState
 import com.kevin.memoverse.presentation.profile.ProfileViewModel
+import com.kevin.memoverse.presentation.profile.TypefaceOptionUi
+import com.kevin.memoverse.presentation.common.TypefaceUi
+import com.kevin.memoverse.resources.profile_typeface_save_failed
+import com.kevin.memoverse.resources.profile_typeface_title
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.profile_offline
 import com.kevin.memoverse.resources.profile_reset
@@ -72,6 +78,7 @@ fun ProfileScreenContent(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
             .statusBarsPadding()
+            .verticalScroll(rememberScrollState())
             .padding(bottom = contentPadding.calculateBottomPadding())
             .padding(horizontal = Spacing.lg, vertical = Spacing.md),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -89,6 +96,18 @@ fun ProfileScreenContent(
             InfoRow(Res.string.profile_translation_label, Res.string.profile_translation_value)
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             InfoRow(Res.string.profile_version_label, Res.string.profile_version_value)
+        }
+        Text(
+            text = stringResource(Res.string.profile_typeface_title).uppercase(),
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+        )
+        state.typefaces.forEach { option ->
+            TypefaceOption(option = option, onClick = { onEvent(ProfileEvent.TypefaceSelected(option.typeface)) })
+        }
+        if (state.hasTypefaceSaveFailed) {
+            Text(stringResource(Res.string.profile_typeface_save_failed), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
         }
         Text(
             text = stringResource(Res.string.profile_offline),
@@ -135,7 +154,7 @@ private fun InfoRow(label: StringResource, value: StringResource) {
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    AppTheme { ProfileScreenContent(state = ProfileUiState(), contentPadding = PaddingValues(), onEvent = {}) }
+    AppTheme { ProfileScreenContent(state = ProfileUiState(typefaces = TypefaceUi.entries.map { TypefaceOptionUi(it, it == TypefaceUi.FRAUNCES) }), contentPadding = PaddingValues(), onEvent = {}) }
 }
 
 @Preview

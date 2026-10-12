@@ -7,6 +7,13 @@ import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.rule.GrantPermissionRule
 import com.kevin.memoverse.domain.exercise.ExerciseFactory
 import com.kevin.memoverse.domain.repository.LearningRepository
+import com.kevin.memoverse.domain.repository.PreferencesRepository
+import com.kevin.memoverse.domain.model.TypefaceChoice
+import androidx.compose.ui.test.assertIsSelected
+import androidx.compose.ui.test.assertIsNotSelected
+import androidx.compose.ui.test.onNodeWithText
+import androidx.compose.ui.test.performScrollTo
+import org.junit.Assert.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
@@ -69,7 +76,10 @@ class GardenJourneyTest {
     }
 
     private fun clearGarden() {
-        runBlocking { KoinPlatform.getKoin().get<LearningRepository>().clear() }
+        runBlocking {
+            KoinPlatform.getKoin().get<LearningRepository>().clear()
+            KoinPlatform.getKoin().get<PreferencesRepository>().setTypeface(TypefaceChoice.DEFAULT)
+        }
     }
 
     @Test
@@ -226,5 +236,18 @@ class GardenJourneyTest {
         const val SEED = 7
         /** 3 graines × 2 exercices (référence puis remise en ordre). */
         const val EXERCISES_FOR_THREE_SEEDS = 6
+    }
+
+    @Test
+    fun choisir_une_police_dans_le_profil_l_enregistre_et_la_coche() {
+        robot.tapTab("Profil")
+        robot.waitForText("Fraunces · Figtree")
+        compose.onNodeWithText("Fraunces · Figtree").performScrollTo().performClick()
+        compose.waitForIdle()
+
+        compose.onNodeWithText("Fraunces · Figtree").assertIsSelected()
+        compose.onNodeWithText("Instrument · Newsreader").assertIsNotSelected()
+        val saved = runBlocking { KoinPlatform.getKoin().get<PreferencesRepository>().observeTypeface().first() }
+        assertEquals(TypefaceChoice.FRAUNCES, saved)
     }
 }

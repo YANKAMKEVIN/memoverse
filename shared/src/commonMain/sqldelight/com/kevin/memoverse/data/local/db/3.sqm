@@ -1,0 +1,5 @@
+-- v3 → v4 : réglages de l'utilisateur (police choisie).
+CREATE TABLE PreferenceEntity (
+    key TEXT NOT NULL PRIMARY KEY,
+    value TEXT NOT NULL
+);

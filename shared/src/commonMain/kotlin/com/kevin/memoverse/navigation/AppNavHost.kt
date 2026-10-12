@@ -1,5 +1,9 @@
 package com.kevin.memoverse.navigation
 
+import androidx.compose.runtime.rememberCoroutineScope
+import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
+import kotlinx.coroutines.launch
+import org.koin.compose.koinInject
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +38,8 @@ fun AppNavHost() {
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentTab = backStackEntry?.destination?.toTab()
     val requestNotificationPermission = rememberNotificationPermissionRequest()
+    val claimNotificationPermissionRequest = koinInject<ClaimNotificationPermissionRequestUseCase>()
+    val scope = rememberCoroutineScope()
     val pendingSessionOpen by NotificationEntry.pendingSessionOpen.collectAsState()
     LaunchedEffect(pendingSessionOpen) {
         if (pendingSessionOpen) {
@@ -72,8 +78,8 @@ fun AppNavHost() {
                     onLearningStarted = {
                         navController.popBackStack<ExplorerRoute>(inclusive = false)
                         navController.navigateToTab(AppTab.GARDEN)
-                        // Les rappels prennent leur sens maintenant que des versets sont plantés.
-                        requestNotificationPermission()
+                        // Les rappels prennent leur sens maintenant que des versets sont plantés ; on ne demande qu'une fois.
+                        scope.launch { if (claimNotificationPermissionRequest()) requestNotificationPermission() }
                     },
                 )
             }
