@@ -37,6 +37,16 @@ sealed interface TypedSegmentUi {
     data class Blank(val slot: Int, val value: String, val length: Int) : TypedSegmentUi
 }
 
+data class RecitedWordUi(val text: String, val state: RecitedWordState)
+
+enum class RecitedWordState {
+    /** Pas encore dit : affiché en pointillés. */
+    HIDDEN,
+    RECITED,
+    /** Après validation : le mot qui n'a pas été dit, révélé pour qu'on le voie. */
+    MISSED,
+}
+
 enum class SpeechErrorUi { PERMISSION_DENIED, UNAVAILABLE, LANGUAGE_PACK_MISSING, NO_MATCH, OTHER }
 
 data class WordChoiceUi(val index: Int, val text: String, val isUsed: Boolean)
@@ -61,6 +71,10 @@ sealed interface ExerciseUi {
     data class ReciteAloud(
         override val reference: String,
         val transcript: String,
+        /** Le verset mot à mot : chaque mot apparaît quand il a été dit. */
+        val words: List<RecitedWordUi>,
+        /** Remplissage de la goutte, de 0 à 1 (pleine = récitation réussie). */
+        val fill: Float,
         val isListening: Boolean,
         val error: SpeechErrorUi?,
         val isTyping: Boolean,

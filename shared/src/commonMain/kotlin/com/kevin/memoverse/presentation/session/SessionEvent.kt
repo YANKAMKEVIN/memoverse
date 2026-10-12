@@ -11,6 +11,8 @@ sealed interface SessionEvent {
     data object MicClicked : SessionEvent
     data object MicPermissionDenied : SessionEvent
     data object TypeInsteadClicked : SessionEvent
+    /** Revenir à l'oral après « Écrire plutôt ». */
+    data object SpeakInsteadClicked : SessionEvent
     data object CheckClicked : SessionEvent
     data object ContinueClicked : SessionEvent
     data object RetryClicked : SessionEvent

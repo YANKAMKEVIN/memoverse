@@ -16,6 +16,6 @@ val presentationModule = module {
     viewModel { ProgressionViewModel(get()) }
     viewModel { ProfileViewModel(get(), get(), get()) }
     viewModel { AppearanceViewModel(get()) }
-    viewModel { SessionViewModel(get(), get(), get(), get()) }
+    viewModel { SessionViewModel(get(), get(), get(), get(), get()) }
     viewModel { (themeId: String) -> ThemeDetailViewModel(themeId, get(), get(), get(), get()) }
 }

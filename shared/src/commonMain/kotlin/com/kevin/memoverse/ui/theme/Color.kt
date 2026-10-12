@@ -19,3 +19,6 @@ internal val Terracotta = Color(0xFFB0573D)
 /** Fond des illustrations détourées (îles, stades) : les panneaux qui les portent prennent cette teinte. */
 internal val IllustrationBackground = Color(0xFFF4EBDE)
 internal val ScrimDark = Color(0xFF1E1A12)
+/** Eau de la goutte (oral) et de l'arrosage. */
+internal val WaterLight = Color(0xFFA9CCD4)
+internal val Water = Color(0xFF6F9FAE)

@@ -10,6 +10,7 @@ import com.kevin.memoverse.domain.usecase.ToggleVerseSelectionUseCase
 import com.kevin.memoverse.domain.exercise.ExerciseFactory
 import com.kevin.memoverse.domain.usecase.BuildWateringSessionUseCase
 import com.kevin.memoverse.domain.usecase.CheckAnswerUseCase
+import com.kevin.memoverse.domain.usecase.MeasureRecitationUseCase
 import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
 import com.kevin.memoverse.domain.speech.SpeechRecognitionService
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
@@ -33,6 +34,7 @@ val domainModule = module {
     factory { BuildWateringSessionUseCase(get(), get(), get(), get()) }
     factory { RecordExerciseResultUseCase(get(), get()) }
     factory { CheckAnswerUseCase() }
+    factory { MeasureRecitationUseCase() }
     factory { ObserveTypefaceUseCase(get()) }
     factory { SelectTypefaceUseCase(get()) }
     factory { ClaimNotificationPermissionRequestUseCase(get()) }

@@ -1,5 +1,6 @@
 package com.kevin.memoverse.presentation.session
 
+import com.kevin.memoverse.domain.exercise.AnswerChecker
 import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.model.HiddenPosition
 import com.kevin.memoverse.domain.model.VerseParts
@@ -100,13 +101,28 @@ internal fun Exercise.toUi(draft: AnswerDraft, speech: SpeechModel = SpeechModel
             },
         )
     }
-    is Exercise.ReciteAloud -> ExerciseUi.ReciteAloud(
-        reference = verse.reference,
-        transcript = (draft as? AnswerDraft.Typed)?.text.orEmpty(),
-        isListening = speech.isListening,
-        error = speech.error,
-        isTyping = speech.isTyping,
-    )
+    is Exercise.ReciteAloud -> {
+        val transcript = (draft as? AnswerDraft.Typed)?.text.orEmpty()
+        val progress = AnswerChecker.recitationProgress(verse.text, transcript)
+        ExerciseUi.ReciteAloud(
+            reference = verse.reference,
+            transcript = transcript,
+            words = verse.text.split(WHITESPACE).filter { it.isNotEmpty() }.zip(progress.recitedWords) { word, isRecited ->
+                RecitedWordUi(
+                    text = word,
+                    state = when {
+                        isRecited -> RecitedWordState.RECITED
+                        revealAnswer -> RecitedWordState.MISSED
+                        else -> RecitedWordState.HIDDEN
+                    },
+                )
+            },
+            fill = progress.fill.toFloat(),
+            isListening = speech.isListening,
+            error = speech.error,
+            isTyping = speech.isTyping,
+        )
+    }
     is Exercise.Recite -> ExerciseUi.Type(verse.reference, null, "", verse.text, "", (draft as? AnswerDraft.Typed)?.text.orEmpty())
 }
 
@@ -129,3 +145,5 @@ private fun HiddenPosition.toUi(): PartPositionUi = when (this) {
     HiddenPosition.MIDDLE -> PartPositionUi.MIDDLE
     HiddenPosition.END -> PartPositionUi.END
 }
+
+private val WHITESPACE = Regex("\\s+")

@@ -8,6 +8,7 @@ import com.kevin.memoverse.domain.usecase.CheckAnswerUseCase
 import com.kevin.memoverse.domain.speech.SpeechError
 import com.kevin.memoverse.domain.speech.SpeechEvent
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
+import com.kevin.memoverse.domain.usecase.MeasureRecitationUseCase
 import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
 import com.kevin.memoverse.fake.FakeLearningRepository
 import com.kevin.memoverse.fake.FakeSpeechRecognitionService
@@ -51,6 +52,7 @@ class SessionViewModelTest {
         checkAnswer = CheckAnswerUseCase(),
         recordResult = RecordExerciseResultUseCase(learning) { 20_000L * 86_400_000L },
         listenToRecitation = ListenToRecitationUseCase(speech),
+        measureRecitation = MeasureRecitationUseCase(),
     )
 
     @Test
@@ -274,6 +276,80 @@ class SessionViewModelTest {
             dispatcher.scheduler.advanceUntilIdle()
 
             assertEquals(SpeechErrorUi.LANGUAGE_PACK_MISSING, assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).error)
+        }
+    }
+
+    @Test
+    fun `une pause ne fait pas perdre les mots déjà dits`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            speech.events = listOf(SpeechEvent.Partial("mot1 alpha"), SpeechEvent.Final("mot1 alpha beta gamma"))
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            speech.events = listOf(SpeechEvent.Final("delta epsilon zeta eta theta"))
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val heard = assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise)
+            assertEquals("mot1 alpha beta gamma delta epsilon zeta eta theta", heard.transcript)
+            assertTrue(heard.words.all { it.state == RecitedWordState.RECITED })
+            assertEquals(1f, heard.fill)
+        }
+    }
+
+    @Test
+    fun `l'écoute s'arrête d'elle-même quand la goutte est pleine`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        speech.events = listOf(SpeechEvent.Partial("mot1 alpha beta"), SpeechEvent.Partial("mot1 alpha beta gamma delta epsilon zeta eta theta"))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(1, speech.stopCount)
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    @Test
+    fun `l'écoute continue tant que la goutte n'est pas pleine`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        speech.events = listOf(SpeechEvent.Partial("mot1 alpha beta gamma"))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(0, speech.stopCount)
+            val heard = assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise)
+            assertEquals(4, heard.words.count { it.state == RecitedWordState.RECITED })
+            assertTrue(heard.fill in 0.5f..0.6f)
+        }
+    }
+
+    @Test
+    fun `apres ecrire plutot, on peut revenir a l'oral avec une goutte vide`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.TypeInsteadClicked)
+            vm.onEvent(SessionEvent.TextChanged("mot1 alpha beta"))
+            vm.onEvent(SessionEvent.SpeakInsteadClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val oral = assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise)
+            assertFalse(oral.isTyping)
+            assertEquals(0f, oral.fill)
+            assertTrue(oral.words.none { it.state == RecitedWordState.RECITED })
         }
     }
 }

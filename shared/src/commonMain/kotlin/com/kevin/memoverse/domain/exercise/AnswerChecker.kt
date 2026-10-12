@@ -2,6 +2,7 @@ package com.kevin.memoverse.domain.exercise
 
 import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.model.ExerciseAnswer
+import com.kevin.memoverse.domain.model.RecitationProgress
 
 /**
  * Correction tolérante du cadrage : on ignore la casse, les accents et la ponctuation,
@@ -29,28 +30,52 @@ object AnswerChecker {
         }
     }
 
+    /** Récitation orale : réussie si au moins 85 % des mots du verset sont retrouvés dans l'ordre. */
+    fun isRecitationCorrect(expected: String, spoken: String): Boolean = recitationProgress(expected, spoken).isComplete
+
     /**
-     * Récitation orale : la transcription vocale déforme parfois un mot (« qu'on » → « con »).
-     * On accepte si au moins 85 % des mots du verset sont retrouvés dans l'ordre.
+     * Aligne la transcription sur le verset (plus longue sous-suite commune, une faute tolérée par mot long)
+     * pour savoir quels mots ont déjà été dits.
      */
-    fun isRecitationCorrect(expected: String, spoken: String): Boolean {
-        val expectedWords = words(expected)
+    fun recitationProgress(expected: String, spoken: String): RecitationProgress {
+        val tokens = expected.split(WHITESPACE).filter { it.isNotEmpty() }
+        // Chaque mot normalisé garde le rang du mot affiché d'où il vient (« Lui-même » en donne deux).
+        val expectedWords = tokens.flatMapIndexed { index, token -> words(token).map { it to index } }
         val spokenWords = words(spoken)
-        if (expectedWords.isEmpty()) return false
-        // Plus longue sous-suite commune, avec une faute de frappe tolérée par mot long.
+        if (expectedWords.isEmpty()) return RecitationProgress(tokens.map { false }, 0.0)
         val lcs = Array(expectedWords.size + 1) { IntArray(spokenWords.size + 1) }
         for (i in 1..expectedWords.size) {
             for (j in 1..spokenWords.size) {
-                lcs[i][j] = if (isSameWord(expectedWords[i - 1], spokenWords[j - 1])) lcs[i - 1][j - 1] + 1
+                lcs[i][j] = if (isSameWord(expectedWords[i - 1].first, spokenWords[j - 1])) lcs[i - 1][j - 1] + 1
                 else maxOf(lcs[i - 1][j], lcs[i][j - 1])
             }
         }
-        return lcs[expectedWords.size][spokenWords.size] >= expectedWords.size * RECITATION_THRESHOLD
+        val matched = BooleanArray(expectedWords.size)
+        var i = expectedWords.size
+        var j = spokenWords.size
+        while (i > 0 && j > 0) {
+            when {
+                isSameWord(expectedWords[i - 1].first, spokenWords[j - 1]) && lcs[i][j] == lcs[i - 1][j - 1] + 1 -> {
+                    matched[i - 1] = true; i--; j--
+                }
+                lcs[i - 1][j] >= lcs[i][j - 1] -> i--
+                else -> j--
+            }
+        }
+        val recited = tokens.indices.map { index ->
+            val parts = expectedWords.indices.filter { expectedWords[it].second == index }
+            // Un signe seul (« — ») n'a rien à dire : il suit le mot qui le précède.
+            if (parts.isEmpty()) false else parts.any { matched[it] }
+        }.toMutableList()
+        for (index in tokens.indices) {
+            if (words(tokens[index]).isEmpty()) recited[index] = index > 0 && recited[index - 1]
+        }
+        return RecitationProgress(recited, matched.count { it }.toDouble() / expectedWords.size)
     }
 
     private fun isSameWord(expected: String, actual: String) = levenshtein(expected, actual) <= if (expected.length > 3) 1 else 0
 
-    private const val RECITATION_THRESHOLD = 0.85
+    private val WHITESPACE = Regex("\\s+")
 
     fun isTypedTextCorrect(expected: String, typed: String): Boolean {
         val expectedWords = words(expected)

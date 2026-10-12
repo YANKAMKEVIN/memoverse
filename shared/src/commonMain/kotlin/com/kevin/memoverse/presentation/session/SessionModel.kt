@@ -29,6 +29,8 @@ internal data class SessionModel(
 /** État du micro pour l'exercice oral en cours. */
 internal data class SpeechModel(
     val isListening: Boolean = false,
+    /** Ce qui a été dit lors des écoutes précédentes : une pause ne fait pas perdre les mots déjà dits. */
+    val committedText: String = "",
     val error: SpeechErrorUi? = null,
     val isTyping: Boolean = false,
 )

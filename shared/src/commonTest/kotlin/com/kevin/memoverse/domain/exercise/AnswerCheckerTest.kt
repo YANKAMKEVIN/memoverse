@@ -4,6 +4,7 @@ import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.model.ExerciseAnswer
 import com.kevin.memoverse.fake.verse
 import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -85,5 +86,56 @@ class AnswerCheckerTest {
 
     private companion object {
         const val LONG_VERSE = "Or la foi est une ferme assurance des choses qu’on espère, une démonstration de celles qu’on ne voit pas."
+    }
+
+    @Test
+    fun `la progression révèle les mots dits, ponctuation comprise`() {
+        val progress = AnswerChecker.recitationProgress("Or la foi est une ferme assurance,", "or la foi")
+
+        assertEquals(listOf(true, true, true, false, false, false, false), progress.recitedWords)
+        assertEquals(3.0 / 7, progress.ratio, 1e-9)
+        assertFalse(progress.isComplete)
+    }
+
+    @Test
+    fun `un mot déformé au milieu reste caché sans bloquer la suite`() {
+        val progress = AnswerChecker.recitationProgress("des choses qu’on espère", "des choses con espère")
+
+        assertEquals(listOf(true, true, false, true), progress.recitedWords)
+    }
+
+    @Test
+    fun `un mot composé est révélé dès qu'une de ses parties est dite`() {
+        val progress = AnswerChecker.recitationProgress("Lui-même a porté", "lui a porté")
+
+        assertEquals(listOf(true, true, true), progress.recitedWords)
+    }
+
+    @Test
+    fun `un tiret isolé suit le mot qui le précède`() {
+        assertEquals(listOf(true, true, false), AnswerChecker.recitationProgress("Amen — viens", "amen").recitedWords)
+    }
+
+    @Test
+    fun `la goutte est pleine dès que la récitation réussit`() {
+        val progress = AnswerChecker.recitationProgress(LONG_VERSE, LONG_VERSE)
+
+        assertTrue(progress.isComplete)
+        assertEquals(1.0, progress.fill)
+    }
+
+    @Test
+    fun `répéter le début en recommençant ne fausse pas la progression`() {
+        val progress = AnswerChecker.recitationProgress("Or la foi est une ferme", "or la or la foi est une ferme")
+
+        assertEquals(List(6) { true }, progress.recitedWords)
+    }
+
+    @Test
+    fun `sans rien dire, rien n'est révélé`() {
+        val progress = AnswerChecker.recitationProgress(LONG_VERSE, "")
+
+        assertTrue(progress.recitedWords.none { it })
+        assertEquals(0.0, progress.fill)
     }
 }

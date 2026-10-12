@@ -3,11 +3,13 @@ package com.kevin.memoverse.presentation.session
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevin.memoverse.domain.model.DataResult
+import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.usecase.BuildWateringSessionUseCase
 import com.kevin.memoverse.domain.usecase.CheckAnswerUseCase
 import com.kevin.memoverse.domain.speech.SpeechError
 import com.kevin.memoverse.domain.speech.SpeechEvent
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
+import com.kevin.memoverse.domain.usecase.MeasureRecitationUseCase
 import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -23,6 +25,7 @@ class SessionViewModel(
     private val checkAnswer: CheckAnswerUseCase,
     private val recordResult: RecordExerciseResultUseCase,
     private val listenToRecitation: ListenToRecitationUseCase,
+    private val measureRecitation: MeasureRecitationUseCase,
 ) : ViewModel() {
 
     private val model = MutableStateFlow(SessionModel())
@@ -59,6 +62,8 @@ class SessionViewModel(
                 stopListening()
                 model.update { it.copy(speech = it.speech.copy(isTyping = true, error = null)) }
             }
+            // Ce qui avait été écrit ne compte pas comme récité : on repart d'une goutte vide.
+            SessionEvent.SpeakInsteadClicked -> model.update { if (it.lastResult != null) it else it.copy(draft = null, speech = SpeechModel()) }
             SessionEvent.CheckClicked -> check()
             SessionEvent.ContinueClicked -> next()
             SessionEvent.RetryClicked -> load()
@@ -87,14 +92,19 @@ class SessionViewModel(
             return
         }
         listeningJob?.cancel()
-        model.update { it.copy(speech = SpeechModel(isListening = true)) }
+        val previous = (model.value.draft as? AnswerDraft.Typed)?.takeIf { it.fromSpeech }?.text.orEmpty()
+        model.update { it.copy(speech = SpeechModel(isListening = true, committedText = previous)) }
         listeningJob = viewModelScope.launch {
             listenToRecitation().collect { event ->
                 when (event) {
                     SpeechEvent.Listening -> Unit
-                    is SpeechEvent.Partial -> editDraft { if (it is AnswerDraft.Typed) it.copy(text = event.text, fromSpeech = true) else it }
+                    is SpeechEvent.Partial -> {
+                        val heard = recordSpeech(event.text)
+                        // La goutte est pleine : inutile de continuer à écouter.
+                        if (isRecitationComplete(heard)) listenToRecitation.stop()
+                    }
                     is SpeechEvent.Final -> {
-                        editDraft { if (it is AnswerDraft.Typed) it.copy(text = event.text, fromSpeech = true) else it }
+                        recordSpeech(event.text)
                         model.update { it.copy(speech = it.speech.copy(isListening = false)) }
                     }
                     is SpeechEvent.Failed -> model.update { it.copy(speech = it.speech.copy(isListening = false, error = event.error.toUi())) }
@@ -102,6 +112,18 @@ class SessionViewModel(
             }
             model.update { it.copy(speech = it.speech.copy(isListening = false)) }
         }
+    }
+
+    /** Ajoute ce qui vient d'être entendu à ce qui avait déjà été dit ; renvoie le tout. */
+    private fun recordSpeech(text: String): String {
+        val heard = listOf(model.value.speech.committedText, text).filter { it.isNotBlank() }.joinToString(" ")
+        editDraft { if (it is AnswerDraft.Typed) it.copy(text = heard, fromSpeech = true) else it }
+        return heard
+    }
+
+    private fun isRecitationComplete(heard: String): Boolean {
+        val exercise = model.value.current as? Exercise.ReciteAloud ?: return false
+        return measureRecitation(exercise.verse.text, heard).isComplete
     }
 
     private fun stopListening() {

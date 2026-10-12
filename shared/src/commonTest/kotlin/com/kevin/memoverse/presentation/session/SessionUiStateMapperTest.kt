@@ -110,4 +110,21 @@ class SessionUiStateMapperTest {
         assertTrue(AnswerDraft.Typed("un deux", fromSpeech = true).toAnswer(exercise) is ExerciseAnswer.Spoken)
         assertTrue(AnswerDraft.Typed("un deux").toAnswer(exercise) is ExerciseAnswer.Typed)
     }
+
+    @Test
+    fun `les mots non dits sont cachés, puis révélés comme manqués après validation`() {
+        val exercise = Exercise.ReciteAloud(verse("v1", text = "Or la foi est"))
+        val draft = AnswerDraft.Typed("or la", fromSpeech = true)
+        val listening = SessionModel(isLoading = false, exercises = listOf(exercise), draft = draft)
+
+        val before = listening.toUiState().exercise as ExerciseUi.ReciteAloud
+        assertEquals(
+            listOf(RecitedWordState.RECITED, RecitedWordState.RECITED, RecitedWordState.HIDDEN, RecitedWordState.HIDDEN),
+            before.words.map { it.state },
+        )
+        assertEquals(listOf("Or", "la", "foi", "est"), before.words.map { it.text })
+
+        val after = listening.copy(lastResult = ExerciseResult(isCorrect = false)).toUiState().exercise as ExerciseUi.ReciteAloud
+        assertEquals(RecitedWordState.MISSED, after.words[2].state)
+    }
 }
