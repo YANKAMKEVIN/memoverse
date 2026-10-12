@@ -335,7 +335,7 @@ class SessionViewModelTest {
     }
 
     @Test
-    fun `apres ecrire plutot, on peut revenir a l'oral avec une goutte vide`() = runTest(dispatcher) {
+    fun `apres ecrire plutot - on peut revenir a l'oral avec une goutte vide`() = runTest(dispatcher) {
         val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
         val vm = viewModel(learning)
         vm.state.test {

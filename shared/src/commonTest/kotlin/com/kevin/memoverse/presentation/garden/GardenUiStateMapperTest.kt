@@ -8,7 +8,7 @@ class GardenUiStateMapperTest {
     private val hour = 3_600_000L
 
     @Test
-    fun `sous une heure, le prochain arrosage s'affiche en minutes`() {
+    fun `sous une heure - le prochain arrosage s'affiche en minutes`() {
         // Régression QA : 50 s s'affichaient « dans 1 h ».
         assertEquals(NextWateringUi.InMinutes(1), 50_000L.toNextWatering())
         assertEquals(NextWateringUi.InMinutes(40), (40 * 60_000L).toNextWatering())

@@ -41,7 +41,7 @@ class ReviewNotificationPlannerTest {
     }
 
     @Test
-    fun `au plus 2 rappels, espacés d'au moins 3 h`() {
+    fun `au plus 2 rappels - espacés d'au moins 3 h`() {
         val verses = listOf(DueVerse("A", at(12, 9)), DueVerse("B", at(12, 10)), DueVerse("C", at(12, 18)), DueVerse("D", at(13, 9)))
 
         val plan = ReviewNotificationPlanner.plan(verses, at(11, 10), zone)

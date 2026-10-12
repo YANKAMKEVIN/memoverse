@@ -18,7 +18,7 @@ class ExercisePlannerTest {
     }
 
     @Test
-    fun `une racine écrit elle-même, un arbre récite, un fruit récite aussi à l'oral`() {
+    fun `une racine écrit elle-même - un arbre récite - un fruit récite aussi à l'oral`() {
         assertEquals(listOf(4, 5), ExercisePlanner.levelsFor(learningVerse("v1", MasteryStage.ROOT)))
         assertEquals(listOf(6, 7), ExercisePlanner.levelsFor(learningVerse("v1", MasteryStage.TREE)))
         assertEquals(listOf(8, 6), ExercisePlanner.levelsFor(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))

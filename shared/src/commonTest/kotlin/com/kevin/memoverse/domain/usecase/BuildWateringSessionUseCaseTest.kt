@@ -22,7 +22,7 @@ class BuildWateringSessionUseCaseTest {
     private fun useCase(learning: FakeLearningRepository) = BuildWateringSessionUseCase(learning, bank, ExerciseFactory(Random(1))) { NOW }
 
     @Test
-    fun `prévoit 2 exercices par verset en croissance, entrelacés`() = runTest {
+    fun `prévoit 2 exercices par verset en croissance - entrelacés`() = runTest {
         val learning = FakeLearningRepository(initial = listOf(learningVerse("v1"), learningVerse("v2")))
 
         val session = (useCase(learning)() as DataResult.Success).data

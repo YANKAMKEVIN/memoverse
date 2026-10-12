@@ -66,7 +66,7 @@ class ExerciseFactoryTest {
     }
 
     @Test
-    fun `le niveau 4 fait écrire des mots retirés, sans propositions`() {
+    fun `le niveau 4 fait écrire des mots retirés - sans propositions`() {
         val exercise = assertIs<Exercise.TypeBlanks>(factory.create(4, target, pool))
 
         assertTrue(exercise.blankIndexes.isNotEmpty())
@@ -96,7 +96,7 @@ class ExerciseFactoryTest {
     }
 
     @Test
-    fun `sans reconnaissance vocale, l'oral devient une récitation écrite`() {
+    fun `sans reconnaissance vocale - l'oral devient une récitation écrite`() {
         assertIs<Exercise.Recite>(ExerciseFactory(Random(1), isSpeechAvailable = false).create(8, target, pool))
     }
 
@@ -110,7 +110,7 @@ class ExerciseFactoryTest {
     }
 
     @Test
-    fun `aucun galet ne dépasse 6 mots, même pour un verset long`() {
+    fun `aucun galet ne dépasse 6 mots - même pour un verset long`() {
         // Régression QA : un galet de Matthieu 28:19-20 tenait sur deux lignes.
         val long = verse("matthieu-28-19-20", text = (1..45).joinToString(" ") { "mot$it" })
 

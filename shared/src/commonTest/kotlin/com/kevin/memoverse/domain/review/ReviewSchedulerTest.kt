@@ -12,7 +12,7 @@ class ReviewSchedulerTest {
     private val day = 24 * hour
 
     @Test
-    fun `chaque arrosage réussi espace le suivant de 6 h, puis 1, 3 et 7 jours`() {
+    fun `chaque arrosage réussi espace le suivant de 6 h puis 1 puis 3 puis 7 jours`() {
         var verse = learningVerse("v1").copy(dueAtEpochMillis = now)
         val intervals = (1..4).map {
             verse = ReviewScheduler.apply(verse, isCorrect = true, nowEpochMillis = verse.dueAtEpochMillis)

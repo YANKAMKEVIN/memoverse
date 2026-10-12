@@ -13,7 +13,7 @@ class AnswerCheckerTest {
     private val expected = "Or la foi est une ferme assurance des choses qu’on espère,"
 
     @Test
-    fun `ignore la casse, les accents et la ponctuation`() {
+    fun `ignore la casse - les accents et la ponctuation`() {
         assertTrue(AnswerChecker.isTypedTextCorrect(expected, "or la foi est une ferme assurance des choses quon espere"))
     }
 
@@ -89,7 +89,7 @@ class AnswerCheckerTest {
     }
 
     @Test
-    fun `la progression révèle les mots dits, ponctuation comprise`() {
+    fun `la progression révèle les mots dits - ponctuation comprise`() {
         val progress = AnswerChecker.recitationProgress("Or la foi est une ferme assurance,", "or la foi")
 
         assertEquals(listOf(true, true, true, false, false, false, false), progress.recitedWords)
@@ -132,7 +132,7 @@ class AnswerCheckerTest {
     }
 
     @Test
-    fun `sans rien dire, rien n'est révélé`() {
+    fun `sans rien dire - rien n'est révélé`() {
         val progress = AnswerChecker.recitationProgress(LONG_VERSE, "")
 
         assertTrue(progress.recitedWords.none { it })

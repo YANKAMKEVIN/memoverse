@@ -37,7 +37,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `le bilan compte l'XP, la précision et les versets qui ont grandi`() {
+    fun `le bilan compte l'XP - la précision et les versets qui ont grandi`() {
         val model = SessionModel(
             isLoading = false,
             exercises = listOf(Exercise.Recite(v1), Exercise.Recite(v1)),
@@ -63,7 +63,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `le bilan signale les versets qui ont redescendu et encourage sous 50 %`() {
+    fun `le bilan signale les versets qui ont redescendu et encourage sous 50 pour cent`() {
         val model = SessionModel(
             isLoading = false,
             exercises = List(2) { Exercise.Recite(v1) },
@@ -80,7 +80,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `après validation, la bonne proposition et le mauvais choix sont révélés`() {
+    fun `après validation - la bonne proposition et le mauvais choix sont révélés`() {
         // Régression QA : le mauvais choix restait vert comme une bonne réponse.
         val exercise = Exercise.ChooseReference(v1, listOf("Autre", "Référence v1", "Encore"))
         val model = SessionModel(
@@ -96,7 +96,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `avant validation, aucune proposition n'est révélée`() {
+    fun `avant validation - aucune proposition n'est révélée`() {
         val exercise = Exercise.ChooseReference(v1, listOf("Autre", "Référence v1"))
         val model = SessionModel(isLoading = false, exercises = listOf(exercise), draft = AnswerDraft.Choice("Autre"))
 
@@ -104,7 +104,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `une transcription vocale devient une réponse orale, une saisie une réponse écrite`() {
+    fun `une transcription vocale devient une réponse orale - une saisie une réponse écrite`() {
         val exercise = Exercise.ReciteAloud(v1)
 
         assertTrue(AnswerDraft.Typed("un deux", fromSpeech = true).toAnswer(exercise) is ExerciseAnswer.Spoken)
@@ -112,7 +112,7 @@ class SessionUiStateMapperTest {
     }
 
     @Test
-    fun `les mots non dits sont cachés, puis révélés comme manqués après validation`() {
+    fun `les mots non dits sont cachés - puis révélés comme manqués après validation`() {
         val exercise = Exercise.ReciteAloud(verse("v1", text = "Or la foi est"))
         val draft = AnswerDraft.Typed("or la", fromSpeech = true)
         val listening = SessionModel(isLoading = false, exercises = listOf(exercise), draft = draft)
