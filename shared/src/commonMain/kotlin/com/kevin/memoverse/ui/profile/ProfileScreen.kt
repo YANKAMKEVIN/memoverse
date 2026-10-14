@@ -30,10 +30,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kevin.memoverse.presentation.profile.ProfileEvent
 import com.kevin.memoverse.presentation.profile.ProfileUiState
 import com.kevin.memoverse.presentation.profile.ProfileViewModel
-import com.kevin.memoverse.presentation.profile.TypefaceOptionUi
-import com.kevin.memoverse.presentation.common.TypefaceUi
-import com.kevin.memoverse.resources.profile_typeface_save_failed
-import com.kevin.memoverse.resources.profile_typeface_title
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.profile_offline
 import com.kevin.memoverse.resources.profile_reset
@@ -98,18 +94,6 @@ fun ProfileScreenContent(
             InfoRow(Res.string.profile_version_label, Res.string.profile_version_value)
         }
         Text(
-            text = stringResource(Res.string.profile_typeface_title).uppercase(),
-            style = MaterialTheme.typography.labelMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
-        )
-        state.typefaces.forEach { option ->
-            TypefaceOption(option = option, onClick = { onEvent(ProfileEvent.TypefaceSelected(option.typeface)) })
-        }
-        if (state.hasTypefaceSaveFailed) {
-            Text(stringResource(Res.string.profile_typeface_save_failed), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.error)
-        }
-        Text(
             text = stringResource(Res.string.profile_offline),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
@@ -154,7 +138,7 @@ private fun InfoRow(label: StringResource, value: StringResource) {
 @Preview
 @Composable
 private fun ProfileScreenPreview() {
-    AppTheme { ProfileScreenContent(state = ProfileUiState(typefaces = TypefaceUi.entries.map { TypefaceOptionUi(it, it == TypefaceUi.FRAUNCES) }), contentPadding = PaddingValues(), onEvent = {}) }
+    AppTheme { ProfileScreenContent(state = ProfileUiState(), contentPadding = PaddingValues(), onEvent = {}) }
 }
 
 @Preview

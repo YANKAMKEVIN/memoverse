@@ -3,8 +3,6 @@ package com.kevin.memoverse.data.repository
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.kevin.memoverse.data.local.db.MemoverseDatabase
 import com.kevin.memoverse.domain.model.DataResult
-import com.kevin.memoverse.domain.model.TypefaceChoice
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -19,26 +17,6 @@ class PreferencesRepositoryImplTest {
     private val repository = PreferencesRepositoryImpl(database, dispatcher)
 
     @Test
-    fun `sans réglage, renvoie la police d'origine`() = runTest(dispatcher) {
-        assertEquals(TypefaceChoice.JARDIN, repository.observeTypeface().first())
-    }
-
-    @Test
-    fun `garde la dernière police choisie`() = runTest(dispatcher) {
-        assertIs<DataResult.Success<Unit>>(repository.setTypeface(TypefaceChoice.CORMORANT))
-        repository.setTypeface(TypefaceChoice.GARAMOND)
-
-        assertEquals(TypefaceChoice.GARAMOND, repository.observeTypeface().first())
-    }
-
-    @Test
-    fun `une valeur inconnue retombe sur la police d'origine`() = runTest(dispatcher) {
-        database.preferenceQueries.upsert("typeface", "POLICE_RETIREE")
-
-        assertEquals(TypefaceChoice.JARDIN, repository.observeTypeface().first())
-    }
-
-    @Test
     fun `la migration crée la table des réglages sur une base existante`() = runTest(dispatcher) {
         val old = JdbcSqliteDriver(JdbcSqliteDriver.IN_MEMORY)
         MemoverseDatabase.Schema.create(old)
@@ -46,9 +24,9 @@ class PreferencesRepositoryImplTest {
         MemoverseDatabase.Schema.migrate(old, 3, 4)
         val migrated = PreferencesRepositoryImpl(MemoverseDatabase(old), dispatcher)
 
-        migrated.setTypeface(TypefaceChoice.FRAUNCES)
+        assertIs<DataResult.Success<Unit>>(migrated.setNotificationPermissionAsked())
 
-        assertEquals(TypefaceChoice.FRAUNCES, migrated.observeTypeface().first())
+        assertEquals(true, migrated.hasAskedNotificationPermission())
     }
 
     @Test
@@ -58,5 +36,12 @@ class PreferencesRepositoryImplTest {
         repository.setNotificationPermissionAsked()
 
         assertEquals(true, repository.hasAskedNotificationPermission())
+    }
+
+    @Test
+    fun `une ancienne ligne de police ne compte pas comme permission demandée`() = runTest(dispatcher) {
+        database.preferenceQueries.upsert("typeface", "FRAUNCES")
+
+        assertEquals(false, repository.hasAskedNotificationPermission())
     }
 }
