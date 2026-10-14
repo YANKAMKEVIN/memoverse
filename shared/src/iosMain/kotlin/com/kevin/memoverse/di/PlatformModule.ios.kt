@@ -12,6 +12,8 @@ import org.koin.dsl.module
 
 actual val platformModule: Module = module {
     single<SqlDriver> { NativeSqliteDriver(MemoverseDatabase.Schema, DATABASE_NAME) }
-    single<LocalNotifier> { UserNotificationsNotifier() }
+    // Une seule instance : la demande d'autorisation (Compose) programme les rappels retenus par le notifier.
+    single { UserNotificationsNotifier() }
+    single<LocalNotifier> { get<UserNotificationsNotifier>() }
     single<SpeechRecognitionService> { IosSpeechRecognitionService() }
 }
