@@ -83,7 +83,7 @@ class IosSpeechRecognitionService : SpeechRecognitionService {
         awaitClose {
             engine.stop()
             input.removeTapOnBus(0u)
-            task?.cancel()
+            task.cancel()
             request = null
             session.setActive(false, AVAudioSessionSetActiveOptionNotifyOthersOnDeactivation, null)
         }

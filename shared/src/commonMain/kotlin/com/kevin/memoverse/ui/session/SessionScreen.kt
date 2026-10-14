@@ -29,15 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.backhandler.BackHandler
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigationevent.NavigationEventInfo
+import androidx.navigationevent.compose.NavigationBackHandler
+import androidx.navigationevent.compose.rememberNavigationEventState
 import com.kevin.memoverse.presentation.common.StageUi
 import com.kevin.memoverse.presentation.session.ExerciseUi
 import com.kevin.memoverse.presentation.session.FeedbackUi
@@ -101,14 +102,16 @@ fun SessionScreen(
     SessionScreenContent(state = state, onEvent = viewModel::onEvent)
 }
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
 fun SessionScreenContent(
     state: SessionUiState,
     onEvent: (SessionEvent) -> Unit,
 ) {
     // Le retour Android passe par la même confirmation que la croix.
-    BackHandler { onEvent(SessionEvent.CloseClicked) }
+    NavigationBackHandler(
+        state = rememberNavigationEventState(NavigationEventInfo.None),
+        onBackCompleted = { onEvent(SessionEvent.CloseClicked) },
+    )
     val summary = state.summary
     when {
         state.isLoading -> LoadingState(Modifier.background(Sand))
