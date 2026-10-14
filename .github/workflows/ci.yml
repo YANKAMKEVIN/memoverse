@@ -1,0 +1,63 @@
+# Vérifie chaque push sur main et chaque pull request.
+# Android tourne sur Linux ; seul iOS prend un runner macOS (10× plus cher en minutes sur un dépôt privé).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    name: Android (tests partagés + app)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Tests partagés (Android host) et compilation de l'app
+        run: ./gradlew :shared:testAndroidHostTest :androidApp:assembleDebug :androidApp:compileDebugAndroidTestKotlin
+      - name: Rapports de tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-android
+          path: '**/build/reports/tests/'
+
+  ios:
+    name: iOS (tests partagés + app)
+    runs-on: macos-26
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - uses: gradle/actions/setup-gradle@v4
+      - uses: actions/cache@v4
+        with:
+          path: ~/.konan
+          key: konan-${{ runner.os }}-${{ hashFiles('gradle/libs.versions.toml') }}
+      - name: Tests partagés (simulateur iOS)
+        run: ./gradlew :shared:iosSimulatorArm64Test
+      - name: Compilation de l'app iOS (simulateur, sans signature)
+        run: >
+          xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp
+          -sdk iphonesimulator -destination 'generic/platform=iOS Simulator'
+          -derivedDataPath build/ios ARCHS=arm64 CODE_SIGNING_ALLOWED=NO build
+      - name: Rapports de tests
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: rapports-ios
+          path: '**/build/reports/tests/'
