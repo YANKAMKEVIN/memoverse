@@ -1,4 +1,4 @@
--- Réglages de l'utilisateur, en clé → valeur (ex. la police choisie).
+-- Réglages de l'utilisateur, en clé → valeur (ex. permission de notification déjà demandée).
 CREATE TABLE PreferenceEntity (
     key TEXT NOT NULL PRIMARY KEY,
     value TEXT NOT NULL

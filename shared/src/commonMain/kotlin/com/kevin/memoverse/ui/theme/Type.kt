@@ -10,153 +10,50 @@ import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import com.kevin.memoverse.presentation.common.TypefaceUi
 import com.kevin.memoverse.resources.Res
-import com.kevin.memoverse.resources.cormorant_garamond_500_italic
-import com.kevin.memoverse.resources.cormorant_garamond_500_normal
-import com.kevin.memoverse.resources.eb_garamond_400_italic
-import com.kevin.memoverse.resources.eb_garamond_400_normal
-import com.kevin.memoverse.resources.eb_garamond_500_normal
 import com.kevin.memoverse.resources.figtree_400_normal
 import com.kevin.memoverse.resources.figtree_500_normal
 import com.kevin.memoverse.resources.figtree_600_normal
 import com.kevin.memoverse.resources.fraunces_300_italic
 import com.kevin.memoverse.resources.fraunces_300_normal
 import com.kevin.memoverse.resources.fraunces_400_normal
-import com.kevin.memoverse.resources.geist_400_normal
-import com.kevin.memoverse.resources.geist_500_normal
-import com.kevin.memoverse.resources.geist_600_normal
-import com.kevin.memoverse.resources.gloock_400_normal
-import com.kevin.memoverse.resources.manrope_400_normal
-import com.kevin.memoverse.resources.manrope_500_normal
-import com.kevin.memoverse.resources.manrope_600_normal
-import com.kevin.memoverse.resources.source_serif_4_400_italic
-import com.kevin.memoverse.resources.source_serif_4_400_normal
-import com.kevin.memoverse.resources.source_serif_4_500_normal
-import com.kevin.memoverse.resources.instrument_sans_400_normal
-import com.kevin.memoverse.resources.instrument_sans_500_normal
-import com.kevin.memoverse.resources.instrument_sans_600_normal
-import com.kevin.memoverse.resources.instrument_serif_400_italic
-import com.kevin.memoverse.resources.instrument_serif_400_normal
-import com.kevin.memoverse.resources.newsreader_400_italic
-import com.kevin.memoverse.resources.newsreader_400_normal
-import com.kevin.memoverse.resources.newsreader_500_normal
 import org.jetbrains.compose.resources.Font
 
-/** Les trois familles d'une association de polices, avec leur correction de taille. */
+/** Les trois familles de l'app : Fraunces (titres, versets) et Figtree (interface). */
 @Immutable
 data class AppFonts(
-    /** Titres. */
+    /** Fraunces légère : titres. */
     val display: FontFamily = FontFamily.Serif,
-    /** Texte des versets et références. */
+    /** Fraunces : texte des versets et références. */
     val verse: FontFamily = FontFamily.Serif,
-    /** Interface. */
+    /** Figtree : interface. */
     val ui: FontFamily = FontFamily.SansSerif,
-    /** Les polices n'ont pas le même œil : on ramène chaque titre à une taille perçue comparable. */
-    val displayScale: Float = 1f,
-    val verseScale: Float = 1f,
 )
 
 val LocalAppFonts = staticCompositionLocalOf { AppFonts() }
 
 @Composable
-internal fun rememberAppFonts(typeface: TypefaceUi = TypefaceUi.JARDIN): AppFonts = when (typeface) {
-    TypefaceUi.JARDIN -> AppFonts(
-        display = FontFamily(
-            Font(Res.font.instrument_serif_400_normal, FontWeight.Normal),
-            Font(Res.font.instrument_serif_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        verse = FontFamily(
-            Font(Res.font.newsreader_400_normal, FontWeight.Normal),
-            Font(Res.font.newsreader_500_normal, FontWeight.Medium),
-            Font(Res.font.newsreader_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        ui = instrumentSans(),
-    )
-    TypefaceUi.FRAUNCES -> AppFonts(
-        display = FontFamily(
-            Font(Res.font.fraunces_300_normal, FontWeight.Normal),
-            Font(Res.font.fraunces_300_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        verse = FontFamily(
-            Font(Res.font.fraunces_400_normal, FontWeight.Normal),
-            Font(Res.font.fraunces_400_normal, FontWeight.Medium),
-            Font(Res.font.fraunces_300_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        ui = FontFamily(
-            Font(Res.font.figtree_400_normal, FontWeight.Normal),
-            Font(Res.font.figtree_500_normal, FontWeight.Medium),
-            Font(Res.font.figtree_600_normal, FontWeight.SemiBold),
-        ),
-        displayScale = 0.9f,
-        verseScale = 0.94f,
-    )
-    TypefaceUi.CORMORANT -> AppFonts(
-        display = FontFamily(
-            Font(Res.font.cormorant_garamond_500_normal, FontWeight.Normal),
-            Font(Res.font.cormorant_garamond_500_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        verse = FontFamily(
-            Font(Res.font.cormorant_garamond_500_normal, FontWeight.Normal),
-            Font(Res.font.cormorant_garamond_500_normal, FontWeight.Medium),
-            Font(Res.font.cormorant_garamond_500_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        ui = FontFamily(
-            Font(Res.font.manrope_400_normal, FontWeight.Normal),
-            Font(Res.font.manrope_500_normal, FontWeight.Medium),
-            Font(Res.font.manrope_600_normal, FontWeight.SemiBold),
-        ),
-        displayScale = 1.04f,
-        verseScale = 1.1f,
-    )
-    TypefaceUi.GLOOCK -> AppFonts(
-        display = FontFamily(
-            Font(Res.font.gloock_400_normal, FontWeight.Normal),
-            Font(Res.font.source_serif_4_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        verse = FontFamily(
-            Font(Res.font.source_serif_4_400_normal, FontWeight.Normal),
-            Font(Res.font.source_serif_4_500_normal, FontWeight.Medium),
-            Font(Res.font.source_serif_4_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        ui = geist(),
-        displayScale = 0.84f,
-        verseScale = 0.92f,
-    )
-    TypefaceUi.GARAMOND -> AppFonts(
-        display = FontFamily(
-            Font(Res.font.eb_garamond_400_normal, FontWeight.Normal),
-            Font(Res.font.eb_garamond_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        verse = FontFamily(
-            Font(Res.font.eb_garamond_400_normal, FontWeight.Normal),
-            Font(Res.font.eb_garamond_500_normal, FontWeight.Medium),
-            Font(Res.font.eb_garamond_400_italic, FontWeight.Normal, FontStyle.Italic),
-        ),
-        ui = geist(),
-        displayScale = 0.95f,
-        verseScale = 1.04f,
-    )
-}
-
-@Composable
-private fun instrumentSans() = FontFamily(
-    Font(Res.font.instrument_sans_400_normal, FontWeight.Normal),
-    Font(Res.font.instrument_sans_500_normal, FontWeight.Medium),
-    Font(Res.font.instrument_sans_600_normal, FontWeight.SemiBold),
-)
-
-@Composable
-private fun geist() = FontFamily(
-    Font(Res.font.geist_400_normal, FontWeight.Normal),
-    Font(Res.font.geist_500_normal, FontWeight.Medium),
-    Font(Res.font.geist_600_normal, FontWeight.SemiBold),
+internal fun rememberAppFonts(): AppFonts = AppFonts(
+    display = FontFamily(
+        Font(Res.font.fraunces_300_normal, FontWeight.Normal),
+        Font(Res.font.fraunces_300_italic, FontWeight.Normal, FontStyle.Italic),
+    ),
+    verse = FontFamily(
+        Font(Res.font.fraunces_400_normal, FontWeight.Normal),
+        Font(Res.font.fraunces_400_normal, FontWeight.Medium),
+        Font(Res.font.fraunces_300_italic, FontWeight.Normal, FontStyle.Italic),
+    ),
+    ui = FontFamily(
+        Font(Res.font.figtree_400_normal, FontWeight.Normal),
+        Font(Res.font.figtree_500_normal, FontWeight.Medium),
+        Font(Res.font.figtree_600_normal, FontWeight.SemiBold),
+    ),
 )
 
 internal fun appTypography(fonts: AppFonts): Typography {
     val display = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = fonts.display, fontWeight = FontWeight.Normal, letterSpacing = (-0.01).em, color = Ink)
-    val d = fonts.displayScale
-    val v = fonts.verseScale
+    val d = DISPLAY_SCALE
+    val v = VERSE_SCALE
     val ui = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = fonts.ui, color = Ink)
     return Typography(
         displayLarge = display.copy(fontSize = (46 * d).sp, lineHeight = (48 * d).sp),
@@ -179,17 +76,21 @@ internal fun appTypography(fonts: AppFonts): Typography {
 /** Styles hors Material : texte de verset et logotype. */
 object AppTextStyles {
     @Composable
-    fun verse(): TextStyle = LocalAppFonts.current.let { TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = it.verse, fontSize = (22 * it.verseScale).sp, lineHeight = (29 * it.verseScale).sp, color = Ink) }
+    fun verse(): TextStyle = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = LocalAppFonts.current.verse, fontSize = (22 * VERSE_SCALE).sp, lineHeight = (29 * VERSE_SCALE).sp, color = Ink)
 
     @Composable
-    fun verseQuote(): TextStyle = LocalAppFonts.current.let { TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = it.verse, fontStyle = FontStyle.Italic, fontSize = (16 * it.verseScale).sp, lineHeight = (22 * it.verseScale).sp, color = Ink) }
+    fun verseQuote(): TextStyle = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = LocalAppFonts.current.verse, fontStyle = FontStyle.Italic, fontSize = (16 * VERSE_SCALE).sp, lineHeight = (22 * VERSE_SCALE).sp, color = Ink)
 
     @Composable
     fun wordmark(): TextStyle = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = LocalAppFonts.current.ui, fontWeight = FontWeight.Medium, fontSize = 13.sp, letterSpacing = 0.38.em)
 
     @Composable
-    fun displayItalic(): TextStyle = LocalAppFonts.current.let { TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = it.display, fontStyle = FontStyle.Italic, fontSize = (32 * it.displayScale).sp, lineHeight = (36 * it.displayScale).sp, color = Ink) }
+    fun displayItalic(): TextStyle = TextStyle(fontFeatureSettings = LINING_FIGURES, fontFamily = LocalAppFonts.current.display, fontStyle = FontStyle.Italic, fontSize = (32 * DISPLAY_SCALE).sp, lineHeight = (36 * DISPLAY_SCALE).sp, color = Ink)
 }
 
-/** Chiffres alignés : Cormorant et Garamond dessinent sinon des chiffres « à l'ancienne » (« 1 » lu « I »). */
-internal const val LINING_FIGURES = "lnum"
+/** Fraunces a un œil plus grand que les tailles de la maquette : on la ramène à une taille perçue comparable. */
+private const val DISPLAY_SCALE = 0.9f
+private const val VERSE_SCALE = 0.94f
+
+/** Chiffres alignés plutôt qu'« à l'ancienne », pour des références (3:16) bien lisibles. */
+private const val LINING_FIGURES = "lnum"

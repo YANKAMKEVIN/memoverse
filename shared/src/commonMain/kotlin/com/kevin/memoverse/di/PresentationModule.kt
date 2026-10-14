@@ -1,6 +1,5 @@
 package com.kevin.memoverse.di
 
-import com.kevin.memoverse.presentation.appearance.AppearanceViewModel
 import com.kevin.memoverse.presentation.garden.GardenViewModel
 import com.kevin.memoverse.presentation.profile.ProfileViewModel
 import com.kevin.memoverse.presentation.progression.ProgressionViewModel
@@ -14,8 +13,7 @@ val presentationModule = module {
     viewModel { ThemesViewModel(get(), get()) }
     viewModel { GardenViewModel(get()) }
     viewModel { ProgressionViewModel(get()) }
-    viewModel { ProfileViewModel(get(), get(), get()) }
-    viewModel { AppearanceViewModel(get()) }
+    viewModel { ProfileViewModel(get()) }
     viewModel { SessionViewModel(get(), get(), get(), get(), get()) }
     viewModel { (themeId: String) -> ThemeDetailViewModel(themeId, get(), get(), get(), get()) }
 }

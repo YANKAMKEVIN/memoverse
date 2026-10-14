@@ -4,7 +4,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
-import com.kevin.memoverse.presentation.common.TypefaceUi
 
 private val JardinColors = lightColorScheme(
     primary = Olive,
@@ -24,8 +23,8 @@ private val JardinColors = lightColorScheme(
 )
 
 @Composable
-fun AppTheme(typeface: TypefaceUi = TypefaceUi.JARDIN, content: @Composable () -> Unit) {
-    val fonts = rememberAppFonts(typeface)
+fun AppTheme(content: @Composable () -> Unit) {
+    val fonts = rememberAppFonts()
     CompositionLocalProvider(LocalAppFonts provides fonts) {
         MaterialTheme(colorScheme = JardinColors, typography = appTypography(fonts), content = content)
     }
