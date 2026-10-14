@@ -43,8 +43,9 @@ internal fun deriveThemeDetailUiState(
             maxActive = LearningVerse.MAX_ACTIVE_VERSES,
             isStarting = startStatus == StartStatus.InProgress,
             isStarted = startStatus == StartStatus.Planted,
-            // Une graine par verset planté, dans l'ordre du thème.
-            ceremony = if (startStatus == StartStatus.Started) {
+            // Une graine par verset planté, dans l'ordre du thème. La scène reste affichée une fois finie,
+            // le temps que la navigation quitte l'écran : sinon la liste réapparaît un instant avant le jardin.
+            ceremony = if (startStatus == StartStatus.Started || startStatus == StartStatus.Planted) {
                 CeremonyUi.Planting(verses.filter { it.id in selection.selectedIds }.map { it.reference })
             } else {
                 null

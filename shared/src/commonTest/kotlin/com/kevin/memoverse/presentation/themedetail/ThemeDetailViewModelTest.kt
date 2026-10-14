@@ -23,7 +23,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -124,7 +123,8 @@ class ThemeDetailViewModelTest {
 
             val state = expectMostRecentItem()
             assertTrue(state.isStarted)
-            assertNull(state.ceremony)
+            // La scène finie reste à l'écran jusqu'au départ vers le jardin.
+            assertEquals(CeremonyUi.Planting(listOf("Référence v1", "Référence v2", "Référence v3")), state.ceremony)
         }
     }
 
