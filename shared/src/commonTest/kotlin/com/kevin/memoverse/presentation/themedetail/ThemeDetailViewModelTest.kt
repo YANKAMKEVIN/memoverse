@@ -10,6 +10,7 @@ import com.kevin.memoverse.fake.FakeVerseBankRepository
 import com.kevin.memoverse.fake.learningVerse
 import com.kevin.memoverse.fake.theme
 import com.kevin.memoverse.fake.verse
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -21,6 +22,8 @@ import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -112,9 +115,51 @@ class ThemeDetailViewModelTest {
 
             viewModel.onEvent(ThemeDetailEvent.StartClicked)
             dispatcher.scheduler.advanceUntilIdle()
-
-            assertTrue(expectMostRecentItem().isStarted)
             assertEquals(setOf("v1", "v2", "v3"), learning.verses.value.map { it.verseId }.toSet())
+            // D'abord la scène de plantation, puis le retour au jardin.
+            assertFalse(expectMostRecentItem().isStarted)
+
+            viewModel.onEvent(ThemeDetailEvent.CeremonyFinished)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val state = expectMostRecentItem()
+            assertTrue(state.isStarted)
+            assertNull(state.ceremony)
+        }
+    }
+
+    @Test
+    fun `la plantation joue une graine par verset planté dans l'ordre du thème`() = runTest(dispatcher) {
+        val viewModel = viewModel()
+        viewModel.state.test {
+            skipItems(2)
+            listOf("v4", "v1", "v2").forEach { viewModel.onEvent(ThemeDetailEvent.VerseToggled(it)) }
+
+            viewModel.onEvent(ThemeDetailEvent.StartClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals(
+                CeremonyUi.Planting(listOf("Référence v1", "Référence v2", "Référence v4")),
+                expectMostRecentItem().ceremony,
+            )
+        }
+    }
+
+    @Test
+    fun `planter une seconde fois pendant la scène n'enregistre rien de plus`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository()
+        val viewModel = viewModel(learning)
+        viewModel.state.test {
+            skipItems(2)
+            listOf("v1", "v2", "v3").forEach { viewModel.onEvent(ThemeDetailEvent.VerseToggled(it)) }
+            viewModel.onEvent(ThemeDetailEvent.StartClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            viewModel.onEvent(ThemeDetailEvent.StartClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertNotNull(expectMostRecentItem().ceremony)
+            assertEquals(3, learning.verses.value.size)
         }
     }
 

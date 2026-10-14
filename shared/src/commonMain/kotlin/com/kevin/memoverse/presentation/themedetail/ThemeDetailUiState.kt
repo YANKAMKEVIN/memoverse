@@ -1,5 +1,7 @@
 package com.kevin.memoverse.presentation.themedetail
 
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
+
 data class ThemeDetailUiState(
     val isLoading: Boolean = true,
     val hasError: Boolean = false,
@@ -12,7 +14,10 @@ data class ThemeDetailUiState(
     val isLimitReached: Boolean = false,
     val canStart: Boolean = false,
     val isStarting: Boolean = false,
+    /** Plantation enregistrée et scène terminée : direction le jardin. */
     val isStarted: Boolean = false,
+    /** Scène de plantation à jouer, entre l'enregistrement et le retour au jardin. */
+    val ceremony: CeremonyUi.Planting? = null,
     val startError: StartErrorUi? = null,
     /** Versets encore plantables avant d'atteindre le plafond de versets actifs. */
     val freeSlots: Int = Int.MAX_VALUE,

@@ -15,6 +15,7 @@ import com.kevin.memoverse.fake.FakeSpeechRecognitionService
 import com.kevin.memoverse.fake.FakeVerseBankRepository
 import com.kevin.memoverse.fake.learningVerse
 import com.kevin.memoverse.fake.verse
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 import com.kevin.memoverse.presentation.common.StageUi
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -94,6 +95,39 @@ class SessionViewModelTest {
             val summary = assertNotNull(expectMostRecentItem().summary)
             assertEquals(10, summary.xp)
             assertEquals(50, summary.accuracyPercent)
+        }
+    }
+
+    @Test
+    fun `la scène d'arrosage précède le bilan et se passe d'un tap`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1")))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.OptionSelected("Référence v1"))
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val reorder = assertIs<ExerciseUi.Reorder>(expectMostRecentItem().exercise)
+            reorder.available.sortedByDescending { it.index }.forEach { vm.onEvent(SessionEvent.ChunkPlaced(it.index)) }
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            // Une réussite sans changement de stade : la graine est arrosée et « prend force ».
+            val ending = expectMostRecentItem()
+            assertEquals(CeremonyUi.Watering("Référence v1", StageUi.SEED, StageUi.SEED), ending.ceremony)
+            assertNotNull(ending.summary)
+
+            vm.onEvent(SessionEvent.CeremonyFinished)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val summary = expectMostRecentItem()
+            assertNull(summary.ceremony)
+            assertEquals(10, assertNotNull(summary.summary).xp)
         }
     }
 

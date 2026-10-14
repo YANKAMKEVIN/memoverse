@@ -62,6 +62,7 @@ class MemoverseRobot(private val rule: ComposeTestRule) {
 
     fun plant() {
         rule.onNode(hasText("Planter") and hasClickAction()).performClick()
+        // L'horloge de test avance d'elle-même : la scène de plantation se joue jusqu'au bout, puis le jardin s'ouvre.
         rule.waitForIdle()
     }
 
@@ -85,6 +86,7 @@ class MemoverseRobot(private val rule: ComposeTestRule) {
         rule.waitForIdle()
     }
 
+    /** Après le dernier exercice, la scène d'arrosage se joue jusqu'au bout (horloge de test) avant le bilan. */
     fun continueAfterFeedback() {
         tap("Continuer")
     }

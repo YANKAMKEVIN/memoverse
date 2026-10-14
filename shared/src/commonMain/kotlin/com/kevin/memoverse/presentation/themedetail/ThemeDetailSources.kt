@@ -12,6 +12,9 @@ internal sealed interface ThemeLoad {
 internal sealed interface StartStatus {
     data object Idle : StartStatus
     data object InProgress : StartStatus
+    /** Versets enregistrés : la scène de plantation se joue. */
     data object Started : StartStatus
+    /** Scène jouée ou passée : on peut rejoindre le jardin. */
+    data object Planted : StartStatus
     data class Error(val error: StartErrorUi) : StartStatus
 }

@@ -66,6 +66,7 @@ class SessionViewModel(
             SessionEvent.SpeakInsteadClicked -> model.update { if (it.lastResult != null) it else it.copy(draft = null, speech = SpeechModel()) }
             SessionEvent.CheckClicked -> check()
             SessionEvent.ContinueClicked -> next()
+            SessionEvent.CeremonyFinished -> model.update { it.copy(isCeremonyDone = true) }
             SessionEvent.RetryClicked -> load()
             SessionEvent.CloseClicked -> model.update {
                 if (it.hasRecordedAnswers && !it.isFinished) it.copy(isConfirmingQuit = true) else it.copy(shouldClose = true)
@@ -146,7 +147,13 @@ class SessionViewModel(
         if (m.lastResult != null) return
         val answer = (m.draft ?: exercise.emptyDraft()).toAnswer(exercise) ?: return
         val isCorrect = checkAnswer(exercise, answer)
-        model.update { it.copy(lastResult = ExerciseResult(isCorrect), correctCount = it.correctCount + if (isCorrect) 1 else 0) }
+        model.update {
+            it.copy(
+                lastResult = ExerciseResult(isCorrect),
+                correctCount = it.correctCount + if (isCorrect) 1 else 0,
+                wateredVerseIds = if (isCorrect) it.wateredVerseIds + exercise.verse.id else it.wateredVerseIds,
+            )
+        }
         val verse = m.verses[exercise.verse.id] ?: return
         val step = m.index
         viewModelScope.launch {

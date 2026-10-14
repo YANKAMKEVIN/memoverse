@@ -47,6 +47,7 @@ class ThemeDetailViewModel(
             is ThemeDetailEvent.VerseToggled -> toggle(event.verseId)
             ThemeDetailEvent.StartClicked -> start()
             ThemeDetailEvent.RetryClicked -> loadTheme()
+            ThemeDetailEvent.CeremonyFinished -> startStatus.update { if (it == StartStatus.Started) StartStatus.Planted else it }
         }
     }
 
@@ -58,7 +59,8 @@ class ThemeDetailViewModel(
     }
 
     private fun start() {
-        if (startStatus.value == StartStatus.InProgress) return
+        // Une seule plantation à la fois : ni pendant l'enregistrement, ni une fois les versets plantés.
+        if (startStatus.value != StartStatus.Idle && startStatus.value !is StartStatus.Error) return
         startStatus.value = StartStatus.InProgress
         viewModelScope.launch {
             startStatus.value = when (val result = startLearning(themeId, selection.value.selectedIds)) {

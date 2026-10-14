@@ -4,6 +4,7 @@ import com.kevin.memoverse.domain.exercise.AnswerChecker
 import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.model.HiddenPosition
 import com.kevin.memoverse.domain.model.VerseParts
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 import com.kevin.memoverse.presentation.common.toUi
 
 /** Points d'expérience gagnés par bonne réponse. */
@@ -13,7 +14,17 @@ internal fun SessionModel.toUiState(): SessionUiState {
     if (isLoading) return SessionUiState(isLoading = true)
     if (hasError) return SessionUiState(isLoading = false, hasError = true, shouldClose = shouldClose)
     if (exercises.isEmpty()) return SessionUiState(isLoading = false, isEmpty = true, shouldClose = shouldClose)
-    if (isFinished) return SessionUiState(isLoading = false, step = exercises.size, totalSteps = exercises.size, summary = summary(), shouldClose = shouldClose)
+    if (isFinished) {
+        val summary = summary()
+        return SessionUiState(
+            isLoading = false,
+            step = exercises.size,
+            totalSteps = exercises.size,
+            summary = summary,
+            ceremony = if (isCeremonyDone) null else ceremony(summary),
+            shouldClose = shouldClose,
+        )
+    }
     val exercise = current ?: return SessionUiState(isLoading = false, isEmpty = true)
     val draft = draft ?: exercise.emptyDraft()
     return SessionUiState(
@@ -53,12 +64,32 @@ private fun SessionModel.summary(): SessionSummaryUi = SessionSummaryUi(
     wiltedVerses = stageChanges { from, to -> to < from },
 )
 
+/**
+ * Une seule scène, pour ne pas rallonger la fin de séance : le verset qui a grandi le plus haut,
+ * sinon un verset réussi qui garde son stade, sinon un verset qui a fané. Rien si la séance n'a rien changé.
+ */
+private fun SessionModel.ceremony(summary: SessionSummaryUi): CeremonyUi? {
+    summary.grownVerses.maxByOrNull { it.to.ordinal }?.let { grown ->
+        return CeremonyUi.Watering(grown.reference, grown.from, grown.to, otherGrownCount = summary.grownVerses.size - 1)
+    }
+    val watered = wateredVerseIds
+        .mapNotNull { id -> verses[id]?.takeIf { verse -> initialStages[id]?.let { verse.stage >= it } ?: true } }
+        .maxByOrNull { it.stage.ordinal }
+    if (watered != null) {
+        val stage = watered.stage.toUi()
+        return CeremonyUi.Watering(referenceOf(watered.verseId), stage, stage)
+    }
+    return summary.wiltedVerses.firstOrNull()?.let { CeremonyUi.Wilting(it.reference, it.from, it.to) }
+}
+
+private fun SessionModel.referenceOf(verseId: String): String =
+    exercises.firstOrNull { it.verse.id == verseId }?.verse?.reference ?: verseId
+
 private fun SessionModel.stageChanges(keep: (from: Int, to: Int) -> Boolean): List<GrownVerseUi> =
     initialStages.mapNotNull { (verseId, from) ->
         val to = verses[verseId]?.stage ?: return@mapNotNull null
         if (!keep(from.ordinal, to.ordinal)) return@mapNotNull null
-        val reference = exercises.firstOrNull { it.verse.id == verseId }?.verse?.reference ?: verseId
-        GrownVerseUi(reference, from.toUi(), to.toUi())
+        GrownVerseUi(referenceOf(verseId), from.toUi(), to.toUi())
     }
 
 internal fun Exercise.toUi(draft: AnswerDraft, speech: SpeechModel = SpeechModel(), revealAnswer: Boolean = false): ExerciseUi = when (this) {

@@ -15,6 +15,8 @@ sealed interface SessionEvent {
     data object SpeakInsteadClicked : SessionEvent
     data object CheckClicked : SessionEvent
     data object ContinueClicked : SessionEvent
+    /** La scène d'arrosage s'est terminée ou a été passée d'un tap. */
+    data object CeremonyFinished : SessionEvent
     data object RetryClicked : SessionEvent
     data object CloseClicked : SessionEvent
     data object QuitConfirmed : SessionEvent
