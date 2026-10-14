@@ -33,3 +33,6 @@ xcuserdata
 
 # Logs
 *.log
+
+# Worktrees des agents Claude Code
+.claude/worktrees/
