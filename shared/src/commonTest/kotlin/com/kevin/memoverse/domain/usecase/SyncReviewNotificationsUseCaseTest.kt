@@ -6,6 +6,7 @@ import com.kevin.memoverse.fake.FakeLearningRepository
 import com.kevin.memoverse.fake.FakeVerseBankRepository
 import com.kevin.memoverse.fake.learningVerse
 import com.kevin.memoverse.fake.verse
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
@@ -13,6 +14,7 @@ import kotlinx.datetime.TimeZone
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class SyncReviewNotificationsUseCaseTest {
 
     private class RecordingScheduler : NotificationScheduler {
