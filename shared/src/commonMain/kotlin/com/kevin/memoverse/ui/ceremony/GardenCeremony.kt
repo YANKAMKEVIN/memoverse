@@ -169,7 +169,7 @@ private fun CeremonyUi.texts(): CeremonyTexts = when (this) {
     )
 }
 
-private val SCENE_MAX_WIDTH = 320.dp
+private val SCENE_MAX_WIDTH = 360.dp
 
 /** Aperçu figé à un instant donné de la scène (par défaut, sa dernière image). */
 @Composable

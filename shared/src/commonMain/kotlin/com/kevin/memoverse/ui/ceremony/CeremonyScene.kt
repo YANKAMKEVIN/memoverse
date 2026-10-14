@@ -225,13 +225,13 @@ private fun DrawScope.drawAboveGround(scene: SceneGeometry, growth: Float, alpha
     val sproutAlpha = alpha * (1f - ((growth - 1.15f) / 0.35f).coerceIn(0f, 1f))
     if (sproutAlpha > 0f) {
         val stem = ((growth - 0.25f) / 0.45f).coerceIn(0f, 1f)
-        drawRevealed(scene, scene.sprout, stem, Leaf.copy(alpha = sproutAlpha), u * 0.008f)
+        drawRevealed(scene, scene.sprout, stem, Leaf.copy(alpha = sproutAlpha), u * 0.01f)
         val open = FastOutSlowInEasing.transform(((growth - 0.55f) / 0.45f).coerceIn(0f, 1f))
         if (open > 0f) {
             val tip = scene.sproutTip
             // Quand le verset fane, les feuilles s'inclinent d'une douzaine de degrés vers le sol.
-            drawLeaf(tip, u * 0.07f * open, u * 0.03f * open, -30f - 30f * open - LEAF_DROOP_DEGREES * droop, lerp(Sage, Dull, 0.4f * droop).copy(alpha = sproutAlpha))
-            drawLeaf(tip, u * 0.065f * open, u * 0.028f * open, 28f + 28f * open + LEAF_DROOP_DEGREES * droop, lerp(Leaf, Dull, 0.4f * droop).copy(alpha = sproutAlpha))
+            drawLeaf(tip, u * 0.1f * open, u * 0.042f * open, -30f - 30f * open - LEAF_DROOP_DEGREES * droop, lerp(Sage, Dull, 0.4f * droop).copy(alpha = sproutAlpha))
+            drawLeaf(tip, u * 0.095f * open, u * 0.04f * open, 28f + 28f * open + LEAF_DROOP_DEGREES * droop, lerp(Leaf, Dull, 0.4f * droop).copy(alpha = sproutAlpha))
         }
     }
     if (growth <= 1f) return
@@ -271,8 +271,8 @@ private fun DrawScope.drawAboveGround(scene: SceneGeometry, growth: Float, alpha
 
 /** Graine en forme d'amande, sans visage. */
 private fun DrawScope.drawSeed(scene: SceneGeometry, center: Offset, angle: Float, alpha: Float = 1f) {
-    val h = scene.u * 0.07f
-    val w = scene.u * 0.046f
+    val h = scene.u * 0.09f
+    val w = scene.u * 0.06f
     val path = scene.scratch.apply {
         reset()
         moveTo(center.x, center.y - h / 2f)
@@ -334,6 +334,7 @@ private fun DrawScope.drawJugAndWater(scene: SceneGeometry, timeline: WateringTi
     withTransform({
         translate(pivot.x, pivot.y)
         rotate(angle, pivot = Offset.Zero)
+        scale(JUG_SCALE, JUG_SCALE, pivot = Offset.Zero)
     }) {
         drawPath(scene.jugHandle, TerracottaDeep.copy(alpha = appear), style = Stroke(width = u * 0.01f, cap = StrokeCap.Round))
         drawPath(scene.jugSpout, Terracotta.copy(alpha = appear))
@@ -344,8 +345,8 @@ private fun DrawScope.drawJugAndWater(scene: SceneGeometry, timeline: WateringTi
     // Les gouttes partent du bec, qui tourne avec la cruche.
     val radians = angle * PI.toFloat() / 180f
     val tip = Offset(
-        pivot.x + u * (SPOUT_TIP_X * cos(radians) - SPOUT_TIP_Y * sin(radians)),
-        pivot.y + u * (SPOUT_TIP_X * sin(radians) + SPOUT_TIP_Y * cos(radians)),
+        pivot.x + u * JUG_SCALE * (SPOUT_TIP_X * cos(radians) - SPOUT_TIP_Y * sin(radians)),
+        pivot.y + u * JUG_SCALE * (SPOUT_TIP_X * sin(radians) + SPOUT_TIP_Y * cos(radians)),
     )
     val target = scene.plantBase
     val pour = timeline.pour
@@ -431,9 +432,9 @@ private class SceneGeometry(val u: Float) {
 
     val sprout = MeasuredPath(Path().apply {
         moveTo(0.5f * u, 0.57f * u)
-        cubicTo(0.505f * u, 0.53f * u, 0.49f * u, 0.48f * u, 0.5f * u, 0.43f * u)
+        cubicTo(0.505f * u, 0.52f * u, 0.488f * u, 0.45f * u, 0.5f * u, 0.38f * u)
     })
-    val sproutTip = p(0.5f, 0.43f)
+    val sproutTip = p(0.5f, 0.38f)
 
     val trunk = MeasuredPath(Path().apply {
         moveTo(0.5f * u, 0.535f * u)
@@ -450,7 +451,7 @@ private class SceneGeometry(val u: Float) {
     /** Centre du feuillage visible au niveau [level] : là où le halo se pose. */
     fun crownCenter(level: Float): Offset = when {
         level >= 2f -> p(0.5f, 0.23f)
-        else -> p(0.5f, 0.44f)
+        else -> p(0.5f, 0.4f)
     }
 
     // Cruche en terre cuite, dessinée autour de son centre (pivot de l'inclinaison).
@@ -527,7 +528,8 @@ private val TUFT_ANGLES = listOf(-40f, -15f, 10f, 35f)
 private const val FIRST_ROOTS = 3
 private const val LEAF_DROOP_DEGREES = 12f
 private const val JUG_X = 0.76f
-private const val JUG_Y = 0.17f
+private const val JUG_Y = 0.15f
+private const val JUG_SCALE = 1.5f
 private const val JUG_TILT_DEGREES = -32f
 private const val SPOUT_TIP_X = -0.095f
 private const val SPOUT_TIP_Y = -0.08f
