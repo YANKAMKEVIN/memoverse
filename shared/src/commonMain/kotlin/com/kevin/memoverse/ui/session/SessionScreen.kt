@@ -70,6 +70,7 @@ import com.kevin.memoverse.resources.session_title_type_end
 import com.kevin.memoverse.resources.session_title_type_middle
 import com.kevin.memoverse.resources.session_title_type_start
 import com.kevin.memoverse.resources.vignette_exercice
+import com.kevin.memoverse.ui.ceremony.GardenCeremony
 import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.LoadingState
 import com.kevin.memoverse.ui.components.PillButton
@@ -113,9 +114,12 @@ fun SessionScreenContent(
         onBackCompleted = { onEvent(SessionEvent.CloseClicked) },
     )
     val summary = state.summary
+    val ceremony = state.ceremony
     when {
         state.isLoading -> LoadingState(Modifier.background(Sand))
         state.hasError -> ErrorState(onRetry = { onEvent(SessionEvent.RetryClicked) }, modifier = Modifier.background(Sand))
+        // Le moment fort de la séance : l'eau versée et la plante qui grandit, juste avant le bilan.
+        ceremony != null -> GardenCeremony(ceremony = ceremony, onFinished = { onEvent(SessionEvent.CeremonyFinished) })
         summary != null -> SessionSummary(summary = summary, onContinue = { onEvent(SessionEvent.CloseClicked) })
         state.isEmpty -> EmptySession(onClose = { onEvent(SessionEvent.CloseClicked) })
         else -> ExerciseLayout(state = state, onEvent = onEvent)

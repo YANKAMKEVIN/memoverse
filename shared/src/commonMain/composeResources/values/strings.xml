@@ -118,6 +118,26 @@
     <string name="session_quit_confirm">Quitter</string>
     <string name="session_quit_cancel">Continuer l’arrosage</string>
 
+    <!-- Scène du jardin de ton cœur (plantation, arrosage) -->
+    <string name="ceremony_skip">Toucher pour passer</string>
+    <string name="ceremony_skip_label">Passer l’animation</string>
+    <plurals name="ceremony_planting_title">
+        <item quantity="one">Une parole plantée</item>
+        <item quantity="other">%1$d paroles plantées</item>
+    </plurals>
+    <plurals name="ceremony_planting_detail">
+        <item quantity="one">Elle grandira à chaque arrosage.</item>
+        <item quantity="other">Elles grandiront à chaque arrosage.</item>
+    </plurals>
+    <string name="ceremony_watering_grew_title">Ton jardin grandit</string>
+    <string name="ceremony_watering_strengthen_title">Ta parole prend force</string>
+    <string name="ceremony_wilting_title">Cette parole a encore besoin d’eau</string>
+    <string name="ceremony_stage_change">%1$s → %2$s</string>
+    <plurals name="ceremony_others_grown">
+        <item quantity="one">Et %1$d autre verset a grandi.</item>
+        <item quantity="other">Et %1$d autres versets ont grandi.</item>
+    </plurals>
+
     <!-- Explorer -->
     <string name="explorer_title">Explorer</string>
     <string name="explorer_subtitle">%1$d thèmes pour faire grandir ta foi.</string>

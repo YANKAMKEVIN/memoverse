@@ -1,5 +1,6 @@
 package com.kevin.memoverse.presentation.session
 
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 import com.kevin.memoverse.presentation.common.StageUi
 
 data class SessionUiState(
@@ -12,6 +13,8 @@ data class SessionUiState(
     val canCheck: Boolean = false,
     val feedback: FeedbackUi? = null,
     val summary: SessionSummaryUi? = null,
+    /** Scène d'arrosage jouée avant le bilan (déjà prêt dans [summary]). */
+    val ceremony: CeremonyUi? = null,
     val isConfirmingQuit: Boolean = false,
     /** La séance doit se fermer (quitter confirmé, ou rien n'avait encore été fait). */
     val shouldClose: Boolean = false,

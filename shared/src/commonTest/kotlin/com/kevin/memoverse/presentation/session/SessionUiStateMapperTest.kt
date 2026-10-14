@@ -7,9 +7,13 @@ import com.kevin.memoverse.domain.model.MasteryStage
 import com.kevin.memoverse.domain.model.VerseParts
 import com.kevin.memoverse.fake.learningVerse
 import com.kevin.memoverse.fake.verse
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 import com.kevin.memoverse.presentation.common.StageUi
 import kotlin.test.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
+import kotlin.test.assertIs
+import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
@@ -126,5 +130,78 @@ class SessionUiStateMapperTest {
 
         val after = listening.copy(lastResult = ExerciseResult(isCorrect = false)).toUiState().exercise as ExerciseUi.ReciteAloud
         assertEquals(RecitedWordState.MISSED, after.words[2].state)
+    }
+
+    private fun finished(
+        initial: Map<String, MasteryStage>,
+        current: Map<String, MasteryStage>,
+        watered: Set<String> = emptySet(),
+        isCeremonyDone: Boolean = false,
+    ) = SessionModel(
+        isLoading = false,
+        exercises = initial.keys.map { Exercise.Recite(verse(it)) },
+        correctCount = watered.size,
+        isFinished = true,
+        verses = current.mapValues { (id, stage) -> learningVerse(id, stage) },
+        initialStages = initial,
+        wateredVerseIds = watered,
+        isCeremonyDone = isCeremonyDone,
+    )
+
+    @Test
+    fun `la scène d'arrosage met en valeur le verset qui a grandi le plus haut`() {
+        val model = finished(
+            initial = mapOf("v1" to MasteryStage.SEED, "v2" to MasteryStage.TREE, "v3" to MasteryStage.ROOT),
+            current = mapOf("v1" to MasteryStage.ROOT, "v2" to MasteryStage.FRUIT, "v3" to MasteryStage.ROOT),
+            watered = setOf("v1", "v2", "v3"),
+        )
+
+        assertEquals(CeremonyUi.Watering("Référence v2", StageUi.TREE, StageUi.FRUIT, otherGrownCount = 1), model.toUiState().ceremony)
+    }
+
+    @Test
+    fun `sans croissance la scène montre le verset réussi le plus grand à son stade`() {
+        val model = finished(
+            initial = mapOf("v1" to MasteryStage.ROOT, "v2" to MasteryStage.TREE, "v3" to MasteryStage.FRUIT),
+            current = mapOf("v1" to MasteryStage.ROOT, "v2" to MasteryStage.TREE, "v3" to MasteryStage.TREE),
+            watered = setOf("v1", "v2"),
+        )
+
+        val ceremony = assertIs<CeremonyUi.Watering>(model.toUiState().ceremony)
+
+        assertEquals(CeremonyUi.Watering("Référence v2", StageUi.TREE, StageUi.TREE), ceremony)
+        assertFalse(ceremony.hasGrown)
+    }
+
+    @Test
+    fun `un verset qui fane sans aucune réussite joue la variante sobre`() {
+        val model = finished(initial = mapOf("v1" to MasteryStage.TREE), current = mapOf("v1" to MasteryStage.ROOT))
+
+        assertEquals(CeremonyUi.Wilting("Référence v1", StageUi.TREE, StageUi.ROOT), model.toUiState().ceremony)
+    }
+
+    @Test
+    fun `une séance qui ne change rien ne joue aucune scène`() {
+        val model = finished(initial = mapOf("v1" to MasteryStage.SEED), current = mapOf("v1" to MasteryStage.SEED))
+
+        val state = model.toUiState()
+
+        assertNull(state.ceremony)
+        assertNotNull(state.summary)
+    }
+
+    @Test
+    fun `une fois la scène jouée seul le bilan reste`() {
+        val model = finished(
+            initial = mapOf("v1" to MasteryStage.SEED),
+            current = mapOf("v1" to MasteryStage.ROOT),
+            watered = setOf("v1"),
+            isCeremonyDone = true,
+        )
+
+        val state = model.toUiState()
+
+        assertNull(state.ceremony)
+        assertEquals(listOf(GrownVerseUi("Référence v1", StageUi.SEED, StageUi.ROOT)), state.summary!!.grownVerses)
     }
 }

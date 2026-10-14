@@ -3,6 +3,7 @@ package com.kevin.memoverse.presentation.themedetail
 import com.kevin.memoverse.domain.model.Difficulty
 import com.kevin.memoverse.domain.model.LearningVerse
 import com.kevin.memoverse.domain.model.VerseSelection
+import com.kevin.memoverse.presentation.ceremony.CeremonyUi
 
 internal fun deriveThemeDetailUiState(
     load: ThemeLoad,
@@ -41,7 +42,13 @@ internal fun deriveThemeDetailUiState(
             activeCount = activeCount,
             maxActive = LearningVerse.MAX_ACTIVE_VERSES,
             isStarting = startStatus == StartStatus.InProgress,
-            isStarted = startStatus == StartStatus.Started,
+            isStarted = startStatus == StartStatus.Planted,
+            // Une graine par verset planté, dans l'ordre du thème.
+            ceremony = if (startStatus == StartStatus.Started) {
+                CeremonyUi.Planting(verses.filter { it.id in selection.selectedIds }.map { it.reference })
+            } else {
+                null
+            },
             startError = (startStatus as? StartStatus.Error)?.error,
         )
     }

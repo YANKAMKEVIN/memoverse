@@ -17,6 +17,10 @@ internal data class SessionModel(
     val initialStages: Map<String, MasteryStage> = emptyMap(),
     val correctCount: Int = 0,
     val isFinished: Boolean = false,
+    /** Versets réussis au moins une fois, dans l'ordre : la scène d'arrosage en choisit un si aucun n'a grandi. */
+    val wateredVerseIds: Set<String> = emptySet(),
+    /** La scène de fin de séance a été jouée (ou passée) : place au bilan. */
+    val isCeremonyDone: Boolean = false,
     val speech: SpeechModel = SpeechModel(),
     val isConfirmingQuit: Boolean = false,
     val shouldClose: Boolean = false,

@@ -57,6 +57,7 @@ import com.kevin.memoverse.resources.start_learning
 import com.kevin.memoverse.resources.theme_detail_instructions
 import com.kevin.memoverse.resources.theme_garden_full
 import com.kevin.memoverse.resources.theme_verse_count
+import com.kevin.memoverse.ui.ceremony.GardenCeremony
 import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.LoadingState
 import com.kevin.memoverse.ui.components.PillButton
@@ -115,6 +116,10 @@ fun ThemeDetailScreenContent(
             }
         }
         TopBar(onBack = onBack, isOverImage = !state.isLoading && !state.hasError && !isHeaderScrolledAway)
+        // Les versets sont plantés : les graines tombent dans le cœur avant le retour au jardin.
+        state.ceremony?.let { ceremony ->
+            GardenCeremony(ceremony = ceremony, onFinished = { onEvent(ThemeDetailEvent.CeremonyFinished) })
+        }
     }
 }
 
