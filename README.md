@@ -15,14 +15,13 @@ Application mobile (Android + iOS, Kotlin Multiplatform / Compose Multiplatform)
 
 ## Commandes
 
-Gradle tourne sur le JDK 21 d’Android Studio :
+Gradle choisit tout seul un JDK 21 (`gradle/gradle-daemon-jvm.properties`), ou le télécharge.
 
-```bash
-export JAVA_HOME="$HOME/Applications/Android Studio.app/Contents/jbr/Contents/Home"
-```
-
-- Tests unitaires : `./gradlew :shared:testAndroidHostTest`
+- Tests unitaires (Android host + simulateur iOS) : `./gradlew :shared:allTests`
 - Tests d’acceptance (appareil branché) : `ANDROID_SERIAL=<serial> ./gradlew :androidApp:connectedDebugAndroidTest`
 - APK debug : `./gradlew :androidApp:assembleDebug`
 - iOS : ouvrir `iosApp/iosApp.xcodeproj`, ou `xcodebuild -project iosApp/iosApp.xcodeproj -scheme iosApp -destination "id=<simulateur>" build`
+- CI : GitHub Actions (`.github/workflows/ci.yml`) à chaque push sur `main` et chaque pull request
 - Régénérer la banque de versets : `python3 tools/build_verses.py <export ls1910.json de getbible>`
+
+État du projet et prochaines étapes : [`docs/tech/etat-projet.md`](docs/tech/etat-projet.md).
