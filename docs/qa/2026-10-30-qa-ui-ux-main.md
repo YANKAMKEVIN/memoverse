@@ -6,13 +6,16 @@ Chemins relatifs à `shared/src/commonMain/kotlin/com/kevin/memoverse/`.
 
 ## Suivi des corrections (branche `qa/ui-ux`, partie de `main`)
 
-Points majeurs 1 à 7 corrigés dans le code ; tests `:shared:allTests` 274/274 (iOS et Android). **Pas encore vérifiés sur appareil** (S24 occupé par une autre QA).
+Points majeurs 1 à 7 corrigés ; tests `:shared:allTests` 274/274 (iOS et Android).
+
+Vérifié sur le S24 le 30/10 vers 16 h 40 (police ×1,0) : étiquettes du jardin et fiche « Tes versets », marge au bord, thème avec jardin plein (« Jardin plein · Aller arroser » mène au jardin), ligne « Rappels » (état lu, « Activer » ouvre les réglages de notifications de l'app), séance « Retrouve la référence » avec un verset long et une mauvaise réponse. Cette vérification a fait corriger deux défauts : la réponse choisie restait hors de l'écran (elle y revient désormais) et un blanc restait sous le panneau (hauteur plafonnée à 55 %).
+Non vérifié sur appareil : grande police (réglage système non modifié), demande « Un rappel pour arroser ? » (elle ne s'affiche qu'une fois, après la première plantation), retrait du fondu après validation, iOS.
 
 | # | Correction |
 |---|---|
 | 1 | En-tête illustré de séance réduit (260 → 190 dp) et supprimé en grande police (≥ ×1,3). |
 | 2 | `key(state.step) { rememberScrollState() }` : chaque exercice repart en haut. |
-| 3 | Panneau de correction placé sous l'exercice (plus par-dessus), au plus la moitié de l'écran, texte défilant et « Continuer » toujours visible ; le verset n'est plus répété quand l'exercice l'affiche déjà. |
+| 3 | Panneau de correction placé sous l'exercice (plus par-dessus), au plus 55 % de l'écran, réponse choisie ramenée à l'écran, fondu retiré après validation, texte défilant et « Continuer » toujours visible ; le verset n'est plus répété quand l'exercice l'affiche déjà. |
 | 4 | Libellés d'onglets sur une ligne avec taille automatique ; slogan du jardin qui passe à la ligne au lieu de chevaucher ; cartes de Progression à hauteur minimale, image à côté du texte. |
 | 5 | Étiquettes du jardin cliquables (fiche « Tes versets » : référence, stade, soif, texte) et gardées à 12 dp des bords. |
 | 6 | Explication avant la demande système (« Un rappel pour arroser ? ») ; ligne « Rappels d'arrosage » dans le Profil (état + Activer / Réglages, relue au retour dans l'app). |
