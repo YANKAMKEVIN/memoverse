@@ -28,6 +28,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -152,7 +153,8 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
         Column(modifier = Modifier.fillMaxSize()) {
             SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
             Spacer(Modifier.height(HEADER_HEIGHT - TOP_BAR_ALLOWANCE))
-            val scrollState = rememberScrollState()
+            // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
+            val scrollState = key(state.step) { rememberScrollState() }
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             Column(
                 modifier = Modifier
