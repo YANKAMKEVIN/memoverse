@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -52,31 +54,38 @@ fun FeedbackPanel(
             .padding(horizontal = Spacing.xl, vertical = Spacing.lg),
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), verticalAlignment = Alignment.CenterVertically) {
-            Box(modifier = Modifier.size(40.dp).background(accent, CircleShape), contentAlignment = Alignment.Center) {
-                Icon(if (feedback.isCorrect) AppIcons.Check else AppIcons.Sprout, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
-            }
-            Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
-                Text(
-                    text = stringResource(if (feedback.isCorrect) Res.string.session_feedback_correct else Res.string.session_feedback_incorrect),
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = accent,
-                )
-                val growth = when {
-                    feedback.grewTo != null -> stringResource(Res.string.session_feedback_grew, feedback.reference, stageName(feedback.grewTo))
-                    feedback.wiltedTo != null -> stringResource(Res.string.session_feedback_wilted, feedback.reference, stageName(feedback.wiltedTo))
-                    else -> null
+        // Le texte défile si le panneau manque de place (grande police, long verset) ; « Continuer » reste visible.
+        Column(
+            modifier = Modifier.weight(1f, fill = false).verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), verticalAlignment = Alignment.CenterVertically) {
+                Box(modifier = Modifier.size(40.dp).background(accent, CircleShape), contentAlignment = Alignment.Center) {
+                    Icon(if (feedback.isCorrect) AppIcons.Check else AppIcons.Sprout, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
                 }
-                growth?.let { Text(it, style = MaterialTheme.typography.titleSmall, color = accent) }
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                    Text(
+                        text = stringResource(if (feedback.isCorrect) Res.string.session_feedback_correct else Res.string.session_feedback_incorrect),
+                        style = MaterialTheme.typography.headlineMedium,
+                        color = accent,
+                    )
+                    val growth = when {
+                        feedback.grewTo != null -> stringResource(Res.string.session_feedback_grew, feedback.reference, stageName(feedback.grewTo))
+                        feedback.wiltedTo != null -> stringResource(Res.string.session_feedback_wilted, feedback.reference, stageName(feedback.wiltedTo))
+                        else -> null
+                    }
+                    growth?.let { Text(it, style = MaterialTheme.typography.titleSmall, color = accent) }
+                }
             }
-        }
-        if (!feedback.isCorrect) {
-            Text(stringResource(Res.string.session_feedback_answer), style = MaterialTheme.typography.titleSmall, color = colors.onSurfaceVariant)
-            feedback.expectedAnswer?.let { Text(it, style = MaterialTheme.typography.titleLarge, color = accent) }
-        }
-        Text("« ${feedback.verseText} »", style = AppTextStyles.verseQuote())
-        if (feedback.expectedAnswer != feedback.reference) {
-            Text(feedback.reference, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+            if (!feedback.isCorrect) {
+                Text(stringResource(Res.string.session_feedback_answer), style = MaterialTheme.typography.titleSmall, color = colors.onSurfaceVariant)
+                feedback.expectedAnswer?.let { Text(it, style = MaterialTheme.typography.titleLarge, color = accent) }
+            }
+            // L'exercice affiche déjà le verset après validation ; on ne le répète que s'il est la correction.
+            if (!feedback.isCorrect && feedback.expectedAnswer == null) {
+                Text("« ${feedback.verseText} »", style = AppTextStyles.verseQuote())
+                Text(feedback.reference, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
+            }
         }
         PillButton(
             text = stringResource(Res.string.session_continue),

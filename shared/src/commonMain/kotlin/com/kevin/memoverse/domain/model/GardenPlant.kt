@@ -6,4 +6,5 @@ data class GardenPlant(
     val reference: String,
     val stage: MasteryStage,
     val isThirsty: Boolean = false,
+    val text: String = "",
 )

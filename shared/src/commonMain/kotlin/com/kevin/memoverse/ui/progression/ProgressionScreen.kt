@@ -4,13 +4,15 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -85,13 +87,13 @@ fun ProgressionScreenContent(
         Wordmark()
         Text(stringResource(Res.string.progression_title), style = MaterialTheme.typography.displayMedium, modifier = Modifier.padding(top = Spacing.sm))
         Text(stringResource(Res.string.progression_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm)) {
-            StageCard(Res.string.stage_seed, state.seedCount, Res.string.progression_seed_caption, Res.drawable.stade_graine, Modifier.weight(1f))
-            StageCard(Res.string.stage_root, state.rootCount, Res.string.progression_root_caption, Res.drawable.stade_racine, Modifier.weight(1f))
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm).height(IntrinsicSize.Min)) {
+            StageCard(Res.string.stage_seed, state.seedCount, Res.string.progression_seed_caption, Res.drawable.stade_graine, Modifier.weight(1f).fillMaxHeight())
+            StageCard(Res.string.stage_root, state.rootCount, Res.string.progression_root_caption, Res.drawable.stade_racine, Modifier.weight(1f).fillMaxHeight())
         }
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            StageCard(Res.string.stage_tree, state.treeCount, Res.string.progression_tree_caption, Res.drawable.stade_arbre, Modifier.weight(1f))
-            StageCard(Res.string.stage_fruit, state.fruitCount, Res.string.progression_fruit_caption, Res.drawable.stade_fruit, Modifier.weight(1f))
+        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+            StageCard(Res.string.stage_tree, state.treeCount, Res.string.progression_tree_caption, Res.drawable.stade_arbre, Modifier.weight(1f).fillMaxHeight())
+            StageCard(Res.string.stage_fruit, state.fruitCount, Res.string.progression_fruit_caption, Res.drawable.stade_fruit, Modifier.weight(1f).fillMaxHeight())
         }
         TotalCard(total = state.totalCount)
     }
@@ -106,28 +108,31 @@ private fun StageCard(
     modifier: Modifier = Modifier,
 ) {
     val shape = RoundedCornerShape(Radius.card)
-    Box(
+    // Hauteur minimale et non fixe : en grande police, la carte s'allonge au lieu d'empiler texte et image.
+    Column(
         modifier = modifier
-            .height(170.dp)
+            .heightIn(min = 170.dp)
             .background(MaterialTheme.colorScheme.surfaceVariant, shape)
             .border(1.dp, MaterialTheme.colorScheme.outline, shape)
             .padding(Spacing.lg),
+        verticalArrangement = Arrangement.SpaceBetween,
     ) {
-        Image(
-            painter = painterResource(illustration),
-            contentDescription = null,
-            contentScale = ContentScale.Fit,
-            modifier = Modifier.size(width = 72.dp, height = 116.dp).align(Alignment.TopEnd),
-        )
-        Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
-            Text(stringResource(name), style = MaterialTheme.typography.titleMedium)
-            Text(count.toString(), style = MaterialTheme.typography.headlineLarge)
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                Text(stringResource(name), style = MaterialTheme.typography.titleMedium)
+                Text(count.toString(), style = MaterialTheme.typography.headlineLarge)
+            }
+            Image(
+                painter = painterResource(illustration),
+                contentDescription = null,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.size(width = 56.dp, height = 90.dp),
+            )
         }
         Text(
             text = stringResource(caption),
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            modifier = Modifier.align(Alignment.BottomStart),
         )
     }
 }

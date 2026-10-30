@@ -5,12 +5,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -34,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -64,9 +67,9 @@ import com.kevin.memoverse.resources.session_title_part_middle
 import com.kevin.memoverse.resources.session_title_part_start
 import com.kevin.memoverse.resources.session_title_recite
 import com.kevin.memoverse.resources.session_title_recite_aloud
-import com.kevin.memoverse.resources.session_title_type_blanks
 import com.kevin.memoverse.resources.session_title_reference
 import com.kevin.memoverse.resources.session_title_reorder
+import com.kevin.memoverse.resources.session_title_type_blanks
 import com.kevin.memoverse.resources.session_title_type_end
 import com.kevin.memoverse.resources.session_title_type_middle
 import com.kevin.memoverse.resources.session_title_type_start
@@ -144,75 +147,83 @@ fun SessionScreenContent(
 private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Unit) {
     val exercise = state.exercise ?: return
     val feedback = state.feedback
+    // Grande police : l'illustration se réduit à la barre du haut, pour laisser voir les propositions.
+    val headerSpace = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
     // imePadding : avec adjustResize, le contenu et la barre du bas remontent au-dessus du clavier.
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).imePadding()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT)) {
             Image(painterResource(Res.drawable.vignette_exercice), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
             Box(Modifier.fillMaxSize().background(Brush.verticalGradient(0f to Sand.copy(alpha = 0.9f), 0.55f to Sand.copy(alpha = 0f))))
         }
-        Column(modifier = Modifier.fillMaxSize()) {
-            SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
-            Spacer(Modifier.height(HEADER_HEIGHT - TOP_BAR_ALLOWANCE))
-            // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
-            val scrollState = key(state.step) { rememberScrollState() }
-            Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = Radius.sheet, topEnd = Radius.sheet))
-                    .verticalScroll(scrollState)
-                    .padding(horizontal = Spacing.xl, vertical = Spacing.xl),
-                verticalArrangement = Arrangement.spacedBy(Spacing.md),
-            ) {
-                // La référence est la réponse de « Retrouve la référence » : on ne l'affiche pas avant validation.
-                if (exercise !is ExerciseUi.ChooseReference || feedback != null) {
-                    Text(exercise.reference.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                }
-                Text(stringResource(exercise.titleRes()), style = MaterialTheme.typography.headlineMedium)
-                val isLocked = feedback != null
-                when (exercise) {
-                    is ExerciseUi.ChooseReference -> ChooseReferenceExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.CompletePart -> CompletePartExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.Reorder -> ReorderExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.FillBlanks -> FillBlanksExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.Type -> TypeExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.TypeBlanks -> TypeBlanksExercise(exercise, isLocked, onEvent)
-                    is ExerciseUi.ReciteAloud -> ReciteAloudExercise(exercise, isLocked, onEvent)
-                }
-                // Assez de place pour lire la fin de l'exercice au-dessus du panneau de correction.
-                if (feedback != null) Spacer(Modifier.height(FEEDBACK_ALLOWANCE))
-            }
-            // Fondu en bas tant qu'il reste du contenu : il invite à faire défiler.
-            if (scrollState.canScrollForward) {
-                Box(
+        BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+            // Panneau de correction : au plus un peu plus de la moitié de l'écran, l'exercice garde le reste.
+            val feedbackMaxHeight = maxHeight * FEEDBACK_MAX_FRACTION
+            Column(modifier = Modifier.fillMaxSize()) {
+                SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
+                Spacer(Modifier.height(headerSpace))
+                // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
+                val scrollState = key(state.step) { rememberScrollState() }
+                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
+                Column(
                     modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .fillMaxWidth()
-                        .height(SCROLL_HINT_HEIGHT)
-                        .background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.surface))),
-                )
-            }
-            }
-            if (feedback == null) {
-                // Barre fixe sous le contenu : le bouton ne recouvre jamais une proposition ni un champ.
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.surface)
-                        .navigationBarsPadding()
-                        .padding(horizontal = Spacing.xxl, vertical = Spacing.md),
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = Radius.sheet, topEnd = Radius.sheet))
+                        .verticalScroll(scrollState)
+                        .padding(horizontal = Spacing.xl, vertical = Spacing.xl),
+                    verticalArrangement = Arrangement.spacedBy(Spacing.md),
                 ) {
-                    PillButton(
-                        text = stringResource(Res.string.session_check),
-                        onClick = { onEvent(SessionEvent.CheckClicked) },
-                        enabled = state.canCheck,
-                        modifier = Modifier.fillMaxWidth(),
+                    // La référence est la réponse de « Retrouve la référence » : on ne l'affiche pas avant validation.
+                    if (exercise !is ExerciseUi.ChooseReference || feedback != null) {
+                        Text(exercise.reference.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                    Text(stringResource(exercise.titleRes()), style = MaterialTheme.typography.headlineMedium)
+                    val isLocked = feedback != null
+                    when (exercise) {
+                        is ExerciseUi.ChooseReference -> ChooseReferenceExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.CompletePart -> CompletePartExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.Reorder -> ReorderExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.FillBlanks -> FillBlanksExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.Type -> TypeExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.TypeBlanks -> TypeBlanksExercise(exercise, isLocked, onEvent)
+                        is ExerciseUi.ReciteAloud -> ReciteAloudExercise(exercise, isLocked, onEvent)
+                    }
+                }
+                // Fondu en bas tant qu'il reste du contenu : il invite à faire défiler. Retiré après validation, pour ne pas voiler la réponse.
+                if (scrollState.canScrollForward && feedback == null) {
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .fillMaxWidth()
+                            .height(SCROLL_HINT_HEIGHT)
+                            .background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.surface))),
                     )
                 }
+                }
+                if (feedback != null) {
+                    // Sous l'exercice et non par-dessus : la réponse donnée reste visible au-dessus.
+                    FeedbackPanel(
+                        feedback = feedback,
+                        onContinue = { onEvent(SessionEvent.ContinueClicked) },
+                        modifier = Modifier.heightIn(max = feedbackMaxHeight),
+                    )
+                } else {
+                    // Barre fixe sous le contenu : le bouton ne recouvre jamais une proposition ni un champ.
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(MaterialTheme.colorScheme.surface)
+                            .navigationBarsPadding()
+                            .padding(horizontal = Spacing.xxl, vertical = Spacing.md),
+                    ) {
+                        PillButton(
+                            text = stringResource(Res.string.session_check),
+                            onClick = { onEvent(SessionEvent.CheckClicked) },
+                            enabled = state.canCheck,
+                            modifier = Modifier.fillMaxWidth(),
+                        )
+                    }
+                }
             }
-        }
-        if (feedback != null) {
-            FeedbackPanel(feedback = feedback, onContinue = { onEvent(SessionEvent.ContinueClicked) }, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
@@ -275,9 +286,10 @@ private fun ExerciseUi.titleRes(): StringResource = when (this) {
     }
 }
 
-private val HEADER_HEIGHT = 260.dp
+private val HEADER_HEIGHT = 190.dp
 private val TOP_BAR_ALLOWANCE = 96.dp
-private val FEEDBACK_ALLOWANCE = 280.dp
+private const val LARGE_FONT_SCALE = 1.3f
+private const val FEEDBACK_MAX_FRACTION = 0.55f
 private val SCROLL_HINT_HEIGHT = 40.dp
 
 private val previewPart = ExerciseUi.CompletePart(

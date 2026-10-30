@@ -46,11 +46,14 @@
     </plurals>
     <string name="garden_tag_thirsty">%1$s · a soif</string>
     <string name="garden_tag_more">+%1$d</string>
+    <string name="garden_sheet_title">Tes versets</string>
     <plurals name="garden_next_watering_minutes">
         <item quantity="one">Arrosé · prochain arrosage dans %1$d min</item>
         <item quantity="other">Arrosé · prochain arrosage dans %1$d min</item>
     </plurals>
     <string name="theme_garden_full">Ton jardin a déjà %1$d versets en cours sur %2$d. Arrose-les pour les faire grandir avant d’en planter d’autres.</string>
+    <string name="theme_garden_full_short">Jardin plein</string>
+    <string name="theme_go_water">Aller arroser</string>
     <string name="garden_plant_more">Planter de nouveaux versets</string>
 
     <!-- Notifications -->
@@ -192,5 +195,14 @@
     <string name="profile_reset_confirm">Réinitialiser</string>
     <string name="profile_reset_cancel">Annuler</string>
     <string name="profile_reset_done">Ton jardin est vide. Tu peux planter de nouveaux versets.</string>
+    <string name="profile_reminders_title">Rappels d’arrosage</string>
+    <string name="profile_reminders_on">Activés : on te prévient quand tes versets ont soif.</string>
+    <string name="profile_reminders_off">Désactivés : aucun rappel quand tes versets ont soif.</string>
+    <string name="profile_reminders_enable">Activer</string>
+    <string name="profile_reminders_manage">Réglages</string>
+    <string name="reminder_prompt_title">Un rappel pour arroser ?</string>
+    <string name="reminder_prompt_message">MEMOVERSE peut te prévenir quand tes versets ont soif. Tu pourras changer d’avis dans le Profil.</string>
+    <string name="reminder_prompt_confirm">Activer les rappels</string>
+    <string name="reminder_prompt_later">Plus tard</string>
     <string name="profile_offline">Tout reste sur ton téléphone : pas de compte, pas de collecte de données.</string>
 </resources>

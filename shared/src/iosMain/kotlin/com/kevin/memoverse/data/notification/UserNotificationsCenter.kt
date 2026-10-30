@@ -1,18 +1,19 @@
 package com.kevin.memoverse.data.notification
 
+import kotlin.coroutines.resume
 import kotlinx.coroutines.suspendCancellableCoroutine
 import platform.UserNotifications.UNAuthorizationOptionAlert
 import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
 import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNAuthorizationStatusEphemeral
+import platform.UserNotifications.UNAuthorizationStatusNotDetermined
 import platform.UserNotifications.UNAuthorizationStatusProvisional
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
 import platform.UserNotifications.UNNotificationSound
 import platform.UserNotifications.UNTimeIntervalNotificationTrigger
 import platform.UserNotifications.UNUserNotificationCenter
-import kotlin.coroutines.resume
 
 /** Accès à UNUserNotificationCenter ; quand retenir ou programmer les rappels est décidé par [AuthorizationGatedNotifier]. */
 class UserNotificationsCenter : NotificationCenter {
@@ -22,6 +23,19 @@ class UserNotificationsCenter : NotificationCenter {
     override suspend fun isAuthorized(): Boolean = suspendCancellableCoroutine { continuation ->
         center.getNotificationSettingsWithCompletionHandler { settings ->
             continuation.resume(settings?.authorizationStatus in AUTHORIZED)
+        }
+    }
+
+    /** null tant que la question n'a pas été posée ; sinon, rappels autorisés ou non (ligne « Rappels » du Profil). */
+    suspend fun authorization(): Boolean? = suspendCancellableCoroutine { continuation ->
+        center.getNotificationSettingsWithCompletionHandler { settings ->
+            continuation.resume(
+                when (settings?.authorizationStatus) {
+                    UNAuthorizationStatusNotDetermined -> null
+                    in AUTHORIZED -> true
+                    else -> false
+                },
+            )
         }
     }
 

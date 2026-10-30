@@ -1,17 +1,20 @@
 package com.kevin.memoverse.navigation
 
-import androidx.compose.runtime.rememberCoroutineScope
-import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
-import kotlinx.coroutines.launch
-import org.koin.compose.koinInject
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hasRoute
@@ -22,6 +25,12 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
 import com.kevin.memoverse.data.notification.NotificationEntry
+import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
+import com.kevin.memoverse.resources.Res
+import com.kevin.memoverse.resources.reminder_prompt_confirm
+import com.kevin.memoverse.resources.reminder_prompt_later
+import com.kevin.memoverse.resources.reminder_prompt_message
+import com.kevin.memoverse.resources.reminder_prompt_title
 import com.kevin.memoverse.ui.components.AppTab
 import com.kevin.memoverse.ui.components.AppTabBar
 import com.kevin.memoverse.ui.explorer.ExplorerScreen
@@ -31,6 +40,9 @@ import com.kevin.memoverse.ui.profile.ProfileScreen
 import com.kevin.memoverse.ui.progression.ProgressionScreen
 import com.kevin.memoverse.ui.session.SessionScreen
 import com.kevin.memoverse.ui.themedetail.ThemeDetailScreen
+import kotlinx.coroutines.launch
+import org.jetbrains.compose.resources.stringResource
+import org.koin.compose.koinInject
 
 @Composable
 fun AppNavHost() {
@@ -40,6 +52,8 @@ fun AppNavHost() {
     val requestNotificationPermission = rememberNotificationPermissionRequest()
     val claimNotificationPermissionRequest = koinInject<ClaimNotificationPermissionRequestUseCase>()
     val scope = rememberCoroutineScope()
+    // Explication avant la demande système : sans elle, la question tombait sans contexte.
+    var isReminderPromptShown by rememberSaveable { mutableStateOf(false) }
     val pendingSessionOpen by NotificationEntry.pendingSessionOpen.collectAsState()
     LaunchedEffect(pendingSessionOpen) {
         if (pendingSessionOpen) {
@@ -72,6 +86,10 @@ fun AppNavHost() {
                 ThemeDetailScreen(
                     themeId = entry.toRoute<ThemeDetailRoute>().themeId,
                     onBack = { navController.popBackStack() },
+                    onGardenClick = {
+                        navController.popBackStack<ExplorerRoute>(inclusive = false)
+                        navController.navigateToTab(AppTab.GARDEN)
+                    },
                     // Une fois planté, on montre le jardin : c'est là que les versets vivent. On retire d'abord
                     // l'écran du thème, sinon l'onglet Explorer le restaurerait (état « planté ») et
                     // renverrait aussitôt au jardin.
@@ -79,11 +97,27 @@ fun AppNavHost() {
                         navController.popBackStack<ExplorerRoute>(inclusive = false)
                         navController.navigateToTab(AppTab.GARDEN)
                         // Les rappels prennent leur sens maintenant que des versets sont plantés ; on ne demande qu'une fois.
-                        scope.launch { if (claimNotificationPermissionRequest()) requestNotificationPermission() }
+                        scope.launch { if (claimNotificationPermissionRequest()) isReminderPromptShown = true }
                     },
                 )
             }
         }
+    }
+    if (isReminderPromptShown) {
+        AlertDialog(
+            onDismissRequest = { isReminderPromptShown = false },
+            title = { Text(stringResource(Res.string.reminder_prompt_title)) },
+            text = { Text(stringResource(Res.string.reminder_prompt_message)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    isReminderPromptShown = false
+                    requestNotificationPermission()
+                }) { Text(stringResource(Res.string.reminder_prompt_confirm)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { isReminderPromptShown = false }) { Text(stringResource(Res.string.reminder_prompt_later)) }
+            },
+        )
     }
 }
 

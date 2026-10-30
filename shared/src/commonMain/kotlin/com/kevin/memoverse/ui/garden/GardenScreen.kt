@@ -7,22 +7,28 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -33,8 +39,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.layout
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kevin.memoverse.presentation.common.StageUi
@@ -50,18 +59,21 @@ import com.kevin.memoverse.resources.garden_empty_subtitle
 import com.kevin.memoverse.resources.garden_empty_title
 import com.kevin.memoverse.resources.garden_growing_count
 import com.kevin.memoverse.resources.garden_growing_label
-import com.kevin.memoverse.resources.garden_plant_first
-import com.kevin.memoverse.resources.garden_plant_more
-import com.kevin.memoverse.resources.garden_tag_thirsty
 import com.kevin.memoverse.resources.garden_next_watering_days
 import com.kevin.memoverse.resources.garden_next_watering_hours
 import com.kevin.memoverse.resources.garden_next_watering_minutes
+import com.kevin.memoverse.resources.garden_plant_first
+import com.kevin.memoverse.resources.garden_plant_more
+import com.kevin.memoverse.resources.garden_sheet_title
 import com.kevin.memoverse.resources.garden_tag_more
+import com.kevin.memoverse.resources.garden_tag_thirsty
 import com.kevin.memoverse.resources.garden_water_count
 import com.kevin.memoverse.resources.garden_watered
 import com.kevin.memoverse.resources.scene_jardin_jour
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.Wordmark
+import com.kevin.memoverse.ui.components.stageName
+import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Gold
 import com.kevin.memoverse.ui.theme.Ink
@@ -92,6 +104,8 @@ fun GardenScreenContent(
     onPlantClick: () -> Unit,
     onWaterClick: () -> Unit,
 ) {
+    // Verset touché dans la scène : sa fiche s'ouvre, avec les autres versets du jardin en dessous.
+    var openedVerseId by rememberSaveable { mutableStateOf<String?>(null) }
     Box(modifier = Modifier.fillMaxSize().background(Sand)) {
         Image(
             painter = painterResource(Res.drawable.scene_jardin_jour),
@@ -99,11 +113,18 @@ fun GardenScreenContent(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
-        PlantTags(plants = state.plants, modifier = Modifier.fillMaxSize())
+        PlantTags(plants = state.plants, onTagClick = { openedVerseId = it }, modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = Spacing.xl, vertical = Spacing.md)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Wordmark()
-                Text(stringResource(Res.string.app_tagline), style = MaterialTheme.typography.bodySmall, color = Ink.copy(alpha = 0.7f))
+                // Poids et retour à la ligne : en grande police, le slogan ne chevauche plus le nom.
+                Text(
+                    text = stringResource(Res.string.app_tagline),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Ink.copy(alpha = 0.7f),
+                    textAlign = TextAlign.End,
+                    modifier = Modifier.weight(1f).padding(start = Spacing.md),
+                )
             }
             if (!state.isLoading) GardenHeader(state = state, modifier = Modifier.padding(top = Spacing.xl))
         }
@@ -155,6 +176,40 @@ fun GardenScreenContent(
             }
         }
     }
+    openedVerseId?.let { verseId ->
+        GardenVersesSheet(plants = state.plants, openedVerseId = verseId, onDismiss = { openedVerseId = null })
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String, onDismiss: () -> Unit) {
+    val ordered = plants.sortedByDescending { it.verseId == openedVerseId }
+    ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+                .navigationBarsPadding()
+                .padding(horizontal = Spacing.xl)
+                .padding(bottom = Spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(Spacing.lg),
+        ) {
+            Text(stringResource(Res.string.garden_sheet_title), style = MaterialTheme.typography.headlineMedium)
+            ordered.forEach { plant ->
+                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                    Text(plant.reference, style = MaterialTheme.typography.titleLarge)
+                    val stage = stageName(plant.stage)
+                    Text(
+                        text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, stage) else stage,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.primary,
+                    )
+                    if (plant.text.isNotEmpty()) Text("« ${plant.text} »", style = AppTextStyles.verseQuote())
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -201,17 +256,18 @@ private fun ActiveRing(active: Int, max: Int) {
  * Les versets qui ont soif passent en premier ; au-delà des emplacements, une pastille « +N ».
  */
 @Composable
-private fun PlantTags(plants: List<GardenPlantUi>, modifier: Modifier = Modifier) {
+private fun PlantTags(plants: List<GardenPlantUi>, onTagClick: (verseId: String) -> Unit, modifier: Modifier = Modifier) {
     val ordered = plants.sortedByDescending { it.isThirsty }
     val shown = ordered.take(if (ordered.size > TAG_SLOTS.size) TAG_SLOTS.size - 1 else TAG_SLOTS.size)
     val hiddenCount = ordered.size - shown.size
-    BoxWithConstraints(modifier = modifier) {
+    Box(modifier = modifier) {
         if (hiddenCount > 0) {
             val (fx, fy) = TAG_SLOTS.last()
             PlantTag(
                 text = stringResource(Res.string.garden_tag_more, hiddenCount),
                 isThirsty = false,
-                modifier = Modifier.offset(x = maxWidth * fx, y = maxHeight * fy),
+                onClick = { onTagClick(ordered[shown.size].verseId) },
+                modifier = Modifier.tagPosition(fx, fy),
             )
         }
         shown.forEachIndexed { index, plant ->
@@ -219,14 +275,15 @@ private fun PlantTags(plants: List<GardenPlantUi>, modifier: Modifier = Modifier
             PlantTag(
                 text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, plant.reference) else plant.reference,
                 isThirsty = plant.isThirsty,
-                modifier = Modifier.offset(x = maxWidth * fx, y = maxHeight * fy),
+                onClick = { onTagClick(plant.verseId) },
+                modifier = Modifier.tagPosition(fx, fy),
             )
         }
     }
 }
 
 @Composable
-private fun PlantTag(text: String, isThirsty: Boolean, modifier: Modifier = Modifier) {
+private fun PlantTag(text: String, isThirsty: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize),
@@ -236,9 +293,20 @@ private fun PlantTag(text: String, isThirsty: Boolean, modifier: Modifier = Modi
             .shadow(6.dp, RoundedCornerShape(Radius.chip))
             .background((if (isThirsty) Gold else Color(0xFFFBF7F0)).copy(alpha = 0.94f), RoundedCornerShape(Radius.chip))
             .border(1.dp, Color.White.copy(alpha = 0.7f), RoundedCornerShape(Radius.chip))
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = Spacing.sm + Spacing.xxs, vertical = Spacing.xs),
     )
 }
+
+/** Place l'étiquette à sa position relative, sans jamais la laisser déborder de l'écran. */
+private fun Modifier.tagPosition(fx: Float, fy: Float, margin: Dp = TAG_EDGE_MARGIN): Modifier = layout { measurable, constraints ->
+    val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
+    val edge = margin.roundToPx()
+    val x = (constraints.maxWidth * fx).toInt().coerceAtMost(constraints.maxWidth - placeable.width - edge).coerceAtLeast(edge)
+    layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(x, (constraints.maxHeight * fy).toInt()) }
+}
+
+private val TAG_EDGE_MARGIN = 12.dp
 
 /** Il faut de la place pour au moins 3 versets (le minimum d'une plantation). */
 private const val MIN_FREE_SLOTS_TO_PLANT = 3
