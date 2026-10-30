@@ -28,8 +28,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -56,6 +56,8 @@ import com.kevin.memoverse.resources.start_error_too_many_active
 import com.kevin.memoverse.resources.start_learning
 import com.kevin.memoverse.resources.theme_detail_instructions
 import com.kevin.memoverse.resources.theme_garden_full
+import com.kevin.memoverse.resources.theme_garden_full_short
+import com.kevin.memoverse.resources.theme_go_water
 import com.kevin.memoverse.resources.theme_verse_count
 import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.LoadingState
@@ -78,13 +80,14 @@ fun ThemeDetailScreen(
     themeId: String,
     onBack: () -> Unit,
     onLearningStarted: () -> Unit,
+    onGardenClick: () -> Unit,
     viewModel: ThemeDetailViewModel = koinViewModel(key = themeId) { parametersOf(themeId) },
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
     LaunchedEffect(state.isStarted) {
         if (state.isStarted) onLearningStarted()
     }
-    ThemeDetailScreenContent(state = state, onEvent = viewModel::onEvent, onBack = onBack)
+    ThemeDetailScreenContent(state = state, onEvent = viewModel::onEvent, onBack = onBack, onGardenClick = onGardenClick)
 }
 
 @Composable
@@ -92,6 +95,7 @@ fun ThemeDetailScreenContent(
     state: ThemeDetailUiState,
     onEvent: (ThemeDetailEvent) -> Unit,
     onBack: () -> Unit,
+    onGardenClick: () -> Unit = {},
 ) {
     val listState = rememberLazyListState()
     // Une fois l'image dépassée, la barre du haut devient opaque pour rester lisible au-dessus des versets.
@@ -110,6 +114,7 @@ fun ThemeDetailScreenContent(
                 SelectionBar(
                     state = state,
                     onStartClick = { onEvent(ThemeDetailEvent.StartClicked) },
+                    onGardenClick = onGardenClick,
                     modifier = Modifier.align(Alignment.BottomCenter),
                 )
             }
@@ -224,13 +229,14 @@ private fun VerseSheet(state: ThemeDetailUiState, onEvent: (ThemeDetailEvent) ->
 }
 
 @Composable
-private fun SelectionBar(state: ThemeDetailUiState, onStartClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun SelectionBar(state: ThemeDetailUiState, onStartClick: () -> Unit, onGardenClick: () -> Unit, modifier: Modifier = Modifier) {
     val shape = RoundedCornerShape(percent = 50)
     val error = state.startError
     val message = when {
         error is StartErrorUi.TooManyActiveVerses -> stringResource(Res.string.start_error_too_many_active, error.freeSlots, error.maxActive)
         error == StartErrorUi.SaveFailed -> stringResource(Res.string.start_error_save_failed)
         state.isLimitReached -> stringResource(Res.string.selection_limit_reached, state.maxSelection)
+        state.isGardenFull -> stringResource(Res.string.theme_garden_full_short)
         else -> pluralStringResource(Res.plurals.selection_count, state.selectedCount, state.selectedCount)
     }
     Row(
@@ -251,7 +257,12 @@ private fun SelectionBar(state: ThemeDetailUiState, onStartClick: () -> Unit, mo
             color = if (error != null || state.isLimitReached) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.weight(1f),
         )
-        PillButton(text = stringResource(Res.string.start_learning), onClick = onStartClick, enabled = state.canStart, isLoading = state.isStarting)
+        // Jardin plein : planter est impossible, la seule suite utile est d'aller arroser.
+        if (state.isGardenFull) {
+            PillButton(text = stringResource(Res.string.theme_go_water), onClick = onGardenClick)
+        } else {
+            PillButton(text = stringResource(Res.string.start_learning), onClick = onStartClick, enabled = state.canStart, isLoading = state.isStarting)
+        }
     }
 }
 

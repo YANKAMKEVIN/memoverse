@@ -10,7 +10,7 @@ private const val HOURS_PER_DAY = 24
 
 fun Garden.toGardenUiState(): GardenUiState = GardenUiState(
     isLoading = false,
-    plants = plants.map { GardenPlantUi(it.verseId, it.reference, it.stage.toUi(), it.isThirsty) },
+    plants = plants.map { GardenPlantUi(it.verseId, it.reference, it.stage.toUi(), it.isThirsty, it.text) },
     activeCount = plants.count { it.stage.isActive },
     maxActive = LearningVerse.MAX_ACTIVE_VERSES,
     thirstyCount = thirstyCount,

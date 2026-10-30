@@ -12,8 +12,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -23,19 +23,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kevin.memoverse.presentation.common.TypefaceUi
 import com.kevin.memoverse.presentation.profile.ProfileEvent
 import com.kevin.memoverse.presentation.profile.ProfileUiState
 import com.kevin.memoverse.presentation.profile.ProfileViewModel
 import com.kevin.memoverse.presentation.profile.TypefaceOptionUi
-import com.kevin.memoverse.presentation.common.TypefaceUi
-import com.kevin.memoverse.resources.profile_typeface_save_failed
-import com.kevin.memoverse.resources.profile_typeface_title
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.profile_offline
+import com.kevin.memoverse.resources.profile_reminders_enable
+import com.kevin.memoverse.resources.profile_reminders_manage
+import com.kevin.memoverse.resources.profile_reminders_off
+import com.kevin.memoverse.resources.profile_reminders_on
+import com.kevin.memoverse.resources.profile_reminders_title
 import com.kevin.memoverse.resources.profile_reset
 import com.kevin.memoverse.resources.profile_reset_cancel
 import com.kevin.memoverse.resources.profile_reset_confirm
@@ -45,10 +49,13 @@ import com.kevin.memoverse.resources.profile_reset_title
 import com.kevin.memoverse.resources.profile_title
 import com.kevin.memoverse.resources.profile_translation_label
 import com.kevin.memoverse.resources.profile_translation_value
+import com.kevin.memoverse.resources.profile_typeface_save_failed
+import com.kevin.memoverse.resources.profile_typeface_title
 import com.kevin.memoverse.resources.profile_version_label
 import com.kevin.memoverse.resources.profile_version_value
 import com.kevin.memoverse.resources.start_error_save_failed
 import com.kevin.memoverse.ui.components.Wordmark
+import com.kevin.memoverse.ui.permission.rememberNotificationSettings
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
@@ -63,7 +70,14 @@ fun ProfileScreen(
     viewModel: ProfileViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ProfileScreenContent(state = state, contentPadding = contentPadding, onEvent = viewModel::onEvent)
+    val notifications = rememberNotificationSettings()
+    ProfileScreenContent(
+        state = state,
+        contentPadding = contentPadding,
+        onEvent = viewModel::onEvent,
+        remindersEnabled = notifications.isEnabled,
+        onRemindersClick = notifications.open,
+    )
 }
 
 @Composable
@@ -71,6 +85,8 @@ fun ProfileScreenContent(
     state: ProfileUiState,
     contentPadding: PaddingValues,
     onEvent: (ProfileEvent) -> Unit,
+    remindersEnabled: Boolean = false,
+    onRemindersClick: () -> Unit = {},
 ) {
     val shape = RoundedCornerShape(Radius.card)
     Column(
@@ -97,6 +113,7 @@ fun ProfileScreenContent(
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
             InfoRow(Res.string.profile_version_label, Res.string.profile_version_value)
         }
+        RemindersRow(isEnabled = remindersEnabled, onClick = onRemindersClick, shape = shape)
         Text(
             text = stringResource(Res.string.profile_typeface_title).uppercase(),
             style = MaterialTheme.typography.labelMedium,
@@ -140,6 +157,31 @@ fun ProfileScreenContent(
                 TextButton(onClick = { onEvent(ProfileEvent.ResetCancelled) }) { Text(stringResource(Res.string.profile_reset_cancel)) }
             },
         )
+    }
+}
+
+@Composable
+private fun RemindersRow(isEnabled: Boolean, onClick: () -> Unit, shape: Shape) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface, shape)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .padding(start = Spacing.lg, end = Spacing.sm, top = Spacing.md, bottom = Spacing.md),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+            Text(stringResource(Res.string.profile_reminders_title), style = MaterialTheme.typography.titleMedium)
+            Text(
+                text = stringResource(if (isEnabled) Res.string.profile_reminders_on else Res.string.profile_reminders_off),
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        TextButton(onClick = onClick) {
+            Text(stringResource(if (isEnabled) Res.string.profile_reminders_manage else Res.string.profile_reminders_enable))
+        }
     }
 }
 

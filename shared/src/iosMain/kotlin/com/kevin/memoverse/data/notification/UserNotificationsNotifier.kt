@@ -10,6 +10,7 @@ import platform.UserNotifications.UNAuthorizationOptionBadge
 import platform.UserNotifications.UNAuthorizationOptionSound
 import platform.UserNotifications.UNAuthorizationStatusAuthorized
 import platform.UserNotifications.UNAuthorizationStatusEphemeral
+import platform.UserNotifications.UNAuthorizationStatusNotDetermined
 import platform.UserNotifications.UNAuthorizationStatusProvisional
 import platform.UserNotifications.UNMutableNotificationContent
 import platform.UserNotifications.UNNotificationRequest
@@ -56,6 +57,19 @@ class UserNotificationsNotifier : LocalNotifier {
             val delaySeconds = ((notification.atEpochMillis - nowMillis) / 1000.0).coerceAtLeast(MIN_DELAY_SECONDS)
             val trigger = UNTimeIntervalNotificationTrigger.triggerWithTimeInterval(delaySeconds, repeats = false)
             center.addNotificationRequest(UNNotificationRequest.requestWithIdentifier(id(notification.id), content, trigger), null)
+        }
+    }
+
+    /** null tant que la question n'a pas été posée ; sinon, rappels autorisés ou non. */
+    suspend fun authorization(): Boolean? = suspendCancellableCoroutine { continuation ->
+        center.getNotificationSettingsWithCompletionHandler { settings ->
+            continuation.resume(
+                when (settings?.authorizationStatus) {
+                    UNAuthorizationStatusNotDetermined -> null
+                    in AUTHORIZED -> true
+                    else -> false
+                },
+            )
         }
     }
 

@@ -18,6 +18,7 @@ data class GardenPlantUi(
     val reference: String,
     val stage: StageUi,
     val isThirsty: Boolean = false,
+    val text: String = "",
 )
 
 /** Délai avant le prochain arrosage, arrondi pour l'affichage. */

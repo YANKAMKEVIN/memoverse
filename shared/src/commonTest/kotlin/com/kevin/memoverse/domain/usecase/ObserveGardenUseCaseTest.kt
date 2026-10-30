@@ -17,14 +17,17 @@ import kotlin.test.assertEquals
 class ObserveGardenUseCaseTest {
 
     @Test
-    fun `associe chaque verset en apprentissage à sa référence`() = runTest {
+    fun `associe chaque verset en apprentissage à sa référence et à son texte`() = runTest {
         val learning = FakeLearningRepository(initial = listOf(learningVerse("v1"), learningVerse("v2", MasteryStage.ROOT)))
         val bank = FakeVerseBankRepository(verses = listOf(verse("v1"), verse("v2")))
 
         val garden = ObserveGardenUseCase(learning, bank, { NOW }, flowOf(Unit))().first()
 
         assertEquals(
-            listOf(GardenPlant("v1", "Référence v1", MasteryStage.SEED, isThirsty = true), GardenPlant("v2", "Référence v2", MasteryStage.ROOT, isThirsty = true)),
+            listOf(
+                GardenPlant("v1", "Référence v1", MasteryStage.SEED, isThirsty = true, text = "Texte v1"),
+                GardenPlant("v2", "Référence v2", MasteryStage.ROOT, isThirsty = true, text = "Texte v2"),
+            ),
             garden.plants,
         )
     }

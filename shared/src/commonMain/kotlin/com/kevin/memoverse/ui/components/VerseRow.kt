@@ -52,7 +52,10 @@ fun VerseRow(
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        SelectionMark(isSelected = isSelected, isLearning = isLearning)
+        // Jardin plein : la case pâlit, pour qu'on ne la croie pas cochable.
+        Box(Modifier.alpha(if (enabled || isLearning) 1f else DISABLED_MARK_ALPHA)) {
+            SelectionMark(isSelected = isSelected, isLearning = isLearning)
+        }
         Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.sm), verticalAlignment = Alignment.CenterVertically) {
                 Text(reference, style = MaterialTheme.typography.titleLarge)
@@ -101,3 +104,4 @@ private fun SelectionMark(isSelected: Boolean, isLearning: Boolean) {
 
 /** Un verset déjà en apprentissage reste lisible mais n'est plus sélectionnable. */
 private const val LEARNING_ALPHA = 0.6f
+private const val DISABLED_MARK_ALPHA = 0.3f

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 
-/** Le jardin = les versets en apprentissage, avec leur référence (« Hébreux 11:1 ») et leur soif. */
+/** Le jardin = les versets en apprentissage, avec leur référence (« Hébreux 11:1 »), leur texte et leur soif. */
 class ObserveGardenUseCase(
     private val learningRepository: LearningRepository,
     private val verseBankRepository: VerseBankRepository,
@@ -21,13 +21,16 @@ class ObserveGardenUseCase(
     private val ticks: Flow<Unit> = minuteTicks(),
 ) {
     operator fun invoke(): Flow<Garden> = combine(learningRepository.observeLearningVerses(), ticks) { learning, _ -> learning }.map { learning ->
-        val references = when (val result = verseBankRepository.getVerses(learning.map { it.verseId })) {
-            is DataResult.Success -> result.data.associate { it.id to it.reference }
+        val verses = when (val result = verseBankRepository.getVerses(learning.map { it.verseId })) {
+            is DataResult.Success -> result.data.associateBy { it.id }
             is DataResult.Error -> emptyMap()
         }
         val now = timeProvider.nowEpochMillis()
         Garden(
-            plants = learning.map { GardenPlant(it.verseId, references[it.verseId] ?: it.verseId, it.stage, it.isThirsty(now)) },
+            plants = learning.map {
+                val verse = verses[it.verseId]
+                GardenPlant(it.verseId, verse?.reference ?: it.verseId, it.stage, it.isThirsty(now), verse?.text.orEmpty())
+            },
             millisUntilNextWatering = learning
                 .takeIf { verses -> verses.none { it.isThirsty(now) } }
                 ?.minOfOrNull { it.dueAtEpochMillis - now },

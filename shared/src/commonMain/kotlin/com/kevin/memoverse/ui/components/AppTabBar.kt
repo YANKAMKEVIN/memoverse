@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.text.TextAutoSize
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -24,6 +25,7 @@ import androidx.compose.ui.semantics.selected
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.tab_explorer
 import com.kevin.memoverse.resources.tab_garden
@@ -73,9 +75,15 @@ fun AppTabBar(
                         style = MaterialTheme.typography.labelSmall,
                         fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
                         color = color,
+                        // Grande police : le libellé rétrécit au lieu de se couper en plein mot (« Progressio / n »).
+                        maxLines = 1,
+                        softWrap = false,
+                        autoSize = TextAutoSize.StepBased(minFontSize = TAB_LABEL_MIN_SIZE, maxFontSize = MaterialTheme.typography.labelSmall.fontSize),
                     )
                 }
             }
         }
     }
 }
+
+private val TAB_LABEL_MIN_SIZE = 8.sp

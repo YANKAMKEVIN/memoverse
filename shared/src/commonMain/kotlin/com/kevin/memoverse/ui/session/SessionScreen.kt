@@ -28,11 +28,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -63,9 +65,9 @@ import com.kevin.memoverse.resources.session_title_part_middle
 import com.kevin.memoverse.resources.session_title_part_start
 import com.kevin.memoverse.resources.session_title_recite
 import com.kevin.memoverse.resources.session_title_recite_aloud
-import com.kevin.memoverse.resources.session_title_type_blanks
 import com.kevin.memoverse.resources.session_title_reference
 import com.kevin.memoverse.resources.session_title_reorder
+import com.kevin.memoverse.resources.session_title_type_blanks
 import com.kevin.memoverse.resources.session_title_type_end
 import com.kevin.memoverse.resources.session_title_type_middle
 import com.kevin.memoverse.resources.session_title_type_start
@@ -139,6 +141,8 @@ fun SessionScreenContent(
 private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Unit) {
     val exercise = state.exercise ?: return
     val feedback = state.feedback
+    // Grande police : l'illustration se réduit à la barre du haut, pour laisser voir les propositions.
+    val headerSpace = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
     // imePadding : avec adjustResize, le contenu et la barre du bas remontent au-dessus du clavier.
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).imePadding()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT)) {
@@ -147,8 +151,9 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
         }
         Column(modifier = Modifier.fillMaxSize()) {
             SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
-            Spacer(Modifier.height(HEADER_HEIGHT - TOP_BAR_ALLOWANCE))
-            val scrollState = rememberScrollState()
+            Spacer(Modifier.height(headerSpace))
+            // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
+            val scrollState = key(state.step) { rememberScrollState() }
             Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
             Column(
                 modifier = Modifier
@@ -173,8 +178,6 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
                     is ExerciseUi.TypeBlanks -> TypeBlanksExercise(exercise, isLocked, onEvent)
                     is ExerciseUi.ReciteAloud -> ReciteAloudExercise(exercise, isLocked, onEvent)
                 }
-                // Assez de place pour lire la fin de l'exercice au-dessus du panneau de correction.
-                if (feedback != null) Spacer(Modifier.height(FEEDBACK_ALLOWANCE))
             }
             // Fondu en bas tant qu'il reste du contenu : il invite à faire défiler.
             if (scrollState.canScrollForward) {
@@ -187,7 +190,14 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
                 )
             }
             }
-            if (feedback == null) {
+            if (feedback != null) {
+                // Sous l'exercice et non par-dessus : la réponse donnée reste visible au-dessus.
+                FeedbackPanel(
+                    feedback = feedback,
+                    onContinue = { onEvent(SessionEvent.ContinueClicked) },
+                    modifier = Modifier.weight(1f, fill = false),
+                )
+            } else {
                 // Barre fixe sous le contenu : le bouton ne recouvre jamais une proposition ni un champ.
                 Box(
                     modifier = Modifier
@@ -204,9 +214,6 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
                     )
                 }
             }
-        }
-        if (feedback != null) {
-            FeedbackPanel(feedback = feedback, onContinue = { onEvent(SessionEvent.ContinueClicked) }, modifier = Modifier.align(Alignment.BottomCenter))
         }
     }
 }
@@ -269,9 +276,9 @@ private fun ExerciseUi.titleRes(): StringResource = when (this) {
     }
 }
 
-private val HEADER_HEIGHT = 260.dp
+private val HEADER_HEIGHT = 190.dp
 private val TOP_BAR_ALLOWANCE = 96.dp
-private val FEEDBACK_ALLOWANCE = 280.dp
+private const val LARGE_FONT_SCALE = 1.3f
 private val SCROLL_HINT_HEIGHT = 40.dp
 
 private val previewPart = ExerciseUi.CompletePart(
