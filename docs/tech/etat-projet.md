@@ -1,6 +1,6 @@
 # État du projet MEMOVERSE
 
-Mis à jour le 30 octobre 2026. À lire en premier pour reprendre le travail dans une session neuve.
+Mis à jour le 31 octobre 2026. À lire en premier pour reprendre le travail dans une session neuve.
 
 ## Où en est le code
 
@@ -32,11 +32,17 @@ QA du 30 octobre sur Galaxy S24 (SM-S921B, version debug), pilotée par adb :
 - 🐛→✅ Défilement repris d'un exercice à l'autre : corrigé (`key(state.step)` dans `SessionScreen`).
 - 🐛→✅ Jardin plein : les ronds de sélection paraissaient actifs alors que la liste est verrouillée : corrigé (`VerseRow`).
 
-Corrections `qa/ui-ux` vérifiées sur le S24 (police ×1,0) : étiquettes et fiche du jardin, thème avec jardin plein, ligne « Rappels », séance avec une mauvaise réponse (voir le rapport de QA). **Branche fusionnée pas encore revue sur le S24** (téléphone pris par une autre QA le 30 octobre en fin d'après-midi) : à faire avant de pousser.
+Corrections `qa/ui-ux` vérifiées sur le S24 (police ×1,0) : étiquettes et fiche du jardin, thème avec jardin plein, ligne « Rappels », séance avec une mauvaise réponse (voir le rapport de QA). Branche fusionnée (`8c08bfd`) revue le 31 octobre sur un **Galaxy A17** (SM-A175F, police ×1,0, installation neuve) :
+
+- ✅ Scène de **plantation** (3 versets, graines dans le cœur de terre, « 3 paroles plantées »).
+- ✅ Boîte « Un rappel pour arroser ? » juste après, puis demande système ; ligne « Rappels d'arrosage » du Profil à « Activés ».
+- ✅ Étiquettes du jardin bien placées, fiche « Tes versets » (stade, « a soif », texte).
+- ✅ Séance, mauvaise réponse : panneau sous l'exercice, réponse choisie visible, pas de blanc.
+- ⏳ Pas encore vu : fin de séance, scène d'arrosage et bilan, thème avec jardin plein (téléphone repris par une autre app en cours de test).
 
 Reste à faire par Kevin (impossible à piloter à distance ou sans changer un réglage du téléphone) :
 
-1. Scène de **plantation** : jardin plein (3/5 et 3 versets minimum par plantation), donc non testée. À faire quand une place se libère ; c'est aussi là qu'apparaît la boîte « Un rappel pour arroser ? » (une seule fois).
+1. ~~Scène de plantation~~ : vue sur l'A17 le 31 octobre.
 2. Exercice oral « goutte » avec le vrai micro.
 3. Grande police (×1,5) : onglets, en-tête du jardin, cartes de Progression, séance.
 4. iOS : ligne « Rappels » et boîte d'explication (simulateur).
