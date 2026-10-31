@@ -38,7 +38,9 @@ Corrections `qa/ui-ux` vérifiées sur le S24 (police ×1,0) : étiquettes et fi
 - ✅ Boîte « Un rappel pour arroser ? » juste après, puis demande système ; ligne « Rappels d'arrosage » du Profil à « Activés ».
 - ✅ Étiquettes du jardin bien placées, fiche « Tes versets » (stade, « a soif », texte).
 - ✅ Séance, mauvaise réponse : panneau sous l'exercice, réponse choisie visible, pas de blanc.
-- ⏳ Pas encore vu : fin de séance, scène d'arrosage et bilan, thème avec jardin plein (téléphone repris par une autre app en cours de test).
+- ✅ Séance en **paysage**, bonne réponse : la réponse choisie reste visible au-dessus du panneau.
+- 🐛 **Paysage** : l'en-tête de séance (190 dp) et la barre « Valider » ne laissent qu'une bande d'environ 300 px pour l'exercice ; il faut faire défiler pour voir les réponses, et la dernière passe sous la barre. L'app n'est pas verrouillée en portrait (pas de `screenOrientation` dans le manifeste). Décision à prendre : verrouiller en portrait, ou réduire l'en-tête en paysage comme en grande police.
+- ⏳ Pas encore vu : fin de séance, scène d'arrosage et bilan, thème avec jardin plein (téléphone repris deux fois par d'autres apps en cours de test).
 
 Reste à faire par Kevin (impossible à piloter à distance ou sans changer un réglage du téléphone) :
 
