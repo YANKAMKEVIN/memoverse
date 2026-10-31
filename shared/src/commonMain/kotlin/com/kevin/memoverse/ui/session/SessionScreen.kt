@@ -18,7 +18,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -30,7 +30,7 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.key
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -162,7 +162,8 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
                 SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
                 Spacer(Modifier.height(headerSpace))
                 // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
-                val scrollState = key(state.step) { rememberScrollState() }
+                // remember(step) et non key(step) : un groupe key ici, combiné au passage panneau ↔ barre, faisait planter Compose.
+                val scrollState = remember(state.step) { ScrollState(initial = 0) }
                 Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
                 Column(
                     modifier = Modifier

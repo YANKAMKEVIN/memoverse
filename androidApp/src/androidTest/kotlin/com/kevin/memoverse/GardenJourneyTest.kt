@@ -20,8 +20,6 @@ import kotlin.random.Random
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import androidx.compose.ui.test.assertIsDisplayed
-import androidx.compose.ui.test.assertIsNotEnabled
-import androidx.compose.ui.test.hasClickAction
 import androidx.compose.ui.test.hasSetTextAction
 import androidx.compose.ui.test.hasText
 import androidx.compose.ui.test.onFirst
@@ -95,7 +93,10 @@ class GardenJourneyTest {
         robot.openThemeFromExplorer("Paix")
 
         robot.waitForText("Ton jardin a déjà 3 versets en cours sur 5", substring = true)
-        compose.onNode(hasText("Planter") and hasClickAction()).assertIsNotEnabled()
+        // Jardin plein : à la place d'un « Planter » grisé, un raccourci vers l'arrosage.
+        robot.waitForText("Jardin plein")
+        robot.tap("Aller arroser")
+        robot.waitForText("Arroser · 3 versets ont soif")
     }
 
     @Test
