@@ -1,14 +1,14 @@
 # État du projet MEMOVERSE
 
-Mis à jour le 31 octobre 2026. À lire en premier pour reprendre le travail dans une session neuve.
+Mis à jour le 3 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
 
 ## Où en est le code
 
-- `main` (`3be4cb8`) : app stable, poussée sur GitHub (dépôt privé `YANKAMKEVIN/memoverse`).
-- `chantier/validation` : **tout le travail en cours, réuni en une seule branche**, en attente des derniers contrôles sur téléphone avant fusion dans `main` par la pull request en brouillon https://github.com/YANKAMKEVIN/memoverse/pull/1.
-- `qa/ui-ux` : corrections de la QA UI/UX de `main` (rapport `docs/qa/2026-10-30-qa-ui-ux-main.md`), **fusionnées dans `chantier/validation` le 30 octobre** (décision de Kevin : tout passe par la PR #1, `main` ne bouge qu'une fois tout vérifié). La PR #2 (`qa/ui-ux` → `main`) est fermée au profit de la PR #1.
+- `main` (`748bbd4`) : contient tout le travail ci-dessous, poussée sur GitHub (dépôt privé `YANKAMKEVIN/memoverse`). Avancée le 3 novembre en fast-forward depuis `3be4cb8` (sans commit de fusion), sur accord de Kevin ; la PR #1 https://github.com/YANKAMKEVIN/memoverse/pull/1 est marquée fusionnée.
+- `chantier/validation` : `main` plus ce commit de mise à jour de l’état du projet (pas encore dans `main`).
+- `qa/ui-ux` : corrections de la QA UI/UX (rapport `docs/qa/2026-10-30-qa-ui-ux-main.md`), fusionnées dans `chantier/validation` le 30 octobre, donc dans `main`. PR #2 fermée. Peut être supprimée.
 
-Contenu de `chantier/validation` :
+Contenu arrivé dans `main` le 3 novembre :
 
 | Chantier | Résumé |
 |---|---|
@@ -52,7 +52,7 @@ Reste à faire par Kevin (impossible à piloter à distance ou sans changer un r
 4. iOS : ligne « Rappels » et boîte d'explication (simulateur).
 5. Avis à l'œil sur le feuillage de l'olivier.
 
-Si ces points vont : fusionner la PR #1 dans `main`.
+Ces points se testent maintenant directement sur `main`. Décision en attente : séance en paysage (verrouiller en portrait, ou réduire l'en-tête).
 
 ## Petits sujets en attente
 
