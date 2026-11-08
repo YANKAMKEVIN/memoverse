@@ -70,9 +70,11 @@ import com.kevin.memoverse.resources.garden_tag_thirsty
 import com.kevin.memoverse.resources.garden_water_count
 import com.kevin.memoverse.resources.garden_watered
 import com.kevin.memoverse.resources.scene_jardin_jour
+import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.components.stageName
+import com.kevin.memoverse.ui.components.textAction
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Gold
@@ -94,7 +96,7 @@ fun GardenScreen(
     viewModel: GardenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    GardenScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick, onWaterClick = onWaterClick)
+    GardenScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick, onWaterClick = onWaterClick, onRetry = viewModel::retry)
 }
 
 @Composable
@@ -103,9 +105,15 @@ fun GardenScreenContent(
     contentPadding: PaddingValues,
     onPlantClick: () -> Unit,
     onWaterClick: () -> Unit,
+    onRetry: () -> Unit = {},
 ) {
     // Verset touché dans la scène : sa fiche s'ouvre, avec les autres versets du jardin en dessous.
     var openedVerseId by rememberSaveable { mutableStateOf<String?>(null) }
+    if (state.hasError) {
+        // Une erreur de lecture ne doit pas se présenter comme un jardin vide.
+        ErrorState(onRetry = onRetry, modifier = Modifier.background(Sand))
+        return
+    }
     Box(modifier = Modifier.fillMaxSize().background(Sand)) {
         Image(
             painter = painterResource(Res.drawable.scene_jardin_jour),
@@ -145,8 +153,8 @@ fun GardenScreenContent(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .background(Color.White.copy(alpha = 0.75f), RoundedCornerShape(percent = 50))
-                        .clickable(onClick = onPlantClick)
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                        .textAction(onClick = onPlantClick)
+                        .padding(horizontal = Spacing.lg),
                 )
             }
             if (state.thirstyCount > 0) {

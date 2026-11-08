@@ -9,6 +9,7 @@ import com.kevin.memoverse.fake.learningVerse
 import com.kevin.memoverse.fake.verse
 import com.kevin.memoverse.presentation.common.StageUi
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.StandardTestDispatcher
@@ -42,6 +43,21 @@ class GardenViewModelTest {
             val loaded = awaitItem()
             assertFalse(loaded.hasPlants)
             assertEquals(5, loaded.maxActive)
+        }
+    }
+
+    @Test
+    fun `une erreur de lecture n'est pas un jardin vide - et se reessaie`() = runTest(dispatcher) {
+        var shouldFail = true
+        val ticks = flow { if (shouldFail) error("base illisible") else emit(Unit) }
+        val viewModel = GardenViewModel(ObserveGardenUseCase(learning, bank, { 0L }, ticks))
+        viewModel.state.test {
+            skipItems(1)
+            assertTrue(awaitItem().hasError)
+
+            shouldFail = false
+            viewModel.retry()
+            assertFalse(awaitItem().hasError)
         }
     }
 

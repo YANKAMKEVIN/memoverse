@@ -19,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import com.kevin.memoverse.resources.session_drop_paused
 import com.kevin.memoverse.resources.session_drop_start
 import com.kevin.memoverse.resources.session_drop_stop
 import com.kevin.memoverse.resources.session_mic_button
+import com.kevin.memoverse.resources.session_open_settings
 import com.kevin.memoverse.resources.session_speech_language_pack
 import com.kevin.memoverse.resources.session_speech_no_match
 import com.kevin.memoverse.resources.session_speech_other
@@ -46,7 +48,10 @@ import com.kevin.memoverse.resources.session_speech_permission
 import com.kevin.memoverse.resources.session_speech_unavailable
 import com.kevin.memoverse.resources.session_type_instead
 import com.kevin.memoverse.resources.session_speak_instead
+import com.kevin.memoverse.ui.components.rememberReduceMotion
+import com.kevin.memoverse.ui.components.textAction
 import com.kevin.memoverse.ui.icons.AppIcons
+import com.kevin.memoverse.ui.permission.rememberAppSettingsOpener
 import com.kevin.memoverse.ui.permission.rememberMicrophonePermissionRequest
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
@@ -76,7 +81,7 @@ fun ReciteAloudExercise(
                     text = stringResource(Res.string.session_speak_instead),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { onEvent(SessionEvent.SpeakInsteadClicked) }.padding(Spacing.sm),
+                    modifier = Modifier.textAction { onEvent(SessionEvent.SpeakInsteadClicked) }.padding(horizontal = Spacing.sm),
                 )
             }
         }
@@ -85,6 +90,7 @@ fun ReciteAloudExercise(
     val requestMicrophone = rememberMicrophonePermissionRequest { granted ->
         onEvent(if (granted) SessionEvent.MicClicked else SessionEvent.MicPermissionDenied)
     }
+    val openSettings = rememberAppSettingsOpener()
     val toggle = { if (exercise.isListening) onEvent(SessionEvent.MicClicked) else requestMicrophone() }
     val colors = MaterialTheme.colorScheme
     val isFull = exercise.fill >= 1f
@@ -126,7 +132,7 @@ fun ReciteAloudExercise(
                         text = stringResource(Res.string.session_type_instead),
                         style = MaterialTheme.typography.titleMedium,
                         color = colors.primary,
-                        modifier = Modifier.clickable { onEvent(SessionEvent.TypeInsteadClicked) }.padding(vertical = Spacing.xs),
+                        modifier = Modifier.textAction { onEvent(SessionEvent.TypeInsteadClicked) },
                     )
                 }
             }
@@ -146,6 +152,10 @@ fun ReciteAloudExercise(
                 color = colors.error,
                 textAlign = TextAlign.Center,
             )
+            // Micro refusé : seuls les réglages du téléphone permettent de revenir dessus.
+            if (error == SpeechErrorUi.PERMISSION_DENIED) {
+                TextButton(onClick = openSettings) { Text(stringResource(Res.string.session_open_settings)) }
+            }
         }
     }
 }
@@ -154,6 +164,7 @@ fun ReciteAloudExercise(
 @Composable
 private fun ListenButton(isListening: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val reduceMotion = rememberReduceMotion()
     val pulse by rememberInfiniteTransition(label = "enregistrement").animateFloat(
         initialValue = 1f,
         targetValue = PULSE_ALPHA,
@@ -170,7 +181,7 @@ private fun ListenButton(isListening: Boolean, onClick: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         if (isListening) {
-            Box(Modifier.size(10.dp).alpha(pulse).background(colors.error, CircleShape))
+            Box(Modifier.size(10.dp).alpha(if (reduceMotion) 1f else pulse).background(colors.error, CircleShape))
         } else {
             Icon(AppIcons.Microphone, contentDescription = stringResource(Res.string.session_mic_button), tint = colors.onPrimary, modifier = Modifier.size(20.dp))
         }

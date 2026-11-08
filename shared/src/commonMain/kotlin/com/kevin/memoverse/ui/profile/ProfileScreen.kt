@@ -2,7 +2,6 @@ package com.kevin.memoverse.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -51,6 +50,7 @@ import com.kevin.memoverse.resources.profile_version_label
 import com.kevin.memoverse.resources.profile_version_value
 import com.kevin.memoverse.resources.start_error_save_failed
 import com.kevin.memoverse.ui.components.Wordmark
+import com.kevin.memoverse.ui.components.textAction
 import com.kevin.memoverse.ui.permission.rememberNotificationSettings
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Radius
@@ -120,7 +120,7 @@ fun ProfileScreenContent(
             text = stringResource(Res.string.profile_reset),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.clickable { onEvent(ProfileEvent.ResetClicked) }.padding(Spacing.md),
+            modifier = Modifier.textAction { onEvent(ProfileEvent.ResetClicked) }.padding(horizontal = Spacing.md),
         )
         when {
             state.isResetDone -> Text(stringResource(Res.string.profile_reset_done), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)
@@ -171,9 +171,9 @@ private fun RemindersRow(isEnabled: Boolean, onClick: () -> Unit, shape: Shape) 
 
 @Composable
 private fun InfoRow(label: StringResource, value: StringResource) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.lg), horizontalArrangement = Arrangement.SpaceBetween) {
+    Row(modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.lg), horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
         Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(stringResource(value), style = MaterialTheme.typography.titleMedium)
+        Text(stringResource(value), style = MaterialTheme.typography.titleMedium, textAlign = TextAlign.End, modifier = Modifier.weight(1f))
     }
 }
 

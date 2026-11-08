@@ -25,4 +25,9 @@ class GardenUiStateMapperTest {
         assertEquals(NextWateringUi.InDays(1), (24 * hour).toNextWatering())
         assertEquals(NextWateringUi.InDays(3), (60 * hour).toNextWatering())
     }
+
+    @Test
+    fun `25 h plus tard - c'est demain et non dans 2 jours`() {
+        assertEquals(NextWateringUi.InDays(1), (25 * hour).toNextWatering())
+    }
 }

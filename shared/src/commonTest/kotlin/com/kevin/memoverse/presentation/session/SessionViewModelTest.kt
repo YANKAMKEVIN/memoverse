@@ -369,6 +369,42 @@ class SessionViewModelTest {
     }
 
     @Test
+    fun `valider pendant l'ecoute arrete bien l'affichage de l'ecoute`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        speech.events = listOf(SpeechEvent.Partial("mot1 alpha"))
+        speech.keepsListening = true
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertTrue(assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).isListening)
+
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertFalse(assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).isListening)
+        }
+    }
+
+    @Test
+    fun `le texte ecrit revient apres un passage par l'oral`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.TypeInsteadClicked)
+            vm.onEvent(SessionEvent.TextChanged("mot1 alpha beta"))
+            vm.onEvent(SessionEvent.SpeakInsteadClicked)
+            vm.onEvent(SessionEvent.TypeInsteadClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            assertEquals("mot1 alpha beta", assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).transcript)
+        }
+    }
+
+    @Test
     fun `apres ecrire plutot - on peut revenir a l'oral avec une goutte vide`() = runTest(dispatcher) {
         val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
         val vm = viewModel(learning)

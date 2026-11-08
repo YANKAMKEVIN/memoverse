@@ -9,10 +9,12 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -33,10 +35,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -57,6 +63,7 @@ import com.kevin.memoverse.resources.session_check
 import com.kevin.memoverse.resources.session_close
 import com.kevin.memoverse.resources.session_empty_subtitle
 import com.kevin.memoverse.resources.session_empty_title
+import com.kevin.memoverse.resources.session_progress
 import com.kevin.memoverse.resources.session_quit_cancel
 import com.kevin.memoverse.resources.session_quit_confirm
 import com.kevin.memoverse.resources.session_quit_message
@@ -120,8 +127,11 @@ fun SessionScreenContent(
     val summary = state.summary
     val ceremony = state.ceremony
     when {
-        state.isLoading -> LoadingState(Modifier.background(Sand))
-        state.hasError -> ErrorState(onRetry = { onEvent(SessionEvent.RetryClicked) }, modifier = Modifier.background(Sand))
+        state.isLoading -> Box(Modifier.fillMaxSize()) {
+            LoadingState(Modifier.background(Sand))
+            CloseButton(onClose = { onEvent(SessionEvent.CloseClicked) }, modifier = Modifier.statusBarsPadding().padding(horizontal = Spacing.lg, vertical = Spacing.sm))
+        }
+        state.hasError -> ErrorState(onRetry = { onEvent(SessionEvent.RetryClicked) }, modifier = Modifier.background(Sand), onClose = { onEvent(SessionEvent.CloseClicked) })
         // Le moment fort de la séance : l'eau versée et la plante qui grandit, juste avant le bilan.
         ceremony != null -> GardenCeremony(ceremony = ceremony, onFinished = { onEvent(SessionEvent.CeremonyFinished) })
         summary != null -> SessionSummary(summary = summary, onContinue = { onEvent(SessionEvent.CloseClicked) })
@@ -148,7 +158,10 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
     val exercise = state.exercise ?: return
     val feedback = state.feedback
     // Grande police : l'illustration se réduit à la barre du haut, pour laisser voir les propositions.
-    val headerSpace = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
+    // Clavier ouvert : même chose, sur petit écran il ne resterait presque rien pour l'exercice.
+    val density = LocalDensity.current
+    val isImeOpen = WindowInsets.ime.getBottom(density) > 0
+    val headerSpace = if (density.fontScale >= LARGE_FONT_SCALE || isImeOpen) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
     // imePadding : avec adjustResize, le contenu et la barre du bas remontent au-dessus du clavier.
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).imePadding()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT)) {
@@ -236,13 +249,12 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.7f), CircleShape).clickable(onClick = onClose),
-            contentAlignment = Alignment.Center,
+        CloseButton(onClose = onClose)
+        val progressLabel = stringResource(Res.string.session_progress, step + 1, total)
+        Row(
+            modifier = Modifier.weight(1f).semantics { contentDescription = progressLabel },
+            horizontalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Icon(AppIcons.Back, contentDescription = stringResource(Res.string.session_close), tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
-        }
-        Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             repeat(total) { index ->
                 Box(
                     modifier = Modifier
@@ -251,6 +263,18 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = if (index < step) 1f else if (index == step) 0.55f else 0.18f), RoundedCornerShape(2.dp)),
                 )
             }
+        }
+    }
+}
+
+@Composable
+private fun CloseButton(onClose: () -> Unit, modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier.size(48.dp).clip(CircleShape).clickable(role = Role.Button, onClick = onClose),
+        contentAlignment = Alignment.Center,
+    ) {
+        Box(modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.7f), CircleShape), contentAlignment = Alignment.Center) {
+            Icon(AppIcons.Back, contentDescription = stringResource(Res.string.session_close), tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
         }
     }
 }

@@ -11,7 +11,7 @@ import kotlinx.coroutines.flow.first
 
 /**
  * Prépare une séance : 2 exercices par verset qui a soif (5 versets au plus, les plus assoiffés
- * d'abord), entrelacés pour que le même verset ne revienne pas deux fois de suite.
+ * d'abord), entrelacés pour que ni le même verset ni le même type d'exercice ne s'enchaînent trop.
  */
 class BuildWateringSessionUseCase(
     private val learningRepository: LearningRepository,
@@ -30,10 +30,22 @@ class BuildWateringSessionUseCase(
         }
         val versesById = bank.associateBy { it.id }
         val planned = growing.mapNotNull { lv -> versesById[lv.verseId]?.let { verse -> Triple(verse, ExercisePlanner.levelsFor(lv), lv.successCount) } }
-        val exercises = (0 until ExercisePlanner.EXERCISES_PER_VERSE).flatMap { round ->
+        val rounds = (0 until ExercisePlanner.EXERCISES_PER_VERSE).map { round ->
             planned.map { (verse, levels, progress) -> exerciseFactory.create(levels[round], verse, bank, progress) }
         }
-        return DataResult.Success(WateringSession(exercises, growing))
+        return DataResult.Success(WateringSession(weave(rounds.first(), rounds.last()), growing))
+    }
+
+    /** a b A c B d C D : un verset garde son ordre, et les deux tours d'exercices alternent au plus tôt. */
+    private fun <T> weave(firsts: List<T>, seconds: List<T>): List<T> {
+        val woven = firsts.take(2).toMutableList()
+        val remainingFirsts = ArrayDeque(firsts.drop(2))
+        val remainingSeconds = ArrayDeque(seconds)
+        while (remainingFirsts.isNotEmpty() || remainingSeconds.isNotEmpty()) {
+            remainingSeconds.removeFirstOrNull()?.let(woven::add)
+            remainingFirsts.removeFirstOrNull()?.let(woven::add)
+        }
+        return woven
     }
 
     companion object {

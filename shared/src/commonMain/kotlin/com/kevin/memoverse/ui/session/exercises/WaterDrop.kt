@@ -30,6 +30,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
+import com.kevin.memoverse.ui.components.rememberReduceMotion
 import com.kevin.memoverse.ui.theme.Water
 import com.kevin.memoverse.ui.theme.WaterLight
 import kotlin.math.PI
@@ -53,12 +54,13 @@ fun WaterDrop(
     val transition = rememberInfiniteTransition(label = "eau")
     val phase by transition.animateFloat(0f, 2f * PI.toFloat(), infiniteRepeatable(tween(WAVE_MILLIS, easing = LinearEasing)), label = "vague")
     val breath by transition.animateFloat(1f, BREATH_SCALE, infiniteRepeatable(tween(BREATH_MILLIS), androidx.compose.animation.core.RepeatMode.Reverse), label = "souffle")
-    val amplitude by animateFloatAsState(if (isListening) LISTENING_AMPLITUDE else IDLE_AMPLITUDE, label = "amplitude")
+    val reduceMotion = rememberReduceMotion()
+    val amplitude by animateFloatAsState(if (reduceMotion) 0f else if (isListening) LISTENING_AMPLITUDE else IDLE_AMPLITUDE, label = "amplitude")
     val outline by animateColorAsState(if (fill >= 1f) colors.primary else colors.outline, label = "contour")
     Canvas(
         modifier = modifier
             .size(DROP_WIDTH, DROP_HEIGHT)
-            .scale(if (isListening) breath else 1f)
+            .scale(if (isListening && !reduceMotion) breath else 1f)
             .semantics { contentDescription = label }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },

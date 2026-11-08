@@ -44,10 +44,12 @@ import com.kevin.memoverse.resources.ceremony_stage_change
 import com.kevin.memoverse.resources.ceremony_watering_grew_title
 import com.kevin.memoverse.resources.ceremony_watering_strengthen_title
 import com.kevin.memoverse.resources.ceremony_wilting_title
+import com.kevin.memoverse.ui.components.rememberReduceMotion
 import com.kevin.memoverse.ui.components.stageName
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Cream
 import com.kevin.memoverse.ui.theme.Spacing
+import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
@@ -69,7 +71,15 @@ fun GardenCeremony(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         onBackCompleted = { finish() },
     )
+    val reduceMotion = rememberReduceMotion()
     LaunchedEffect(ceremony) {
+        if (reduceMotion) {
+            // Réglage « réduire les animations » : la dernière image, le temps de la lire.
+            clock.snapTo(timeline.totalMillis.toFloat())
+            delay(REDUCED_MOTION_HOLD_MILLIS)
+            finish()
+            return@LaunchedEffect
+        }
         // Une seule horloge, cadencée par les images : chaque étape lit le temps écoulé.
         clock.animateTo(timeline.totalMillis.toFloat(), tween(timeline.totalMillis, easing = LinearEasing))
         finish()
@@ -170,6 +180,7 @@ private fun CeremonyUi.texts(): CeremonyTexts = when (this) {
 }
 
 private val SCENE_MAX_WIDTH = 360.dp
+private const val REDUCED_MOTION_HOLD_MILLIS = 2_000L
 
 /** Aperçu figé à un instant donné de la scène (par défaut, sa dernière image). */
 @Composable

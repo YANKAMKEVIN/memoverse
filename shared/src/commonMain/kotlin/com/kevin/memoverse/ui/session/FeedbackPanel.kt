@@ -20,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.presentation.session.FeedbackUi
 import com.kevin.memoverse.resources.Res
@@ -35,6 +38,7 @@ import com.kevin.memoverse.ui.icons.AppIcons
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
+import com.kevin.memoverse.ui.theme.TerracottaDeep
 import org.jetbrains.compose.resources.stringResource
 
 /** Bandeau après « Valider » : sauge si c'est juste, terre cuite douce sinon. */
@@ -45,10 +49,12 @@ fun FeedbackPanel(
     modifier: Modifier = Modifier,
 ) {
     val colors = MaterialTheme.colorScheme
-    val accent = if (feedback.isCorrect) colors.primary else colors.error
+    val accent = if (feedback.isCorrect) colors.primary else TerracottaDeep
     Column(
         modifier = modifier
             .fillMaxWidth()
+            // Annoncé par le lecteur d'écran dès l'apparition du panneau.
+            .semantics { liveRegion = LiveRegionMode.Polite }
             .background(if (feedback.isCorrect) colors.primaryContainer else ErrorContainer, RoundedCornerShape(topStart = Radius.sheet, topEnd = Radius.sheet))
             .navigationBarsPadding()
             .padding(horizontal = Spacing.xl, vertical = Spacing.lg),

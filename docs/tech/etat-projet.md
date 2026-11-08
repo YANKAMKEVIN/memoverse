@@ -6,6 +6,7 @@ Mis à jour le 8 novembre 2026. À lire en premier pour reprendre le travail dan
 
 - `main` (`748bbd4`) : contient tout le travail ci-dessous, poussée sur GitHub (dépôt privé `YANKAMKEVIN/memoverse`). Avancée le 3 novembre en fast-forward depuis `3be4cb8` (sans commit de fusion), sur accord de Kevin ; la PR #1 https://github.com/YANKAMKEVIN/memoverse/pull/1 est marquée fusionnée.
 - `chantier/validation` : `main` plus ce commit de mise à jour de l’état du projet (pas encore dans `main`).
+- `ui/ameliorations-qa` : **30 améliorations UI/UX** (8 novembre), partie de `chantier/validation`, poussée, pas dans `main` et **pas encore vue sur un appareil**. Détail plus bas.
 - `qa/ui-ux` : corrections de la QA UI/UX (rapport `docs/qa/2026-10-30-qa-ui-ux-main.md`), fusionnées dans `chantier/validation` le 30 octobre, donc dans `main`. PR #2 fermée. Peut être supprimée.
 
 Contenu arrivé dans `main` le 3 novembre :
@@ -20,7 +21,21 @@ Contenu arrivé dans `main` le 3 novembre :
 | QA UI/UX (`qa/ui-ux`) | Les 7 points majeurs du rapport : en-tête de séance réduit (supprimé en grande police) ; panneau de correction sous l'exercice, plafonné à 55 %, réponse choisie ramenée à l'écran ; grande police (onglets, slogan, cartes de Progression) ; étiquettes du jardin cliquables (fiche « Tes versets ») ; explication avant la demande de notifications et ligne « Rappels d'arrosage » dans le Profil ; jardin plein : « Aller arroser ». Points 8 à 15 (accessibilité, contrastes, micro…) non traités. |
 | Xcode | Phase « Compile Kotlin Framework » marquée « exécutée à chaque build » (`alwaysOutOfDate`), comme le recommande la doc Kotlin. |
 
-Tests : `./gradlew :shared:allTests` → iOS 147/147, Android 153/153 (au 31 octobre, après le correctif du plantage sur « Continuer »).
+Tests : `./gradlew :shared:allTests` → iOS 152/152, Android 158/158 (au 8 novembre, branche `ui/ameliorations-qa`).
+
+## 30 améliorations UI/UX (`ui/ameliorations-qa`)
+
+Reprennent les points 8 à 15 et les mineurs du rapport de QA du 30 octobre.
+
+- **Lecteurs d'écran (1-6)** : résultat annoncé (`liveRegion`), verdict des propositions (icône et état, plus seulement la couleur), mots cachés, trous et champs nommés, barre de progression (« Exercice 3 sur 6 »), « Sélectionné » annoncé une seule fois.
+- **Gestes (7-8)** : rôle bouton sur les textes et galets cliquables (`Modifier.textAction`), cibles de 48 dp (fermer, retour, trous, galets).
+- **Contrastes (9-13)** : `InkMuted` foncé (#6A6457), onglets inactifs, option sélectionnée (`LeafDeep`), bouton désactivé, panneau d'erreur (`TerracottaDeep`).
+- **États (14-16)** : erreur de lecture ≠ jardin vide (jardin, Progression, avec « Réessayer ») ; chargement de Progression ; sortie visible au chargement et à l'erreur de séance.
+- **Micro (17-19)** : bouton « Ouvrir les réglages » après un refus, message valable sur iOS, « Je t'écoute… » ne reste plus affiché après « Valider ».
+- **Séance (20-24)** : en-tête masqué clavier ouvert, iOS forcé en clair (`UIUserInterfaceStyle`), tours d'exercices alternés (1 1 2 1 2 2 au lieu de 1 1 1 2 2 2), « Terminé » sur le dernier champ, texte écrit retrouvé après un passage par l'oral.
+- **Confort (25-30)** : réglage système « réduire les animations » respecté (goutte, pulsation, scènes), « demain » pour 25 h, carte « Comment pousse ton jardin » (stades, soif, limite, XP), ligne Traduction du Profil, Progression sous la barre de statut, boîtes de dialogue en crème.
+
+Vérifié : tests unitaires iOS et Android, compilation Android et tests instrumentés (compilés, non lancés). **Reste à voir sur appareil** : `GardenJourneyTest`, rendu des couleurs, grande police, TalkBack / VoiceOver.
 
 ## Validation sur appareil
 
@@ -59,7 +74,6 @@ Ces points se testent maintenant directement sur `main`.
 - La boîte « Réinitialiser ton jardin ? » a un fond lavande (couleur Material par défaut), hors palette sable.
 - Avertissement existant : `createAndroidComposeRule` déprécié dans `GardenJourneyTest` (androidTest).
 - Avertissements Xcode connus, sans correction simple : objet ICU « built for newer iOS-simulator version » (il faudrait monter la cible iOS minimale, décision produit) et `appintentsmetadataprocessor` (informatif).
-- Pas d'option « animations réduites » (aucune API commune pour la détecter).
 
 ## Pièges connus
 

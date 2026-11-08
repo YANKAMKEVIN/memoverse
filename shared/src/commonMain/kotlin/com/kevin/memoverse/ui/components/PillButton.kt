@@ -34,8 +34,8 @@ fun PillButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-            disabledContainerColor = containerColor.copy(alpha = 0.35f),
-            disabledContentColor = contentColor.copy(alpha = 0.8f),
+            disabledContainerColor = MaterialTheme.colorScheme.outline,
+            disabledContentColor = MaterialTheme.colorScheme.onSurfaceVariant,
         ),
         contentPadding = PaddingValues(horizontal = Spacing.xl, vertical = Spacing.lg),
     ) {

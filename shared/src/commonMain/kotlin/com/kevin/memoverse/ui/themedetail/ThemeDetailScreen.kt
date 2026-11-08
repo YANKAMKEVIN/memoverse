@@ -32,10 +32,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -140,12 +142,17 @@ private fun TopBar(onBack: () -> Unit, isOverImage: Boolean) {
     ) {
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .background(Color.White.copy(alpha = if (isOverImage) 0.22f else 0.6f), CircleShape)
-                .clickable(onClick = onBack),
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable(role = Role.Button, onClick = onBack),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(AppIcons.Back, contentDescription = stringResource(Res.string.back), tint = tint, modifier = Modifier.size(20.dp))
+            Box(
+                modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = if (isOverImage) 0.22f else 0.6f), CircleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                Icon(AppIcons.Back, contentDescription = stringResource(Res.string.back), tint = tint, modifier = Modifier.size(20.dp))
+            }
         }
         Wordmark(color = tint, modifier = Modifier.align(Alignment.Center))
     }

@@ -6,6 +6,7 @@ data class ProgressionUiState(
     val rootCount: Int = 0,
     val treeCount: Int = 0,
     val fruitCount: Int = 0,
+    val hasError: Boolean = false,
 ) {
     val totalCount: Int get() = seedCount + rootCount + treeCount + fruitCount
 }

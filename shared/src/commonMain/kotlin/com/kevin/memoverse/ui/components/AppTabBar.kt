@@ -32,7 +32,7 @@ import com.kevin.memoverse.resources.tab_garden
 import com.kevin.memoverse.resources.tab_profile
 import com.kevin.memoverse.resources.tab_progression
 import com.kevin.memoverse.ui.icons.AppIcons
-import com.kevin.memoverse.ui.theme.InkSubtle
+import com.kevin.memoverse.ui.theme.InkMuted
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
@@ -59,7 +59,7 @@ fun AppTabBar(
         ) {
             AppTab.entries.forEach { tab ->
                 val isSelected = tab == selected
-                val color = if (isSelected) colors.primary else InkSubtle
+                val color = if (isSelected) colors.primary else InkMuted
                 Column(
                     modifier = Modifier
                         .weight(1f)

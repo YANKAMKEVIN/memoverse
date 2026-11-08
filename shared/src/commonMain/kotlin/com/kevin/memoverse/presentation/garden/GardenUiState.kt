@@ -9,6 +9,7 @@ data class GardenUiState(
     val maxActive: Int = 0,
     val thirstyCount: Int = 0,
     val nextWatering: NextWateringUi? = null,
+    val hasError: Boolean = false,
 ) {
     val hasPlants: Boolean get() = plants.isNotEmpty()
 }

@@ -20,6 +20,8 @@ private val JardinColors = lightColorScheme(
     onSurfaceVariant = InkMuted,
     outline = Hairline,
     error = Terracotta,
+    // Fond des boîtes de dialogue : sans cela, le lavande par défaut de Material.
+    surfaceContainerHigh = Cream,
 )
 
 @Composable

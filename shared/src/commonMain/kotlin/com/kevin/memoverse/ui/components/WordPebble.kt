@@ -13,6 +13,7 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
@@ -34,8 +35,8 @@ fun WordPebble(
             .shadow(if (enabled) 3.dp else 0.dp, shape, ambientColor = PebbleShadow, spotColor = PebbleShadow)
             .background(Brush.verticalGradient(listOf(PebbleTop, PebbleBottom)), shape)
             .border(1.dp, Color.White.copy(alpha = 0.7f), shape)
-            .clickable(enabled = enabled, onClick = onClick)
-            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+            .clickable(enabled = enabled, role = Role.Button, onClick = onClick)
+            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
     )
 }
 
