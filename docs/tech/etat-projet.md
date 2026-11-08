@@ -1,6 +1,6 @@
 # État du projet MEMOVERSE
 
-Mis à jour le 3 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
+Mis à jour le 8 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
 
 ## Où en est le code
 
@@ -39,7 +39,7 @@ Corrections `qa/ui-ux` vérifiées sur le S24 (police ×1,0) : étiquettes et fi
 - ✅ Étiquettes du jardin bien placées, fiche « Tes versets » (stade, « a soif », texte).
 - ✅ Séance, mauvaise réponse : panneau sous l'exercice, réponse choisie visible, pas de blanc.
 - ✅ Séance en **paysage**, bonne réponse : la réponse choisie reste visible au-dessus du panneau.
-- 🐛 **Paysage** : l'en-tête de séance (190 dp) et la barre « Valider » ne laissent qu'une bande d'environ 300 px pour l'exercice ; il faut faire défiler pour voir les réponses, et la dernière passe sous la barre. L'app n'est pas verrouillée en portrait (pas de `screenOrientation` dans le manifeste). Décision à prendre : verrouiller en portrait, ou réduire l'en-tête en paysage comme en grande police.
+- 🐛 **Paysage** : l'en-tête de séance (190 dp) et la barre « Valider » ne laissent qu'une bande d'environ 300 px pour l'exercice ; il faut faire défiler pour voir les réponses, et la dernière passe sous la barre. → ✅ Décision de Kevin (8 novembre) : téléphones verrouillés en portrait (`AndroidManifest.xml`, `Info.plist` côté iPhone). L'iPad garde ses 4 orientations : l'App Store les exige tant que `UIRequiresFullScreen` n'est pas activé, et Android 16 ignore de toute façon ce verrou sur grand écran.
 - 🐛→✅ **Plantage sur « Continuer »** après chaque exercice (NullPointerException dans Compose, `LayoutNode.onChildRemoved`). Il n'existait que dans la branche fusionnée : `key(state.step)` (défilement remis à zéro, `chantier/validation`) et l'échange panneau ↔ barre « Valider » (`qa/ui-ux`) dans la même `Column` cassaient le suivi des nœuds de Compose. Corrigé par `remember(state.step) { ScrollState(0) }` dans `SessionScreen`. Le plantage renvoyait à l'app précédente, ce qui avait d'abord fait croire à une autre session qui reprenait le téléphone.
 - ✅ Après correctif, `GardenJourneyTest` sur l'A17 : 9/9, dont séance complète jusqu'à la scène d'arrosage et au bilan (+60 XP, 100 %), mauvaise réponse, quitter une séance, clavier ouvert, jardin plein. Le test du jardin plein attend maintenant « Jardin plein » et « Aller arroser » (il cherchait encore un « Planter » grisé).
 - Astuce : `Composer.setDiagnosticStackTraceEnabled(true)` dans `MainActivity` (ligne temporaire, à ne pas commiter) ajoute aux plantages Compose la pile des composables en cause.
@@ -52,7 +52,7 @@ Reste à faire par Kevin (impossible à piloter à distance ou sans changer un r
 4. iOS : ligne « Rappels » et boîte d'explication (simulateur).
 5. Avis à l'œil sur le feuillage de l'olivier.
 
-Ces points se testent maintenant directement sur `main`. Décision en attente : séance en paysage (verrouiller en portrait, ou réduire l'en-tête).
+Ces points se testent maintenant directement sur `main`.
 
 ## Petits sujets en attente
 
