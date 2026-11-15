@@ -13,6 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.kevin.memoverse.ui.theme.Hairline
+import com.kevin.memoverse.ui.theme.InkMuted
 import com.kevin.memoverse.ui.theme.Spacing
 
 /** Bouton principal : pilule olive (variante claire pour les fonds sombres). */
@@ -34,13 +36,14 @@ fun PillButton(
         colors = ButtonDefaults.buttonColors(
             containerColor = containerColor,
             contentColor = contentColor,
-            disabledContainerColor = containerColor.copy(alpha = 0.35f),
-            disabledContentColor = contentColor.copy(alpha = 0.8f),
+            // Désactivé : fond filet et texte encre douce (4,2:1) ; l'ancien voile à 35 % tombait à 1,4:1.
+            disabledContainerColor = Hairline,
+            disabledContentColor = InkMuted,
         ),
         contentPadding = PaddingValues(horizontal = Spacing.xl, vertical = Spacing.lg),
     ) {
         if (isLoading) {
-            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = Spacing.xxs, color = contentColor)
+            CircularProgressIndicator(modifier = Modifier.size(20.dp), strokeWidth = Spacing.xxs, color = LocalContentColor.current)
         } else {
             // La typographie porte une couleur d'encre : on reprend celle du bouton (active ou désactivée).
             Text(text, style = MaterialTheme.typography.labelLarge, color = LocalContentColor.current)

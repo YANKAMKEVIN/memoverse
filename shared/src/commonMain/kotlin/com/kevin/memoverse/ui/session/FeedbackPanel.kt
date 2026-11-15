@@ -35,6 +35,7 @@ import com.kevin.memoverse.ui.icons.AppIcons
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
+import com.kevin.memoverse.ui.theme.TerracottaText
 import org.jetbrains.compose.resources.stringResource
 
 /** Bandeau après « Valider » : sauge si c'est juste, terre cuite douce sinon. */
@@ -46,6 +47,8 @@ fun FeedbackPanel(
 ) {
     val colors = MaterialTheme.colorScheme
     val accent = if (feedback.isCorrect) colors.primary else colors.error
+    // Les textes du panneau d'erreur prennent une terre cuite plus sombre (AA) ; la pastille et le bouton gardent l'accent.
+    val textAccent = if (feedback.isCorrect) colors.primary else TerracottaText
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -67,19 +70,19 @@ fun FeedbackPanel(
                     Text(
                         text = stringResource(if (feedback.isCorrect) Res.string.session_feedback_correct else Res.string.session_feedback_incorrect),
                         style = MaterialTheme.typography.headlineMedium,
-                        color = accent,
+                        color = textAccent,
                     )
                     val growth = when {
                         feedback.grewTo != null -> stringResource(Res.string.session_feedback_grew, feedback.reference, stageName(feedback.grewTo))
                         feedback.wiltedTo != null -> stringResource(Res.string.session_feedback_wilted, feedback.reference, stageName(feedback.wiltedTo))
                         else -> null
                     }
-                    growth?.let { Text(it, style = MaterialTheme.typography.titleSmall, color = accent) }
+                    growth?.let { Text(it, style = MaterialTheme.typography.titleSmall, color = textAccent) }
                 }
             }
             if (!feedback.isCorrect) {
                 Text(stringResource(Res.string.session_feedback_answer), style = MaterialTheme.typography.titleSmall, color = colors.onSurfaceVariant)
-                feedback.expectedAnswer?.let { Text(it, style = MaterialTheme.typography.titleLarge, color = accent) }
+                feedback.expectedAnswer?.let { Text(it, style = MaterialTheme.typography.titleLarge, color = textAccent) }
             }
             // L'exercice affiche déjà le verset après validation ; on ne le répète que s'il est la correction.
             if (!feedback.isCorrect && feedback.expectedAnswer == null) {
@@ -91,6 +94,8 @@ fun FeedbackPanel(
             text = stringResource(Res.string.session_continue),
             onClick = onContinue,
             containerColor = accent,
+            // Blanc sur terre cuite : 4,9:1 (le texte crème du thème n'atteint que 4,4:1).
+            contentColor = if (feedback.isCorrect) colors.onPrimary else Color.White,
             modifier = Modifier.fillMaxWidth(),
         )
     }

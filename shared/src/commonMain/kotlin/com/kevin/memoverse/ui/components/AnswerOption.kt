@@ -20,6 +20,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.presentation.session.OptionVerdict
+import com.kevin.memoverse.ui.theme.Leaf
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
 
@@ -47,7 +48,8 @@ fun AnswerOption(
     val highlight = when (verdict) {
         OptionVerdict.CORRECT -> colors.primary
         OptionVerdict.WRONG_CHOICE -> colors.error
-        null -> if (isSelected) colors.secondary else null
+        // Feuille plutôt que sauge : le texte blanc passe de 3,0:1 à 4,5:1.
+        null -> if (isSelected) Leaf else null
     }
     Text(
         text = text,
