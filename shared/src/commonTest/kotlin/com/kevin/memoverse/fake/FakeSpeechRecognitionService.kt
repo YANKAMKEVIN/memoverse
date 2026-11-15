@@ -2,8 +2,9 @@ package com.kevin.memoverse.fake
 
 import com.kevin.memoverse.domain.speech.SpeechEvent
 import com.kevin.memoverse.domain.speech.SpeechRecognitionService
+import kotlinx.coroutines.awaitCancellation
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.flow
 
 /** Rejoue des événements vocaux prédéfinis. */
 class FakeSpeechRecognitionService(
@@ -12,7 +13,13 @@ class FakeSpeechRecognitionService(
 ) : SpeechRecognitionService {
     var stopCount = 0
 
-    override fun listen(languageTag: String): Flow<SpeechEvent> = flowOf(*events.toTypedArray())
+    /** Si vrai, le flux reste ouvert après les événements (micro toujours actif), jusqu'à annulation. */
+    var keepListening = false
+
+    override fun listen(languageTag: String): Flow<SpeechEvent> = flow {
+        events.forEach { emit(it) }
+        if (keepListening) awaitCancellation()
+    }
 
     override fun stop() {
         stopCount++
