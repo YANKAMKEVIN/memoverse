@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +40,7 @@ import com.kevin.memoverse.resources.session_drop_paused
 import com.kevin.memoverse.resources.session_drop_start
 import com.kevin.memoverse.resources.session_drop_stop
 import com.kevin.memoverse.resources.session_mic_button
+import com.kevin.memoverse.resources.session_open_settings
 import com.kevin.memoverse.resources.session_speech_language_pack
 import com.kevin.memoverse.resources.session_speech_no_match
 import com.kevin.memoverse.resources.session_speech_other
@@ -48,6 +50,7 @@ import com.kevin.memoverse.resources.session_type_instead
 import com.kevin.memoverse.resources.session_speak_instead
 import com.kevin.memoverse.ui.icons.AppIcons
 import com.kevin.memoverse.ui.permission.rememberMicrophonePermissionRequest
+import com.kevin.memoverse.ui.permission.rememberOpenAppSettings
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
@@ -132,19 +135,41 @@ fun ReciteAloudExercise(
             }
         }
         exercise.error?.let { error ->
+            ErrorMessage(error)
+        }
+    }
+}
+
+/** Message d'erreur de la voix ; après un refus du micro, un lien mène aux réglages (sinon, impasse). */
+@Composable
+private fun ErrorMessage(error: SpeechErrorUi) {
+    val colors = MaterialTheme.colorScheme
+    Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
+        Text(
+            text = stringResource(
+                when (error) {
+                    SpeechErrorUi.PERMISSION_DENIED -> Res.string.session_speech_permission
+                    SpeechErrorUi.UNAVAILABLE -> Res.string.session_speech_unavailable
+                    SpeechErrorUi.LANGUAGE_PACK_MISSING -> Res.string.session_speech_language_pack
+                    SpeechErrorUi.NO_MATCH -> Res.string.session_speech_no_match
+                    SpeechErrorUi.OTHER -> Res.string.session_speech_other
+                },
+            ),
+            style = MaterialTheme.typography.bodySmall,
+            color = colors.error,
+            textAlign = TextAlign.Center,
+        )
+        if (error == SpeechErrorUi.PERMISSION_DENIED) {
+            val openSettings = rememberOpenAppSettings()
             Text(
-                text = stringResource(
-                    when (error) {
-                        SpeechErrorUi.PERMISSION_DENIED -> Res.string.session_speech_permission
-                        SpeechErrorUi.UNAVAILABLE -> Res.string.session_speech_unavailable
-                        SpeechErrorUi.LANGUAGE_PACK_MISSING -> Res.string.session_speech_language_pack
-                        SpeechErrorUi.NO_MATCH -> Res.string.session_speech_no_match
-                        SpeechErrorUi.OTHER -> Res.string.session_speech_other
-                    },
-                ),
-                style = MaterialTheme.typography.bodySmall,
-                color = colors.error,
-                textAlign = TextAlign.Center,
+                text = stringResource(Res.string.session_open_settings),
+                style = MaterialTheme.typography.titleMedium,
+                color = colors.primary,
+                modifier = Modifier
+                    .heightIn(min = 48.dp)
+                    .clickable(role = Role.Button, onClick = openSettings)
+                    .wrapContentHeight()
+                    .padding(horizontal = Spacing.md),
             )
         }
     }
