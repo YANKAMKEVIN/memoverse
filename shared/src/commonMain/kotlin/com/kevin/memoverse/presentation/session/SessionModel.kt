@@ -43,6 +43,8 @@ internal data class ExerciseResult(
     val isCorrect: Boolean,
     val grewTo: MasteryStage? = null,
     val wiltedTo: MasteryStage? = null,
+    /** L'enregistrement du résultat a échoué : la réponse n'est pas comptée dans le bilan. */
+    val notSaved: Boolean = false,
 )
 
 /** Réponse en cours de saisie, avant vérification. */

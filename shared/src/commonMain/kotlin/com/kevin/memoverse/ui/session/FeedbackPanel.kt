@@ -28,6 +28,7 @@ import com.kevin.memoverse.resources.session_feedback_answer
 import com.kevin.memoverse.resources.session_feedback_correct
 import com.kevin.memoverse.resources.session_feedback_grew
 import com.kevin.memoverse.resources.session_feedback_incorrect
+import com.kevin.memoverse.resources.session_feedback_not_saved
 import com.kevin.memoverse.resources.session_feedback_wilted
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.stageName
@@ -76,6 +77,9 @@ fun FeedbackPanel(
                     }
                     growth?.let { Text(it, style = MaterialTheme.typography.titleSmall, color = accent) }
                 }
+            }
+            if (feedback.notSaved) {
+                Text(stringResource(Res.string.session_feedback_not_saved), style = MaterialTheme.typography.titleSmall, color = colors.error)
             }
             if (!feedback.isCorrect) {
                 Text(stringResource(Res.string.session_feedback_answer), style = MaterialTheme.typography.titleSmall, color = colors.onSurfaceVariant)

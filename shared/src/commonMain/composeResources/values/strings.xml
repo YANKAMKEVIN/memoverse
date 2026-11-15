@@ -102,6 +102,7 @@
     <string name="session_feedback_answer">La bonne réponse :</string>
     <string name="session_feedback_grew">%1$s passe au stade %2$s.</string>
     <string name="session_feedback_wilted">%1$s a besoin d’eau : retour au stade %2$s.</string>
+    <string name="session_feedback_not_saved">Réponse non enregistrée : elle ne compte pas dans le bilan.</string>
     <string name="session_empty_title">Ton jardin est arrosé</string>
     <string name="session_empty_subtitle">Aucun verset n’a soif pour l’instant. Reviens quand une plante aura besoin d’eau.</string>
     <string name="session_back_to_garden">Retour au jardin</string>
