@@ -20,6 +20,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.LiveRegionMode
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.presentation.session.FeedbackUi
 import com.kevin.memoverse.resources.Res
@@ -63,7 +66,11 @@ fun FeedbackPanel(
                 Box(modifier = Modifier.size(40.dp).background(accent, CircleShape), contentAlignment = Alignment.Center) {
                     Icon(if (feedback.isCorrect) AppIcons.Check else AppIcons.Sprout, contentDescription = null, tint = Color.White, modifier = Modifier.size(22.dp))
                 }
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                // Verdict annoncé dès l'apparition du panneau par les lecteurs d'écran (TalkBack, VoiceOver).
+                Column(
+                    modifier = Modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+                    verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+                ) {
                     Text(
                         text = stringResource(if (feedback.isCorrect) Res.string.session_feedback_correct else Res.string.session_feedback_incorrect),
                         style = MaterialTheme.typography.headlineMedium,
