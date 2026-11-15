@@ -6,16 +6,23 @@ import com.kevin.memoverse.domain.model.MasteryStage
 import com.kevin.memoverse.domain.repository.LearningRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.update
 
 class FakeLearningRepository(
     initial: List<LearningVerse> = emptyList(),
     var saveError: Throwable? = null,
+    /** Erreur levée à l'abonnement (base illisible) ; remise à null, l'abonnement suivant réussit. */
+    var observeError: Throwable? = null,
 ) : LearningRepository {
 
     val verses = MutableStateFlow(initial)
 
-    override fun observeLearningVerses(): Flow<List<LearningVerse>> = verses
+    override fun observeLearningVerses(): Flow<List<LearningVerse>> = flow {
+        observeError?.let { throw it }
+        emitAll(verses)
+    }
 
     override suspend fun addVerses(verses: List<LearningVerse>): DataResult<Unit> {
         saveError?.let { return DataResult.Error(it) }

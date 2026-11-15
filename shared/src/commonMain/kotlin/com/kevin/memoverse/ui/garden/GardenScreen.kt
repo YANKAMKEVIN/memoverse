@@ -40,7 +40,10 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.liveRegion
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
@@ -56,6 +59,8 @@ import com.kevin.memoverse.resources.app_tagline
 import com.kevin.memoverse.resources.garden_active_label
 import com.kevin.memoverse.resources.garden_active_ratio
 import com.kevin.memoverse.resources.garden_empty_subtitle
+import com.kevin.memoverse.resources.garden_error_subtitle
+import com.kevin.memoverse.resources.garden_error_title
 import com.kevin.memoverse.resources.garden_empty_title
 import com.kevin.memoverse.resources.garden_growing_count
 import com.kevin.memoverse.resources.garden_growing_label
@@ -69,6 +74,7 @@ import com.kevin.memoverse.resources.garden_tag_more
 import com.kevin.memoverse.resources.garden_tag_thirsty
 import com.kevin.memoverse.resources.garden_water_count
 import com.kevin.memoverse.resources.garden_watered
+import com.kevin.memoverse.resources.retry
 import com.kevin.memoverse.resources.scene_jardin_jour
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.Wordmark
@@ -94,7 +100,13 @@ fun GardenScreen(
     viewModel: GardenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    GardenScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick, onWaterClick = onWaterClick)
+    GardenScreenContent(
+        state = state,
+        contentPadding = contentPadding,
+        onPlantClick = onPlantClick,
+        onWaterClick = onWaterClick,
+        onRetry = viewModel::onRetry,
+    )
 }
 
 @Composable
@@ -103,6 +115,7 @@ fun GardenScreenContent(
     contentPadding: PaddingValues,
     onPlantClick: () -> Unit,
     onWaterClick: () -> Unit,
+    onRetry: () -> Unit = {},
 ) {
     // Verset touché dans la scène : sa fiche s'ouvre, avec les autres versets du jardin en dessous.
     var openedVerseId by rememberSaveable { mutableStateOf<String?>(null) }
@@ -138,7 +151,9 @@ fun GardenScreenContent(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
-            if (state.hasPlants && state.maxActive - state.activeCount >= MIN_FREE_SLOTS_TO_PLANT) {
+            if (state.hasError) {
+                PillButton(text = stringResource(Res.string.retry), onClick = onRetry, modifier = Modifier.fillMaxWidth())
+            } else if (state.hasPlants && state.maxActive - state.activeCount >= MIN_FREE_SLOTS_TO_PLANT) {
                 Text(
                     text = stringResource(Res.string.garden_plant_more),
                     style = MaterialTheme.typography.titleMedium,
@@ -171,7 +186,7 @@ fun GardenScreenContent(
                         .background(Color.White.copy(alpha = 0.75f), RoundedCornerShape(percent = 50))
                         .padding(vertical = Spacing.lg),
                 )
-            } else if (!state.isLoading) {
+            } else if (!state.isLoading && !state.hasError) {
                 PillButton(text = stringResource(Res.string.garden_plant_first), onClick = onPlantClick, modifier = Modifier.fillMaxWidth())
             }
         }
@@ -214,6 +229,16 @@ private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String
 
 @Composable
 private fun GardenHeader(state: GardenUiState, modifier: Modifier = Modifier) {
+    if (state.hasError) {
+        Column(
+            modifier = modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
+            verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+        ) {
+            Text(stringResource(Res.string.garden_error_title), style = MaterialTheme.typography.headlineLarge)
+            Text(stringResource(Res.string.garden_error_subtitle), style = MaterialTheme.typography.bodyMedium, color = Ink.copy(alpha = 0.7f))
+        }
+        return
+    }
     if (!state.hasPlants) {
         Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             Text(stringResource(Res.string.garden_empty_title), style = MaterialTheme.typography.headlineLarge)

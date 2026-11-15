@@ -4,6 +4,8 @@ import com.kevin.memoverse.presentation.common.StageUi
 
 data class GardenUiState(
     val isLoading: Boolean = true,
+    /** Le jardin n'a pas pu être lu : ne pas le confondre avec un jardin vide. */
+    val hasError: Boolean = false,
     val plants: List<GardenPlantUi> = emptyList(),
     val activeCount: Int = 0,
     val maxActive: Int = 0,
