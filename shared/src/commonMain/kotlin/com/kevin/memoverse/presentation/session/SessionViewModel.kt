@@ -130,6 +130,8 @@ class SessionViewModel(
     private fun stopListening() {
         listeningJob?.cancel()
         listeningJob = null
+        // Le job annulé n'atteint jamais sa remise à zéro finale : sans ceci, « Je t'écoute… » resterait affiché.
+        model.update { if (it.speech.isListening) it.copy(speech = it.speech.copy(isListening = false)) else it }
     }
 
     private fun SpeechError.toUi(): SpeechErrorUi = when (this) {

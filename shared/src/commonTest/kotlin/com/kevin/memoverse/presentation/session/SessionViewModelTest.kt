@@ -386,4 +386,46 @@ class SessionViewModelTest {
             assertTrue(oral.words.none { it.state == RecitedWordState.RECITED })
         }
     }
+
+    @Test
+    fun `ecrire plutot pendant l'ecoute arrete l'indicateur d'ecoute`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        speech.events = listOf(SpeechEvent.Listening, SpeechEvent.Partial("mot1 alpha"))
+        speech.keepListening = true
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertTrue(assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).isListening)
+
+            vm.onEvent(SessionEvent.TypeInsteadClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val typing = assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise)
+            assertTrue(typing.isTyping)
+            assertFalse(typing.isListening)
+        }
+    }
+
+    @Test
+    fun `verifier pendant l'ecoute arrete l'indicateur d'ecoute`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1", MasteryStage.TREE).copy(successCount = 2)))
+        speech.events = listOf(SpeechEvent.Partial("mot1 alpha"))
+        speech.keepListening = true
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.MicClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertTrue(assertIs<ExerciseUi.ReciteAloud>(expectMostRecentItem().exercise).isListening)
+
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val state = expectMostRecentItem()
+            assertNotNull(state.feedback)
+            assertFalse(assertIs<ExerciseUi.ReciteAloud>(state.exercise).isListening)
+        }
+    }
 }
