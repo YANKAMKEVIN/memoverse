@@ -386,4 +386,35 @@ class SessionViewModelTest {
             assertTrue(oral.words.none { it.state == RecitedWordState.RECITED })
         }
     }
+
+    @Test
+    fun `un echec d'enregistrement est signale et la reponse ne compte pas au bilan`() = runTest(dispatcher) {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1")))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            learning.saveError = IllegalStateException("disque plein")
+
+            vm.onEvent(SessionEvent.OptionSelected("Référence v1"))
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val feedback = assertNotNull(expectMostRecentItem().feedback)
+            assertTrue(feedback.isCorrect)
+            assertTrue(feedback.notSaved)
+
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val reorder = assertIs<ExerciseUi.Reorder>(expectMostRecentItem().exercise)
+            reorder.available.sortedByDescending { it.index }.forEach { vm.onEvent(SessionEvent.ChunkPlaced(it.index)) }
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val summary = assertNotNull(expectMostRecentItem().summary)
+            assertEquals(0, summary.xp)
+            assertEquals(0, summary.accuracyPercent)
+        }
+    }
 }

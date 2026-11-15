@@ -147,6 +147,7 @@ class SessionViewModel(
         if (m.lastResult != null) return
         val answer = (m.draft ?: exercise.emptyDraft()).toAnswer(exercise) ?: return
         val isCorrect = checkAnswer(exercise, answer)
+        val wateredBefore = exercise.verse.id in m.wateredVerseIds
         model.update {
             it.copy(
                 lastResult = ExerciseResult(isCorrect),
@@ -157,7 +158,23 @@ class SessionViewModel(
         val verse = m.verses[exercise.verse.id] ?: return
         val step = m.index
         viewModelScope.launch {
-            val outcome = (recordResult(verse, isCorrect) as? DataResult.Success)?.data ?: return@launch
+            val outcome = when (val result = recordResult(verse, isCorrect)) {
+                is DataResult.Success -> result.data
+                is DataResult.Error -> {
+                    // Rien n'a été enregistré : la réponse ne compte pas au bilan, et on le dit.
+                    model.update { current ->
+                        current.copy(
+                            correctCount = current.correctCount - if (isCorrect) 1 else 0,
+                            wateredVerseIds = if (isCorrect && !wateredBefore) current.wateredVerseIds - exercise.verse.id else current.wateredVerseIds,
+                            lastResult = current.lastResult
+                                ?.takeIf { current.index == step }
+                                ?.copy(notSaved = true)
+                                ?: current.lastResult,
+                        )
+                    }
+                    return@launch
+                }
+            }
             model.update { current ->
                 val result = current.lastResult.takeIf { current.index == step }
                 current.copy(

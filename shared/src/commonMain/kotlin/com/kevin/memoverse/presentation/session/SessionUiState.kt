@@ -102,6 +102,8 @@ data class FeedbackUi(
     val expectedAnswer: String? = null,
     val grewTo: StageUi? = null,
     val wiltedTo: StageUi? = null,
+    /** Le résultat n'a pas pu être enregistré ; il n'est pas compté dans le bilan. */
+    val notSaved: Boolean = false,
 )
 
 data class SessionSummaryUi(

@@ -43,6 +43,7 @@ internal fun SessionModel.toUiState(): SessionUiState {
                 expectedAnswer = exercise.expectedAnswer(),
                 grewTo = result.grewTo?.toUi(),
                 wiltedTo = result.wiltedTo?.toUi(),
+                notSaved = result.notSaved,
             )
         },
     )
