@@ -51,7 +51,7 @@ class SessionViewModelTest {
     private fun viewModel(learning: FakeLearningRepository) = SessionViewModel(
         buildSession = BuildWateringSessionUseCase(learning, bank, ExerciseFactory(Random(3))) { 20_000L * 86_400_000L },
         checkAnswer = CheckAnswerUseCase(),
-        recordResult = RecordExerciseResultUseCase(learning) { 20_000L * 86_400_000L },
+        recordResult = RecordExerciseResultUseCase(learning, { 20_000L * 86_400_000L }),
         listenToRecitation = ListenToRecitationUseCase(speech),
         measureRecitation = MeasureRecitationUseCase(),
     )
