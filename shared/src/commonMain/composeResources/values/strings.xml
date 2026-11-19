@@ -92,6 +92,7 @@
     <string name="session_drop_label">Goutte remplie à %1$d %</string>
     <string name="session_type_instead">Écrire plutôt</string>
     <string name="session_speak_instead">Réciter à voix haute plutôt</string>
+    <string name="session_open_settings">Ouvrir les réglages</string>
     <string name="session_speech_permission">Autorise le micro pour réciter à voix haute, ou écris le verset.</string>
     <string name="session_speech_unavailable">La reconnaissance vocale en français n’est pas prête sur ce téléphone (connexion ou pack de langue à télécharger). Réessaie plus tard, ou écris le verset.</string>
     <string name="session_speech_language_pack">Le français n’est pas encore installé pour la voix sur ce téléphone. Accepte le téléchargement proposé par Android, puis réessaie.</string>
