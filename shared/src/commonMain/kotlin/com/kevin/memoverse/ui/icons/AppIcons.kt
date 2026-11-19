@@ -42,6 +42,9 @@ object AppIcons {
     val Check: ImageVector by lazy {
         strokeIcon("Coche", width = 2.2f) { moveTo(5f, 12.5f); lineTo(10f, 17f); lineTo(19f, 7f) }
     }
+    val Cross: ImageVector by lazy {
+        strokeIcon("Croix", width = 2.2f) { moveTo(6.5f, 6.5f); lineTo(17.5f, 17.5f); moveTo(17.5f, 6.5f); lineTo(6.5f, 17.5f) }
+    }
     val Microphone: ImageVector by lazy {
         strokeIcon("Micro", width = 2f) {
             moveTo(12f, 3f); curveTo(10.3f, 3f, 9f, 4.3f, 9f, 6f); lineTo(9f, 12f); curveTo(9f, 13.7f, 10.3f, 15f, 12f, 15f)

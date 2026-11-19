@@ -102,6 +102,8 @@
     <string name="session_reorder_placeholder">Touche les galets dans l’ordre du verset.</string>
     <string name="session_feedback_correct">Juste.</string>
     <string name="session_feedback_incorrect">Presque.</string>
+    <string name="session_option_correct">Bonne réponse</string>
+    <string name="session_option_wrong">Ton choix, incorrect</string>
     <string name="session_feedback_answer">La bonne réponse :</string>
     <string name="session_feedback_grew">%1$s passe au stade %2$s.</string>
     <string name="session_feedback_wilted">%1$s a besoin d’eau : retour au stade %2$s.</string>
