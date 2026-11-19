@@ -58,4 +58,34 @@ class GardenViewModelTest {
             assertEquals(2, state.activeCount)
         }
     }
+
+    @Test
+    fun `une erreur de lecture affiche une erreur et non un jardin vide`() = runTest(dispatcher) {
+        learning.observeError = IllegalStateException("base illisible")
+        GardenViewModel(ObserveGardenUseCase(learning, bank, { 0L }, flowOf(Unit))).state.test {
+            assertTrue(awaitItem().isLoading)
+            val failed = awaitItem()
+            assertTrue(failed.hasError)
+            assertFalse(failed.isLoading)
+        }
+    }
+
+    @Test
+    fun `réessayer après une erreur recharge le jardin`() = runTest(dispatcher) {
+        learning.observeError = IllegalStateException("base illisible")
+        learning.verses.value = listOf(learningVerse("v1"))
+        val viewModel = GardenViewModel(ObserveGardenUseCase(learning, bank, { 0L }, flowOf(Unit)))
+        viewModel.state.test {
+            skipItems(1)
+            assertTrue(awaitItem().hasError)
+
+            learning.observeError = null
+            viewModel.onRetry()
+
+            assertTrue(awaitItem().isLoading)
+            val loaded = awaitItem()
+            assertFalse(loaded.hasError)
+            assertEquals(listOf("Référence v1"), loaded.plants.map { it.reference })
+        }
+    }
 }

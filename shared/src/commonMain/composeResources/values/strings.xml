@@ -28,6 +28,8 @@
     <string name="garden_growing_label">en croissance</string>
     <string name="garden_active_ratio">%1$d/%2$d</string>
     <string name="garden_active_label">en apprentissage</string>
+    <string name="garden_error_title">Ton jardin ne s’ouvre pas</string>
+    <string name="garden_error_subtitle">Tes versets sont toujours là, mais ils n’ont pas pu être lus. Réessaie dans un instant.</string>
     <string name="garden_empty_title">Ton jardin attend</string>
     <string name="garden_empty_subtitle">Plante tes premiers versets.</string>
     <string name="garden_plant_first">Planter mes premiers versets</string>
