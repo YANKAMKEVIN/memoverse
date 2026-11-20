@@ -30,11 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.BlendMode
-import androidx.compose.ui.graphics.CompositingStrategy
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -54,6 +50,8 @@ import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.LoadingState
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.components.familyIsland
+import com.kevin.memoverse.ui.components.softEdges
+import com.kevin.memoverse.ui.theme.SkyWarm
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Cream
 import com.kevin.memoverse.ui.theme.Radius
@@ -188,18 +186,6 @@ private fun ThemeChip(theme: ThemeItemUi, onClick: () -> Unit) {
     }
 }
 
-/** Fond les bords de l'illustration dans le ciel (son fond crème ne se voit plus). */
-private fun Modifier.softEdges(): Modifier = this
-    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
-    .drawWithContent {
-        drawContent()
-        drawRect(
-            brush = Brush.radialGradient(0.62f to Color.Black, 1f to Color.Transparent),
-            blendMode = BlendMode.DstIn,
-        )
-    }
-
-private val SkyWarm = Color(0xFFF6E6D3)
 private val ShadowWarm = Color(0x33402E1A)
 
 @Preview

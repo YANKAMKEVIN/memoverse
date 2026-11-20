@@ -1,6 +1,7 @@
 package com.kevin.memoverse.presentation.garden
 
 import com.kevin.memoverse.domain.model.Garden
+import com.kevin.memoverse.domain.model.GardenPlant
 import com.kevin.memoverse.domain.model.LearningVerse
 import com.kevin.memoverse.presentation.common.toUi
 
@@ -10,11 +11,20 @@ private const val HOURS_PER_DAY = 24
 
 fun Garden.toGardenUiState(): GardenUiState = GardenUiState(
     isLoading = false,
-    plants = plants.map { GardenPlantUi(it.verseId, it.reference, it.stage.toUi(), it.isThirsty, it.text) },
+    plants = plants.map { it.toUi() },
     activeCount = plants.count { it.stage.isActive },
     maxActive = LearningVerse.MAX_ACTIVE_VERSES,
     thirstyCount = thirstyCount,
     nextWatering = millisUntilNextWatering?.toNextWatering(),
+)
+
+internal fun GardenPlant.toUi(): GardenPlantUi = GardenPlantUi(
+    verseId = verseId,
+    reference = reference,
+    stage = stage.toUi(),
+    isThirsty = isThirsty,
+    text = text,
+    nextWatering = if (isThirsty) null else millisUntilThirsty.toNextWatering(),
 )
 
 /** En minutes sous une heure, puis en heures (arrondi supérieur), puis en jours au-delà de 24 h. */

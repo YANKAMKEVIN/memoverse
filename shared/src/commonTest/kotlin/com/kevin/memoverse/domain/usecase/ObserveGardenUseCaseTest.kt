@@ -56,6 +56,7 @@ class ObserveGardenUseCaseTest {
 
         assertEquals(0, garden.thirstyCount)
         assertEquals(2_000L, garden.millisUntilNextWatering)
+        assertEquals(listOf(5_000L, 2_000L), garden.plants.map { it.millisUntilThirsty })
     }
 
     @Test

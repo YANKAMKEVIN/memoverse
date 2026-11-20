@@ -19,7 +19,7 @@ fun ChooseReferenceExercise(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.md)) {
-        Text("« ${exercise.verseText} »", style = AppTextStyles.verse())
+        Text("«\u202F${exercise.verseText}\u202F»", style = AppTextStyles.verse())
         exercise.options.forEach { option ->
             AnswerOption(
                 text = option.text,

@@ -1,5 +1,6 @@
 package com.kevin.memoverse.presentation.session
 
+import com.kevin.memoverse.domain.model.WateringStats
 import com.kevin.memoverse.domain.model.Exercise
 import com.kevin.memoverse.domain.model.ExerciseAnswer
 import com.kevin.memoverse.domain.model.LearningVerse
@@ -23,6 +24,8 @@ internal data class SessionModel(
     val isCeremonyDone: Boolean = false,
     val speech: SpeechModel = SpeechModel(),
     val isConfirmingQuit: Boolean = false,
+    /** Cumul après cette séance, une fois enregistré (pour « 420 au total » au bilan). */
+    val stats: WateringStats? = null,
     val shouldClose: Boolean = false,
 ) {
     /** Au moins un exercice a été validé : quitter demande une confirmation. */

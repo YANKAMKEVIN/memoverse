@@ -10,7 +10,11 @@ import com.kevin.memoverse.domain.speech.SpeechEvent
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
 import com.kevin.memoverse.domain.usecase.MeasureRecitationUseCase
 import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
+import com.kevin.memoverse.domain.model.WateringStats
+import com.kevin.memoverse.domain.usecase.RecordWateringSessionUseCase
 import com.kevin.memoverse.fake.FakeLearningRepository
+import com.kevin.memoverse.fake.FakePreferencesRepository
+import kotlinx.datetime.TimeZone
 import com.kevin.memoverse.fake.FakeSpeechRecognitionService
 import com.kevin.memoverse.fake.FakeVerseBankRepository
 import com.kevin.memoverse.fake.learningVerse
@@ -54,7 +58,10 @@ class SessionViewModelTest {
         recordResult = RecordExerciseResultUseCase(learning, { 20_000L * 86_400_000L }),
         listenToRecitation = ListenToRecitationUseCase(speech),
         measureRecitation = MeasureRecitationUseCase(),
+        recordSession = RecordWateringSessionUseCase(preferences, { 20_000L * 86_400_000L }, { TimeZone.UTC }),
     )
+
+    private val preferences = FakePreferencesRepository()
 
     @Test
     fun `parcourt une séance jusqu'au bilan`() = runTest(dispatcher) {
@@ -95,6 +102,35 @@ class SessionViewModelTest {
             val summary = assertNotNull(expectMostRecentItem().summary)
             assertEquals(10, summary.xp)
             assertEquals(50, summary.accuracyPercent)
+        }
+    }
+
+    @Test
+    fun `la fin de séance ajoute son XP au cumul et à la série de jours`() = runTest(dispatcher) {
+        preferences.wateringStats.value = WateringStats(totalXp = 400, streakDays = 2, lastSessionEpochDay = 19_999)
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1")))
+        val vm = viewModel(learning)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.OptionSelected("Référence v1"))
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val reorder = assertIs<ExerciseUi.Reorder>(expectMostRecentItem().exercise)
+            assertEquals(400, preferences.wateringStats.value.totalXp)
+            reorder.available.sortedBy { it.index }.forEach { vm.onEvent(SessionEvent.ChunkPlaced(it.index)) }
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+
+            val summary = assertNotNull(expectMostRecentItem().summary)
+            assertEquals(20, summary.xp)
+            assertEquals(420, summary.totalXp)
+            assertEquals(3, summary.streakDays)
+            assertEquals(WateringStats(totalXp = 420, streakDays = 3, lastSessionEpochDay = 20_000), preferences.wateringStats.value)
         }
     }
 

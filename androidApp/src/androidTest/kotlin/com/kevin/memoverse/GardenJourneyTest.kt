@@ -58,6 +58,7 @@ class GardenJourneyTest {
         }
         loadKoinModules(module { factory { ExerciseFactory(Random(SEED), isSpeechAvailable = false) } })
         clearGarden()
+        robot.skipOnboardingIfShown()
         robot.waitForText("Ton jardin attend")
     }
 
@@ -134,7 +135,7 @@ class GardenJourneyTest {
         robot.continueAfterFeedback()
 
         robot.pressBack()
-        robot.waitForText("Quitter l’arrosage ?")
+        robot.waitForText("Quitter l’arrosage\u202F?")
         robot.tap("Continuer l’arrosage")
         robot.waitForText("Valider")
 
@@ -186,7 +187,7 @@ class GardenJourneyTest {
 
         robot.waitForText("Ton jardin est arrosé")
         assertTrue(robot.isDisplayed("+60 XP"))
-        assertTrue(robot.isDisplayed("100 %"))
+        assertTrue(robot.isDisplayed("100\u202F%"))
         robot.tap("Continuer")
         robot.waitForText("prochain arrosage dans 6 h", substring = true)
     }
@@ -202,7 +203,7 @@ class GardenJourneyTest {
         robot.validate()
 
         robot.waitForText("Presque.")
-        assertTrue(robot.isDisplayed("La bonne réponse :"))
+        assertTrue(robot.isDisplayed("La bonne réponse\u202F:"))
     }
 
     @Test

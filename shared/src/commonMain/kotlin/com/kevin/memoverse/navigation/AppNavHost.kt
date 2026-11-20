@@ -1,12 +1,11 @@
 package com.kevin.memoverse.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -24,8 +23,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kevin.memoverse.data.notification.NotificationEntry
 import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
+import com.kevin.memoverse.presentation.onboarding.OnboardingViewModel
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.reminder_prompt_confirm
 import com.kevin.memoverse.resources.reminder_prompt_later
@@ -33,8 +34,10 @@ import com.kevin.memoverse.resources.reminder_prompt_message
 import com.kevin.memoverse.resources.reminder_prompt_title
 import com.kevin.memoverse.ui.components.AppTab
 import com.kevin.memoverse.ui.components.AppTabBar
+import com.kevin.memoverse.ui.components.GardenDialog
 import com.kevin.memoverse.ui.explorer.ExplorerScreen
 import com.kevin.memoverse.ui.garden.GardenScreen
+import com.kevin.memoverse.ui.onboarding.OnboardingScreen
 import com.kevin.memoverse.ui.permission.rememberNotificationPermissionRequest
 import com.kevin.memoverse.ui.profile.ProfileScreen
 import com.kevin.memoverse.ui.progression.ProgressionScreen
@@ -43,9 +46,22 @@ import com.kevin.memoverse.ui.themedetail.ThemeDetailScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost() {
+    // Premier lancement : l'accueil en trois volets passe avant le jardin, une seule fois.
+    val onboarding = koinViewModel<OnboardingViewModel>()
+    val showOnboarding by onboarding.showOnboarding.collectAsStateWithLifecycle()
+    when (showOnboarding) {
+        null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        true -> OnboardingScreen(onFinished = onboarding::onFinished)
+        false -> MainNavHost()
+    }
+}
+
+@Composable
+private fun MainNavHost() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentTab = backStackEntry?.destination?.toTab()
@@ -79,7 +95,9 @@ fun AppNavHost() {
             composable<ExplorerRoute> {
                 ExplorerScreen(contentPadding = innerPadding, onThemeClick = { navController.navigate(ThemeDetailRoute(it)) })
             }
-            composable<ProgressionRoute> { ProgressionScreen(contentPadding = innerPadding) }
+            composable<ProgressionRoute> {
+                ProgressionScreen(contentPadding = innerPadding, onPlantClick = { navController.navigateToTab(AppTab.EXPLORER) })
+            }
             composable<ProfileRoute> { ProfileScreen(contentPadding = innerPadding) }
             composable<SessionRoute> { SessionScreen(onClose = { navController.popBackStack() }) }
             composable<ThemeDetailRoute> { entry ->
@@ -104,19 +122,16 @@ fun AppNavHost() {
         }
     }
     if (isReminderPromptShown) {
-        AlertDialog(
-            onDismissRequest = { isReminderPromptShown = false },
-            title = { Text(stringResource(Res.string.reminder_prompt_title)) },
-            text = { Text(stringResource(Res.string.reminder_prompt_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    isReminderPromptShown = false
-                    requestNotificationPermission()
-                }) { Text(stringResource(Res.string.reminder_prompt_confirm)) }
+        GardenDialog(
+            title = stringResource(Res.string.reminder_prompt_title),
+            message = stringResource(Res.string.reminder_prompt_message),
+            confirmText = stringResource(Res.string.reminder_prompt_confirm),
+            onConfirm = {
+                isReminderPromptShown = false
+                requestNotificationPermission()
             },
-            dismissButton = {
-                TextButton(onClick = { isReminderPromptShown = false }) { Text(stringResource(Res.string.reminder_prompt_later)) }
-            },
+            dismissText = stringResource(Res.string.reminder_prompt_later),
+            onDismiss = { isReminderPromptShown = false },
         )
     }
 }

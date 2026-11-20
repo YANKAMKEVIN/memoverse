@@ -17,9 +17,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.semantics
@@ -53,6 +56,11 @@ fun FeedbackPanel(
     val accent = if (feedback.isCorrect) colors.primary else colors.error
     // Les textes du panneau d'erreur prennent une terre cuite plus sombre (AA) ; la pastille et le bouton gardent l'accent.
     val textAccent = if (feedback.isCorrect) colors.primary else TerracottaText
+    // Le verdict se sent sans regarder le bas de l'écran : une vibration douce si c'est juste, plus sourde sinon.
+    val haptic = LocalHapticFeedback.current
+    LaunchedEffect(feedback.isCorrect) {
+        haptic.performHapticFeedback(if (feedback.isCorrect) HapticFeedbackType.Confirm else HapticFeedbackType.Reject)
+    }
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -97,7 +105,7 @@ fun FeedbackPanel(
             }
             // L'exercice affiche déjà le verset après validation ; on ne le répète que s'il est la correction.
             if (!feedback.isCorrect && feedback.expectedAnswer == null) {
-                Text("« ${feedback.verseText} »", style = AppTextStyles.verseQuote())
+                Text("«\u202F${feedback.verseText}\u202F»", style = AppTextStyles.verseQuote())
                 Text(feedback.reference, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
             }
         }

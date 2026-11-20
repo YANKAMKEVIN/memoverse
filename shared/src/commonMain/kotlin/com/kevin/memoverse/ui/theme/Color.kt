@@ -4,6 +4,8 @@ import androidx.compose.ui.graphics.Color
 
 // Direction « Jardin vivant » : sable, crème, olive (cf. maquettes Figma).
 internal val Sand = Color(0xFFF3ECE0)
+/** Ciel chaud de l'Explorer, en haut du dégradé vers le sable. */
+internal val SkyWarm = Color(0xFFF6E6D3)
 internal val Cream = Color(0xFFFBF7F0)
 internal val Hairline = Color(0xFFE2D8C6)
 internal val Ink = Color(0xFF2B2A26)

@@ -13,6 +13,8 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
@@ -26,6 +28,7 @@ fun WordPebble(
     enabled: Boolean = true,
 ) {
     val shape = RoundedCornerShape(percent = 50)
+    val haptic = LocalHapticFeedback.current
     Text(
         text = text,
         style = AppTextStyles.verse().copy(fontSize = MaterialTheme.typography.bodyLarge.fontSize * 1.05f),
@@ -34,7 +37,11 @@ fun WordPebble(
             .shadow(if (enabled) 3.dp else 0.dp, shape, ambientColor = PebbleShadow, spotColor = PebbleShadow)
             .background(Brush.verticalGradient(listOf(PebbleTop, PebbleBottom)), shape)
             .border(1.dp, Color.White.copy(alpha = 0.7f), shape)
-            .clickable(enabled = enabled, onClick = onClick)
+            // Un tic léger quand le galet est posé ou retiré : la séance se sent sous le doigt.
+            .clickable(enabled = enabled) {
+                haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
+                onClick()
+            }
             .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
     )
 }

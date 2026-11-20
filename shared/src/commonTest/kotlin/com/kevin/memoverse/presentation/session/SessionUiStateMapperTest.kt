@@ -25,6 +25,12 @@ class SessionUiStateMapperTest {
         SessionModel(isLoading = false, exercises = listOf(exercise), lastResult = ExerciseResult(isCorrect = false)).toUiState().feedback!!
 
     @Test
+    fun `fermer pendant le chargement ou après une erreur ferme la séance`() {
+        assertTrue(SessionModel(isLoading = true, shouldClose = true).toUiState().shouldClose)
+        assertTrue(SessionModel(isLoading = false, hasError = true, shouldClose = true).toUiState().shouldClose)
+    }
+
+    @Test
     fun `la bonne réponse d'une référence est la référence`() {
         assertEquals("Référence v1", feedbackFor(Exercise.ChooseReference(v1, listOf("Référence v1", "Autre"))).expectedAnswer)
     }

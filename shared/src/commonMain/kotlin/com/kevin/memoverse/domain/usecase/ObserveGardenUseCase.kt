@@ -29,7 +29,14 @@ class ObserveGardenUseCase(
         Garden(
             plants = learning.map {
                 val verse = verses[it.verseId]
-                GardenPlant(it.verseId, verse?.reference ?: it.verseId, it.stage, it.isThirsty(now), verse?.text.orEmpty())
+                GardenPlant(
+                    verseId = it.verseId,
+                    reference = verse?.reference ?: it.verseId,
+                    stage = it.stage,
+                    isThirsty = it.isThirsty(now),
+                    text = verse?.text.orEmpty(),
+                    millisUntilThirsty = (it.dueAtEpochMillis - now).coerceAtLeast(0),
+                )
             },
             millisUntilNextWatering = learning
                 .takeIf { verses -> verses.none { it.isThirsty(now) } }

@@ -1,5 +1,8 @@
 package com.kevin.memoverse.ui.garden
 
+import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +28,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
@@ -54,6 +59,7 @@ import com.kevin.memoverse.presentation.garden.GardenPlantUi
 import com.kevin.memoverse.presentation.garden.GardenUiState
 import com.kevin.memoverse.presentation.garden.GardenViewModel
 import com.kevin.memoverse.presentation.garden.NextWateringUi
+import com.kevin.memoverse.presentation.garden.isNightHour
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.app_tagline
 import com.kevin.memoverse.resources.garden_active_label
@@ -76,21 +82,31 @@ import com.kevin.memoverse.resources.garden_water_count
 import com.kevin.memoverse.resources.garden_watered
 import com.kevin.memoverse.resources.retry
 import com.kevin.memoverse.resources.scene_jardin_jour
+import com.kevin.memoverse.resources.scene_jardin_nuit
 import com.kevin.memoverse.ui.components.PillButton
+import com.kevin.memoverse.ui.components.PlantImage
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.components.stageName
+import com.kevin.memoverse.ui.components.verseDueText
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.AppTheme
+import com.kevin.memoverse.ui.theme.Cream
 import com.kevin.memoverse.ui.theme.Gold
 import com.kevin.memoverse.ui.theme.Ink
 import com.kevin.memoverse.ui.theme.Olive
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Sand
+import com.kevin.memoverse.ui.theme.ScrimDark
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import kotlinx.coroutines.delay
+import kotlinx.datetime.TimeZone
+import kotlinx.datetime.toLocalDateTime
+import kotlin.time.Clock
+import kotlin.time.ExperimentalTime
 
 @Composable
 fun GardenScreen(
@@ -100,14 +116,30 @@ fun GardenScreen(
     viewModel: GardenViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val isNight by rememberIsNight()
     GardenScreenContent(
         state = state,
         contentPadding = contentPadding,
         onPlantClick = onPlantClick,
         onWaterClick = onWaterClick,
         onRetry = viewModel::onRetry,
+        isNight = isNight,
     )
 }
+
+/** Vrai le soir et la nuit (heure locale), revérifié chaque minute tant que le jardin est affiché. */
+@OptIn(ExperimentalTime::class)
+@Composable
+private fun rememberIsNight(): State<Boolean> = produceState(initialValue = currentHourIsNight()) {
+    while (true) {
+        value = currentHourIsNight()
+        delay(NIGHT_CHECK_MILLIS)
+    }
+}
+
+@OptIn(ExperimentalTime::class)
+private fun currentHourIsNight(): Boolean =
+    isNightHour(Clock.System.now().toLocalDateTime(TimeZone.currentSystemDefault()).hour)
 
 @Composable
 fun GardenScreenContent(
@@ -116,36 +148,41 @@ fun GardenScreenContent(
     onPlantClick: () -> Unit,
     onWaterClick: () -> Unit,
     onRetry: () -> Unit = {},
+    isNight: Boolean = false,
 ) {
+    // Le soir, la scène de nuit ; en-tête et slogan passent en clair pour rester lisibles.
+    val headerColor by animateColorAsState(if (isNight) Cream else Ink, tween(SCENE_FADE_MILLIS), label = "en-tête")
     // Verset touché dans la scène : sa fiche s'ouvre, avec les autres versets du jardin en dessous.
     var openedVerseId by rememberSaveable { mutableStateOf<String?>(null) }
     Box(modifier = Modifier.fillMaxSize().background(Sand)) {
-        Image(
-            painter = painterResource(Res.drawable.scene_jardin_jour),
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
-        PlantTags(plants = state.plants, onTagClick = { openedVerseId = it }, modifier = Modifier.fillMaxSize())
+        Crossfade(targetState = isNight, animationSpec = tween(SCENE_FADE_MILLIS), label = "scène") { night ->
+            Image(
+                painter = painterResource(if (night) Res.drawable.scene_jardin_nuit else Res.drawable.scene_jardin_jour),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize(),
+            )
+        }
+        GardenPlants(plants = state.plants, isNight = isNight, onTagClick = { openedVerseId = it }, modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = Spacing.xl, vertical = Spacing.md)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
-                Wordmark()
+                Wordmark(color = headerColor)
                 // Poids et retour à la ligne : en grande police, le slogan ne chevauche plus le nom.
                 Text(
                     text = stringResource(Res.string.app_tagline),
                     style = MaterialTheme.typography.bodySmall,
-                    color = Ink.copy(alpha = 0.7f),
+                    color = headerColor.copy(alpha = 0.8f),
                     textAlign = TextAlign.End,
                     modifier = Modifier.weight(1f).padding(start = Spacing.md),
                 )
             }
-            if (!state.isLoading) GardenHeader(state = state, modifier = Modifier.padding(top = Spacing.xl))
+            if (!state.isLoading) GardenHeader(state = state, color = headerColor, modifier = Modifier.padding(top = Spacing.xl))
         }
         Column(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .background(Brush.verticalGradient(listOf(Sand.copy(alpha = 0f), Sand.copy(alpha = 0.85f))))
+                .background(Brush.verticalGradient(listOf(Sand.copy(alpha = 0f), (if (isNight) ScrimDark else Sand).copy(alpha = 0.85f))))
                 .padding(contentPadding)
                 .padding(horizontal = Spacing.xxl, vertical = Spacing.lg),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -192,13 +229,28 @@ fun GardenScreenContent(
         }
     }
     openedVerseId?.let { verseId ->
-        GardenVersesSheet(plants = state.plants, openedVerseId = verseId, onDismiss = { openedVerseId = null })
+        GardenVersesSheet(
+            plants = state.plants,
+            openedVerseId = verseId,
+            thirstyCount = state.thirstyCount,
+            onWaterClick = {
+                openedVerseId = null
+                onWaterClick()
+            },
+            onDismiss = { openedVerseId = null },
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String, onDismiss: () -> Unit) {
+private fun GardenVersesSheet(
+    plants: List<GardenPlantUi>,
+    openedVerseId: String,
+    thirstyCount: Int,
+    onWaterClick: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     val ordered = plants.sortedByDescending { it.verseId == openedVerseId }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
         Column(
@@ -212,37 +264,50 @@ private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String
         ) {
             Text(stringResource(Res.string.garden_sheet_title), style = MaterialTheme.typography.headlineMedium)
             ordered.forEach { plant ->
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
-                    Text(plant.reference, style = MaterialTheme.typography.titleLarge)
-                    val stage = stageName(plant.stage)
-                    Text(
-                        text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, stage) else stage,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    if (plant.text.isNotEmpty()) Text("« ${plant.text} »", style = AppTextStyles.verseQuote())
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    // La plante du verset et son échéance : on voit d'un coup d'œil où il en est.
+                    Box(modifier = Modifier.size(width = 44.dp, height = 56.dp), contentAlignment = Alignment.BottomCenter) {
+                        PlantImage(stage = plant.stage, scale = SHEET_PLANT_SCALE, isThirsty = plant.isThirsty)
+                    }
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                        Text(plant.reference, style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = "${stageName(plant.stage)} · ${verseDueText(plant)}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        if (plant.text.isNotEmpty()) Text("«\u202F${plant.text}\u202F»", style = AppTextStyles.verseQuote())
+                    }
                 }
+            }
+            // On arrose là où l'on vient de voir qu'un verset a soif, sans refermer la fiche.
+            if (thirstyCount > 0) {
+                PillButton(
+                    text = pluralStringResource(Res.plurals.garden_water_count, thirstyCount, thirstyCount),
+                    onClick = onWaterClick,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+                )
             }
         }
     }
 }
 
 @Composable
-private fun GardenHeader(state: GardenUiState, modifier: Modifier = Modifier) {
+private fun GardenHeader(state: GardenUiState, color: Color, modifier: Modifier = Modifier) {
     if (state.hasError) {
         Column(
             modifier = modifier.semantics(mergeDescendants = true) { liveRegion = LiveRegionMode.Polite },
             verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Text(stringResource(Res.string.garden_error_title), style = MaterialTheme.typography.headlineLarge)
-            Text(stringResource(Res.string.garden_error_subtitle), style = MaterialTheme.typography.bodyMedium, color = Ink.copy(alpha = 0.7f))
+            Text(stringResource(Res.string.garden_error_title), style = MaterialTheme.typography.headlineLarge, color = color)
+            Text(stringResource(Res.string.garden_error_subtitle), style = MaterialTheme.typography.bodyMedium, color = color.copy(alpha = 0.75f))
         }
         return
     }
     if (!state.hasPlants) {
         Column(modifier = modifier, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            Text(stringResource(Res.string.garden_empty_title), style = MaterialTheme.typography.headlineLarge)
-            Text(stringResource(Res.string.garden_empty_subtitle), style = MaterialTheme.typography.bodyMedium, color = Ink.copy(alpha = 0.7f))
+            Text(stringResource(Res.string.garden_empty_title), style = MaterialTheme.typography.headlineLarge, color = color)
+            Text(stringResource(Res.string.garden_empty_subtitle), style = MaterialTheme.typography.bodyMedium, color = color.copy(alpha = 0.75f))
         }
         return
     }
@@ -251,64 +316,76 @@ private fun GardenHeader(state: GardenUiState, modifier: Modifier = Modifier) {
             Text(
                 text = pluralStringResource(Res.plurals.garden_growing_count, state.plants.size, state.plants.size),
                 style = MaterialTheme.typography.headlineLarge,
+                color = color,
             )
-            Text(stringResource(Res.string.garden_growing_label), style = MaterialTheme.typography.bodyMedium, color = Ink.copy(alpha = 0.7f))
+            Text(stringResource(Res.string.garden_growing_label), style = MaterialTheme.typography.bodyMedium, color = color.copy(alpha = 0.75f))
         }
         Column(horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.spacedBy(Spacing.xs)) {
-            ActiveRing(active = state.activeCount, max = state.maxActive)
-            Text(stringResource(Res.string.garden_active_label), style = MaterialTheme.typography.labelSmall, color = Ink.copy(alpha = 0.7f))
+            ActiveRing(active = state.activeCount, max = state.maxActive, color = color)
+            Text(stringResource(Res.string.garden_active_label), style = MaterialTheme.typography.labelSmall, color = color.copy(alpha = 0.75f))
         }
     }
 }
 
 @Composable
-private fun ActiveRing(active: Int, max: Int) {
+private fun ActiveRing(active: Int, max: Int, color: Color) {
     Box(modifier = Modifier.size(72.dp), contentAlignment = Alignment.Center) {
         Canvas(modifier = Modifier.fillMaxSize()) {
             val stroke = 3.dp.toPx()
             val inset = stroke / 2
             val arcSize = Size(size.width - stroke, size.height - stroke)
-            drawArc(Ink.copy(alpha = 0.12f), 0f, 360f, false, Offset(inset, inset), arcSize, style = Stroke(stroke))
+            drawArc(color.copy(alpha = 0.15f), 0f, 360f, false, Offset(inset, inset), arcSize, style = Stroke(stroke))
             val sweep = if (max == 0) 0f else 360f * active / max
-            drawArc(Olive, -90f, sweep, false, Offset(inset, inset), arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
+            drawArc(if (color == Ink) Olive else color, -90f, sweep, false, Offset(inset, inset), arcSize, style = Stroke(stroke, cap = StrokeCap.Round))
         }
-        Text(stringResource(Res.string.garden_active_ratio, active, max), style = MaterialTheme.typography.headlineSmall.copy(fontSize = MaterialTheme.typography.titleLarge.fontSize))
+        Text(stringResource(Res.string.garden_active_ratio, active, max), style = MaterialTheme.typography.headlineSmall.copy(fontSize = MaterialTheme.typography.titleLarge.fontSize), color = color)
     }
 }
 
 /**
- * Étiquettes posées sur les terrasses de la scène (positions relatives à l'illustration).
+ * Les versets poussent sur les terrasses de la scène (positions relatives à l'illustration) :
+ * chacun montre sa plante à son stade, avec son étiquette en dessous ; une plante qui a soif penche et pâlit.
  * Les versets qui ont soif passent en premier ; au-delà des emplacements, une pastille « +N ».
  */
 @Composable
-private fun PlantTags(plants: List<GardenPlantUi>, onTagClick: (verseId: String) -> Unit, modifier: Modifier = Modifier) {
+private fun GardenPlants(plants: List<GardenPlantUi>, isNight: Boolean, onTagClick: (verseId: String) -> Unit, modifier: Modifier = Modifier) {
+    // La scène de nuit n'a pas ses terrasses aux mêmes endroits : chaque scène a ses emplacements.
+    val slots = if (isNight) NIGHT_TAG_SLOTS else TAG_SLOTS
     val ordered = plants.sortedByDescending { it.isThirsty }
-    val shown = ordered.take(if (ordered.size > TAG_SLOTS.size) TAG_SLOTS.size - 1 else TAG_SLOTS.size)
+    val shown = ordered.take(if (ordered.size > slots.size) slots.size - 1 else slots.size)
     val hiddenCount = ordered.size - shown.size
     Box(modifier = modifier) {
         if (hiddenCount > 0) {
-            val (fx, fy) = TAG_SLOTS.last()
+            val (fx, fy) = slots.last()
             PlantTag(
                 text = stringResource(Res.string.garden_tag_more, hiddenCount),
                 isThirsty = false,
-                onClick = { onTagClick(ordered[shown.size].verseId) },
-                modifier = Modifier.tagPosition(fx, fy),
+                modifier = Modifier
+                    .tagPosition(fx, fy)
+                    .clickable(role = Role.Button, onClick = { onTagClick(ordered[shown.size].verseId) }),
             )
         }
         shown.forEachIndexed { index, plant ->
-            val (fx, fy) = TAG_SLOTS[index]
-            PlantTag(
-                text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, plant.reference) else plant.reference,
-                isThirsty = plant.isThirsty,
-                onClick = { onTagClick(plant.verseId) },
-                modifier = Modifier.tagPosition(fx, fy),
-            )
+            val (fx, fy) = slots[index]
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .tagPosition(fx, fy)
+                    .clickable(role = Role.Button, onClick = { onTagClick(plant.verseId) }),
+            ) {
+                PlantImage(stage = plant.stage, isThirsty = plant.isThirsty, isNight = isNight)
+                PlantTag(
+                    text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, plant.reference) else plant.reference,
+                    isThirsty = plant.isThirsty,
+                    modifier = Modifier.padding(top = Spacing.xxs),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PlantTag(text: String, isThirsty: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PlantTag(text: String, isThirsty: Boolean, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize),
@@ -318,32 +395,52 @@ private fun PlantTag(text: String, isThirsty: Boolean, onClick: () -> Unit, modi
             .shadow(6.dp, RoundedCornerShape(Radius.chip))
             .background((if (isThirsty) Gold else Color(0xFFFBF7F0)).copy(alpha = 0.94f), RoundedCornerShape(Radius.chip))
             .border(1.dp, Color.White.copy(alpha = 0.7f), RoundedCornerShape(Radius.chip))
-            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = Spacing.sm + Spacing.xxs, vertical = Spacing.xs),
     )
 }
 
-/** Place l'étiquette à sa position relative, sans jamais la laisser déborder de l'écran. */
+/**
+ * Place l'élément sur la scène, sans jamais le laisser déborder de l'écran : son bas (l'étiquette)
+ * tombe juste sous la position relative, la plante pousse au-dessus.
+ */
 private fun Modifier.tagPosition(fx: Float, fy: Float, margin: Dp = TAG_EDGE_MARGIN): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
     val edge = margin.roundToPx()
     val x = (constraints.maxWidth * fx).toInt().coerceAtMost(constraints.maxWidth - placeable.width - edge).coerceAtLeast(edge)
-    layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(x, (constraints.maxHeight * fy).toInt()) }
+    val y = ((constraints.maxHeight * fy).toInt() + TAG_BASELINE.roundToPx() - placeable.height).coerceAtLeast(0)
+    layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(x, y) }
 }
 
 private val TAG_EDGE_MARGIN = 12.dp
+private const val SHEET_PLANT_SCALE = 0.17f
+
+/** Hauteur d'une étiquette : le bas de chaque élément tombe là, quelle que soit la taille de la plante. */
+private val TAG_BASELINE = 30.dp
 
 /** Il faut de la place pour au moins 3 versets (le minimum d'une plantation). */
 private const val MIN_FREE_SLOTS_TO_PLANT = 3
 
+// Trois rangs espacés : la plus grande plante (Fruit) ne recouvre pas l'étiquette du rang du dessus.
 private val TAG_SLOTS = listOf(
-    0.58f to 0.47f,
-    0.17f to 0.51f,
-    0.36f to 0.60f,
-    0.04f to 0.42f,
-    0.60f to 0.55f,
-    0.10f to 0.64f,
+    0.56f to 0.44f,
+    0.04f to 0.40f,
+    0.30f to 0.56f,
+    0.62f to 0.60f,
+    0.06f to 0.68f,
+    0.42f to 0.72f,
 )
+
+private val NIGHT_TAG_SLOTS = listOf(
+    0.52f to 0.40f,
+    0.05f to 0.40f,
+    0.28f to 0.56f,
+    0.64f to 0.56f,
+    0.08f to 0.72f,
+    0.48f to 0.72f,
+)
+
+private const val SCENE_FADE_MILLIS = 600
+private const val NIGHT_CHECK_MILLIS = 60_000L
 
 @Preview
 @Composable

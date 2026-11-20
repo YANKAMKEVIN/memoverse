@@ -15,6 +15,9 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -26,6 +29,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
@@ -54,6 +59,14 @@ fun WaterDrop(
     val phase by transition.animateFloat(0f, 2f * PI.toFloat(), infiniteRepeatable(tween(WAVE_MILLIS, easing = LinearEasing)), label = "vague")
     val breath by transition.animateFloat(1f, BREATH_SCALE, infiniteRepeatable(tween(BREATH_MILLIS), androidx.compose.animation.core.RepeatMode.Reverse), label = "souffle")
     val amplitude by animateFloatAsState(if (isListening) LISTENING_AMPLITUDE else IDLE_AMPLITUDE, label = "amplitude")
+    // Une impulsion quand la goutte devient pleine : la récitation est réussie.
+    val haptic = LocalHapticFeedback.current
+    val isFull = fill >= 1f
+    var wasFull by remember { mutableStateOf(isFull) }
+    LaunchedEffect(isFull) {
+        if (isFull && !wasFull) haptic.performHapticFeedback(HapticFeedbackType.GestureThresholdActivate)
+        wasFull = isFull
+    }
     val outline by animateColorAsState(if (fill >= 1f) colors.primary else colors.outline, label = "contour")
     Canvas(
         modifier = modifier

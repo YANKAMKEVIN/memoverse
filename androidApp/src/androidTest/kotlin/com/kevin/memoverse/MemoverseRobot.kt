@@ -41,6 +41,12 @@ class MemoverseRobot(private val rule: ComposeTestRule) {
         rule.waitForIdle()
     }
 
+    /** Au tout premier lancement, l'accueil en trois volets passe avant le jardin : on le passe. */
+    fun skipOnboardingIfShown() {
+        rule.waitUntil(TIMEOUT_MILLIS) { isDisplayed(ONBOARDING_SKIP) || isDisplayed("MEMOVERSE") }
+        if (isDisplayed(ONBOARDING_SKIP)) tap(ONBOARDING_SKIP)
+    }
+
     /** Les onglets fusionnent icône et libellé dans un seul nœud cliquable. */
     fun tapTab(label: String) = tap(label)
 
@@ -138,5 +144,6 @@ class MemoverseRobot(private val rule: ComposeTestRule) {
         const val EXPLORER_SUBTITLE = "thèmes pour faire grandir ta foi"
         const val THEME_INSTRUCTIONS = "Choisis 3 ou 4 versets à planter."
         const val GARDEN_FULL = "Ton jardin a déjà"
+        const val ONBOARDING_SKIP = "Passer"
     }
 }
