@@ -1,5 +1,19 @@
 package com.kevin.memoverse.ui.session
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.ExitTransition
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -18,9 +32,9 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.ScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
@@ -161,53 +175,46 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
             Column(modifier = Modifier.fillMaxSize()) {
                 SessionTopBar(step = state.step, total = state.totalSteps, onClose = { onEvent(SessionEvent.CloseClicked) })
                 Spacer(Modifier.height(headerSpace))
-                // Un défilement neuf à chaque exercice : sinon le suivant s'ouvre plus bas, titre caché.
-                // remember(step) et non key(step) : un groupe key ici, combiné au passage panneau ↔ barre, faisait planter Compose.
-                val scrollState = remember(state.step) { ScrollState(initial = 0) }
-                Box(modifier = Modifier.weight(1f).fillMaxWidth()) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = Radius.sheet, topEnd = Radius.sheet))
-                        .verticalScroll(scrollState)
-                        .padding(horizontal = Spacing.xl, vertical = Spacing.xl),
-                    verticalArrangement = Arrangement.spacedBy(Spacing.md),
+                // L'exercice suivant glisse depuis la droite : on sent qu'on avance dans la séance.
+                // Chaque exercice garde ses propres données pendant qu'il sort (ExerciseFrame), et son propre
+                // défilement : le suivant s'ouvre toujours en haut, titre visible.
+                AnimatedContent(
+                    targetState = ExerciseFrame(state.step, exercise, feedback),
+                    contentKey = { it.step },
+                    transitionSpec = {
+                        (slideInHorizontally(tween(STEP_SLIDE_MILLIS)) { it } + fadeIn(tween(STEP_SLIDE_MILLIS)))
+                            .togetherWith(slideOutHorizontally(tween(STEP_SLIDE_MILLIS)) { -it / 3 } + fadeOut(tween(STEP_SLIDE_MILLIS)))
+                    },
+                    label = "exercice",
+                    modifier = Modifier.weight(1f).fillMaxWidth(),
+                ) { frame ->
+                    ExerciseContent(frame = frame, onEvent = onEvent)
+                }
+                // Le panneau de correction monte sous l'exercice (la réponse donnée reste visible au-dessus),
+                // puis redescend au « Continuer » ; la barre « Valider » reprend sa place.
+                // Le panneau garde la dernière correction pendant qu'il redescend (simple mémoire, pas un état observé).
+                val lastFeedback = remember { arrayOfNulls<FeedbackUi>(1) }
+                if (feedback != null) lastFeedback[0] = feedback
+                AnimatedVisibility(
+                    visible = feedback != null,
+                    enter = slideInVertically(tween(PANEL_MILLIS)) { it } + expandVertically(tween(PANEL_MILLIS), expandFrom = Alignment.Top),
+                    exit = slideOutVertically(tween(PANEL_MILLIS)) { it } + shrinkVertically(tween(PANEL_MILLIS), shrinkTowards = Alignment.Top),
+                    label = "correction",
                 ) {
-                    // La référence est la réponse de « Retrouve la référence » : on ne l'affiche pas avant validation.
-                    if (exercise !is ExerciseUi.ChooseReference || feedback != null) {
-                        Text(exercise.reference.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-                    }
-                    Text(stringResource(exercise.titleRes()), style = MaterialTheme.typography.headlineMedium)
-                    val isLocked = feedback != null
-                    when (exercise) {
-                        is ExerciseUi.ChooseReference -> ChooseReferenceExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.CompletePart -> CompletePartExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.Reorder -> ReorderExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.FillBlanks -> FillBlanksExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.Type -> TypeExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.TypeBlanks -> TypeBlanksExercise(exercise, isLocked, onEvent)
-                        is ExerciseUi.ReciteAloud -> ReciteAloudExercise(exercise, isLocked, onEvent)
+                    lastFeedback[0]?.let { shown ->
+                        FeedbackPanel(
+                            feedback = shown,
+                            onContinue = { onEvent(SessionEvent.ContinueClicked) },
+                            modifier = Modifier.heightIn(max = feedbackMaxHeight),
+                        )
                     }
                 }
-                // Fondu en bas tant qu'il reste du contenu : il invite à faire défiler. Retiré après validation, pour ne pas voiler la réponse.
-                if (scrollState.canScrollForward && feedback == null) {
-                    Box(
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .fillMaxWidth()
-                            .height(SCROLL_HINT_HEIGHT)
-                            .background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.surface))),
-                    )
-                }
-                }
-                if (feedback != null) {
-                    // Sous l'exercice et non par-dessus : la réponse donnée reste visible au-dessus.
-                    FeedbackPanel(
-                        feedback = feedback,
-                        onContinue = { onEvent(SessionEvent.ContinueClicked) },
-                        modifier = Modifier.heightIn(max = feedbackMaxHeight),
-                    )
-                } else {
+                AnimatedVisibility(
+                    visible = feedback == null,
+                    enter = fadeIn(tween(PANEL_MILLIS)) + expandVertically(tween(PANEL_MILLIS)),
+                    exit = ExitTransition.None,
+                    label = "valider",
+                ) {
                     // Barre fixe sous le contenu : le bouton ne recouvre jamais une proposition ni un champ.
                     Box(
                         modifier = Modifier
@@ -229,6 +236,52 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
     }
 }
 
+/** Ce qu'affiche un exercice : il le garde pendant son animation de sortie. */
+private data class ExerciseFrame(val step: Int, val exercise: ExerciseUi, val feedback: FeedbackUi?)
+
+@Composable
+private fun ExerciseContent(frame: ExerciseFrame, onEvent: (SessionEvent) -> Unit) {
+    val exercise = frame.exercise
+    val feedback = frame.feedback
+    val scrollState = rememberScrollState()
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(topStart = Radius.sheet, topEnd = Radius.sheet))
+                .verticalScroll(scrollState)
+                .padding(horizontal = Spacing.xl, vertical = Spacing.xl),
+            verticalArrangement = Arrangement.spacedBy(Spacing.md),
+        ) {
+            // La référence est la réponse de « Retrouve la référence » : on ne l'affiche pas avant validation.
+            if (exercise !is ExerciseUi.ChooseReference || feedback != null) {
+                Text(exercise.reference.uppercase(), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            Text(stringResource(exercise.titleRes()), style = MaterialTheme.typography.headlineMedium)
+            val isLocked = feedback != null
+            when (exercise) {
+                is ExerciseUi.ChooseReference -> ChooseReferenceExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.CompletePart -> CompletePartExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.Reorder -> ReorderExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.FillBlanks -> FillBlanksExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.Type -> TypeExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.TypeBlanks -> TypeBlanksExercise(exercise, isLocked, onEvent)
+                is ExerciseUi.ReciteAloud -> ReciteAloudExercise(exercise, isLocked, onEvent)
+            }
+        }
+        // Fondu en bas tant qu'il reste du contenu : il invite à faire défiler. Retiré après validation, pour ne pas voiler la réponse.
+        if (scrollState.canScrollForward && feedback == null) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth()
+                    .height(SCROLL_HINT_HEIGHT)
+                    .background(Brush.verticalGradient(listOf(Color.Transparent, MaterialTheme.colorScheme.surface))),
+            )
+        }
+    }
+}
+
 @Composable
 private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
     Row(
@@ -244,11 +297,17 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
         }
         Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             repeat(total) { index ->
+                // Le segment se remplit en 300 ms au passage à l'exercice suivant.
+                val alpha by animateFloatAsState(
+                    targetValue = if (index < step) 1f else if (index == step) 0.55f else 0.18f,
+                    animationSpec = tween(SEGMENT_FILL_MILLIS),
+                    label = "segment",
+                )
                 Box(
                     modifier = Modifier
                         .weight(1f)
                         .height(4.dp)
-                        .background(MaterialTheme.colorScheme.primary.copy(alpha = if (index < step) 1f else if (index == step) 0.55f else 0.18f), RoundedCornerShape(2.dp)),
+                        .background(MaterialTheme.colorScheme.primary.copy(alpha = alpha), RoundedCornerShape(2.dp)),
                 )
             }
         }
@@ -292,6 +351,9 @@ private val TOP_BAR_ALLOWANCE = 96.dp
 private const val LARGE_FONT_SCALE = 1.3f
 private const val FEEDBACK_MAX_FRACTION = 0.55f
 private val SCROLL_HINT_HEIGHT = 40.dp
+private const val STEP_SLIDE_MILLIS = 350
+private const val PANEL_MILLIS = 250
+private const val SEGMENT_FILL_MILLIS = 300
 
 private val previewPart = ExerciseUi.CompletePart(
     reference = "Hébreux 11:1",
