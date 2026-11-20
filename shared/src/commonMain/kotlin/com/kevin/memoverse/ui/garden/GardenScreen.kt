@@ -77,6 +77,7 @@ import com.kevin.memoverse.resources.garden_watered
 import com.kevin.memoverse.resources.retry
 import com.kevin.memoverse.resources.scene_jardin_jour
 import com.kevin.memoverse.ui.components.PillButton
+import com.kevin.memoverse.ui.components.PlantImage
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.components.stageName
 import com.kevin.memoverse.ui.theme.AppTextStyles
@@ -126,7 +127,7 @@ fun GardenScreenContent(
             contentScale = ContentScale.Crop,
             modifier = Modifier.fillMaxSize(),
         )
-        PlantTags(plants = state.plants, onTagClick = { openedVerseId = it }, modifier = Modifier.fillMaxSize())
+        GardenPlants(plants = state.plants, onTagClick = { openedVerseId = it }, modifier = Modifier.fillMaxSize())
         Column(modifier = Modifier.fillMaxWidth().statusBarsPadding().padding(horizontal = Spacing.xl, vertical = Spacing.md)) {
             Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween, verticalAlignment = Alignment.CenterVertically) {
                 Wordmark()
@@ -277,11 +278,12 @@ private fun ActiveRing(active: Int, max: Int) {
 }
 
 /**
- * Étiquettes posées sur les terrasses de la scène (positions relatives à l'illustration).
+ * Les versets poussent sur les terrasses de la scène (positions relatives à l'illustration) :
+ * chacun montre sa plante à son stade, avec son étiquette en dessous ; une plante qui a soif penche et pâlit.
  * Les versets qui ont soif passent en premier ; au-delà des emplacements, une pastille « +N ».
  */
 @Composable
-private fun PlantTags(plants: List<GardenPlantUi>, onTagClick: (verseId: String) -> Unit, modifier: Modifier = Modifier) {
+private fun GardenPlants(plants: List<GardenPlantUi>, onTagClick: (verseId: String) -> Unit, modifier: Modifier = Modifier) {
     val ordered = plants.sortedByDescending { it.isThirsty }
     val shown = ordered.take(if (ordered.size > TAG_SLOTS.size) TAG_SLOTS.size - 1 else TAG_SLOTS.size)
     val hiddenCount = ordered.size - shown.size
@@ -291,24 +293,32 @@ private fun PlantTags(plants: List<GardenPlantUi>, onTagClick: (verseId: String)
             PlantTag(
                 text = stringResource(Res.string.garden_tag_more, hiddenCount),
                 isThirsty = false,
-                onClick = { onTagClick(ordered[shown.size].verseId) },
-                modifier = Modifier.tagPosition(fx, fy),
+                modifier = Modifier
+                    .tagPosition(fx, fy)
+                    .clickable(role = Role.Button, onClick = { onTagClick(ordered[shown.size].verseId) }),
             )
         }
         shown.forEachIndexed { index, plant ->
             val (fx, fy) = TAG_SLOTS[index]
-            PlantTag(
-                text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, plant.reference) else plant.reference,
-                isThirsty = plant.isThirsty,
-                onClick = { onTagClick(plant.verseId) },
-                modifier = Modifier.tagPosition(fx, fy),
-            )
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier
+                    .tagPosition(fx, fy)
+                    .clickable(role = Role.Button, onClick = { onTagClick(plant.verseId) }),
+            ) {
+                PlantImage(stage = plant.stage, isThirsty = plant.isThirsty)
+                PlantTag(
+                    text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, plant.reference) else plant.reference,
+                    isThirsty = plant.isThirsty,
+                    modifier = Modifier.padding(top = Spacing.xxs),
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun PlantTag(text: String, isThirsty: Boolean, onClick: () -> Unit, modifier: Modifier = Modifier) {
+private fun PlantTag(text: String, isThirsty: Boolean, modifier: Modifier = Modifier) {
     Text(
         text = text,
         style = MaterialTheme.typography.titleLarge.copy(fontSize = MaterialTheme.typography.bodySmall.fontSize),
@@ -318,31 +328,38 @@ private fun PlantTag(text: String, isThirsty: Boolean, onClick: () -> Unit, modi
             .shadow(6.dp, RoundedCornerShape(Radius.chip))
             .background((if (isThirsty) Gold else Color(0xFFFBF7F0)).copy(alpha = 0.94f), RoundedCornerShape(Radius.chip))
             .border(1.dp, Color.White.copy(alpha = 0.7f), RoundedCornerShape(Radius.chip))
-            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = Spacing.sm + Spacing.xxs, vertical = Spacing.xs),
     )
 }
 
-/** Place l'étiquette à sa position relative, sans jamais la laisser déborder de l'écran. */
+/**
+ * Place l'élément sur la scène, sans jamais le laisser déborder de l'écran : son bas (l'étiquette)
+ * tombe juste sous la position relative, la plante pousse au-dessus.
+ */
 private fun Modifier.tagPosition(fx: Float, fy: Float, margin: Dp = TAG_EDGE_MARGIN): Modifier = layout { measurable, constraints ->
     val placeable = measurable.measure(constraints.copy(minWidth = 0, minHeight = 0))
     val edge = margin.roundToPx()
     val x = (constraints.maxWidth * fx).toInt().coerceAtMost(constraints.maxWidth - placeable.width - edge).coerceAtLeast(edge)
-    layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(x, (constraints.maxHeight * fy).toInt()) }
+    val y = ((constraints.maxHeight * fy).toInt() + TAG_BASELINE.roundToPx() - placeable.height).coerceAtLeast(0)
+    layout(constraints.maxWidth, constraints.maxHeight) { placeable.place(x, y) }
 }
 
 private val TAG_EDGE_MARGIN = 12.dp
 
+/** Hauteur d'une étiquette : le bas de chaque élément tombe là, quelle que soit la taille de la plante. */
+private val TAG_BASELINE = 30.dp
+
 /** Il faut de la place pour au moins 3 versets (le minimum d'une plantation). */
 private const val MIN_FREE_SLOTS_TO_PLANT = 3
 
+// Trois rangs espacés : la plus grande plante (Fruit) ne recouvre pas l'étiquette du rang du dessus.
 private val TAG_SLOTS = listOf(
-    0.58f to 0.47f,
-    0.17f to 0.51f,
-    0.36f to 0.60f,
-    0.04f to 0.42f,
-    0.60f to 0.55f,
-    0.10f to 0.64f,
+    0.56f to 0.44f,
+    0.04f to 0.40f,
+    0.30f to 0.56f,
+    0.62f to 0.60f,
+    0.06f to 0.68f,
+    0.42f to 0.72f,
 )
 
 @Preview
