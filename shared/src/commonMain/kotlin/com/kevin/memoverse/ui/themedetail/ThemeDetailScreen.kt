@@ -48,7 +48,6 @@ import com.kevin.memoverse.presentation.themedetail.ThemeDetailViewModel
 import com.kevin.memoverse.presentation.themedetail.VerseItemUi
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.back
-import com.kevin.memoverse.resources.scene_parterres
 import com.kevin.memoverse.resources.selection_count
 import com.kevin.memoverse.resources.selection_limit_reached
 import com.kevin.memoverse.resources.start_error_save_failed
@@ -64,11 +63,14 @@ import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.LoadingState
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.VerseRow
+import com.kevin.memoverse.ui.components.familyIsland
+import com.kevin.memoverse.ui.components.softEdges
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.icons.AppIcons
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Radius
-import com.kevin.memoverse.ui.theme.ScrimDark
+import com.kevin.memoverse.ui.theme.Sand
+import com.kevin.memoverse.ui.theme.SkyWarm
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
@@ -130,7 +132,8 @@ fun ThemeDetailScreenContent(
 
 @Composable
 private fun TopBar(onBack: () -> Unit, isOverImage: Boolean) {
-    val tint = if (isOverImage) Color.White else MaterialTheme.colorScheme.onSurface
+    // L'en-tête est clair (ciel chaud) : l'encre se lit dessus comme sur la feuille des versets.
+    val tint = MaterialTheme.colorScheme.onSurface
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -141,7 +144,7 @@ private fun TopBar(onBack: () -> Unit, isOverImage: Boolean) {
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(Color.White.copy(alpha = if (isOverImage) 0.22f else 0.6f), CircleShape)
+                .background(Color.White.copy(alpha = 0.6f), CircleShape)
                 .clickable(onClick = onBack),
             contentAlignment = Alignment.Center,
         ) {
@@ -153,39 +156,31 @@ private fun TopBar(onBack: () -> Unit, isOverImage: Boolean) {
 
 @Composable
 private fun ThemeHeader(state: ThemeDetailUiState) {
-    Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT)) {
+    // L'île de la famille, sur le ciel chaud de l'Explorer : on garde le fil avec l'île touchée.
+    Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT).background(Brush.verticalGradient(listOf(SkyWarm, Sand)))) {
         Image(
-            painter = painterResource(Res.drawable.scene_parterres),
+            painter = painterResource(familyIsland(state.familyName)),
             contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize(),
-        )
-        Box(
+            contentScale = ContentScale.Fit,
             modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    Brush.verticalGradient(
-                        0f to ScrimDark.copy(alpha = 0.55f),
-                        0.3f to Color.Transparent,
-                        0.45f to Color.Transparent,
-                        1f to ScrimDark.copy(alpha = 0.62f),
-                    ),
-                ),
+                .align(Alignment.CenterEnd)
+                .offset(x = ISLAND_OFFSET_X, y = ISLAND_OFFSET_Y)
+                .size(ISLAND_SIZE)
+                .softEdges(),
         )
         Column(
             modifier = Modifier.align(Alignment.BottomStart).padding(start = Spacing.xl, end = Spacing.xl, bottom = Spacing.xxl + Spacing.xl),
             verticalArrangement = Arrangement.spacedBy(Spacing.xs),
         ) {
-            Text(state.themeName, style = MaterialTheme.typography.displayLarge.copy(fontSize = MaterialTheme.typography.displayLarge.fontSize * 1.1f), color = Color.White)
+            Text(state.themeName, style = MaterialTheme.typography.displayLarge.copy(fontSize = MaterialTheme.typography.displayLarge.fontSize * 1.1f))
             Text(
                 text = pluralStringResource(Res.plurals.theme_verse_count, state.verses.size, state.verses.size),
                 style = MaterialTheme.typography.titleMedium,
-                color = Color.White.copy(alpha = 0.85f),
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
             Text(
                 text = state.familyName,
                 style = MaterialTheme.typography.titleLarge.copy(fontStyle = FontStyle.Italic),
-                color = Color.White.copy(alpha = 0.9f),
             )
         }
     }
@@ -272,6 +267,9 @@ private fun SelectionBar(state: ThemeDetailUiState, onStartClick: () -> Unit, on
 }
 
 private val HEADER_HEIGHT = 400.dp
+private val ISLAND_SIZE = 240.dp
+private val ISLAND_OFFSET_X = 28.dp
+private val ISLAND_OFFSET_Y = (-20).dp
 private const val HEADER_SCROLL_THRESHOLD = 600
 private val BarShadow = Color(0x44402E1A)
 

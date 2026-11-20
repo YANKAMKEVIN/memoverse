@@ -1,5 +1,12 @@
 package com.kevin.memoverse.ui.components
 
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.BlendMode
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.CompositingStrategy
+import androidx.compose.ui.graphics.graphicsLayer
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.ile_mission
 import com.kevin.memoverse.resources.ile_moments_de_vie
@@ -20,3 +27,14 @@ fun familyIsland(familyName: String): DrawableResource = when (familyName) {
     "Moments de vie" -> Res.drawable.ile_moments_de_vie
     else -> Res.drawable.ile_mission
 }
+
+/** Fond les bords de l'illustration dans le ciel (son fond crème ne se voit plus). */
+fun Modifier.softEdges(): Modifier = this
+    .graphicsLayer(compositingStrategy = CompositingStrategy.Offscreen)
+    .drawWithContent {
+        drawContent()
+        drawRect(
+            brush = Brush.radialGradient(0.62f to Color.Black, 1f to Color.Transparent),
+            blendMode = BlendMode.DstIn,
+        )
+    }
