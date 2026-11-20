@@ -69,18 +69,18 @@
     <string name="theme_garden_full_short">Jardin plein</string>
     <string name="theme_go_water">Aller arroser</string>
     <string name="garden_plant_more">Planter de nouveaux versets</string>
-    <string name="verse_due_now">A soif · à arroser maintenant</string>
+    <string name="verse_due_now">a soif</string>
     <plurals name="verse_due_minutes">
-        <item quantity="one">À arroser dans %1$d min</item>
-        <item quantity="other">À arroser dans %1$d min</item>
+        <item quantity="one">à arroser dans %1$d min</item>
+        <item quantity="other">à arroser dans %1$d min</item>
     </plurals>
     <plurals name="verse_due_hours">
-        <item quantity="one">À arroser dans %1$d h</item>
-        <item quantity="other">À arroser dans %1$d h</item>
+        <item quantity="one">à arroser dans %1$d h</item>
+        <item quantity="other">à arroser dans %1$d h</item>
     </plurals>
     <plurals name="verse_due_days">
-        <item quantity="one">À arroser demain</item>
-        <item quantity="other">À arroser dans %1$d jours</item>
+        <item quantity="one">à arroser demain</item>
+        <item quantity="other">à arroser dans %1$d jours</item>
     </plurals>
 
     <!-- Notifications -->

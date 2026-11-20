@@ -80,6 +80,7 @@ import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.PlantImage
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.components.stageName
+import com.kevin.memoverse.ui.components.verseDueText
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Gold
@@ -193,13 +194,28 @@ fun GardenScreenContent(
         }
     }
     openedVerseId?.let { verseId ->
-        GardenVersesSheet(plants = state.plants, openedVerseId = verseId, onDismiss = { openedVerseId = null })
+        GardenVersesSheet(
+            plants = state.plants,
+            openedVerseId = verseId,
+            thirstyCount = state.thirstyCount,
+            onWaterClick = {
+                openedVerseId = null
+                onWaterClick()
+            },
+            onDismiss = { openedVerseId = null },
+        )
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String, onDismiss: () -> Unit) {
+private fun GardenVersesSheet(
+    plants: List<GardenPlantUi>,
+    openedVerseId: String,
+    thirstyCount: Int,
+    onWaterClick: () -> Unit,
+    onDismiss: () -> Unit,
+) {
     val ordered = plants.sortedByDescending { it.verseId == openedVerseId }
     ModalBottomSheet(onDismissRequest = onDismiss, containerColor = MaterialTheme.colorScheme.surface) {
         Column(
@@ -213,16 +229,29 @@ private fun GardenVersesSheet(plants: List<GardenPlantUi>, openedVerseId: String
         ) {
             Text(stringResource(Res.string.garden_sheet_title), style = MaterialTheme.typography.headlineMedium)
             ordered.forEach { plant ->
-                Column(verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
-                    Text(plant.reference, style = MaterialTheme.typography.titleLarge)
-                    val stage = stageName(plant.stage)
-                    Text(
-                        text = if (plant.isThirsty) stringResource(Res.string.garden_tag_thirsty, stage) else stage,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary,
-                    )
-                    if (plant.text.isNotEmpty()) Text("« ${plant.text} »", style = AppTextStyles.verseQuote())
+                Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                    // La plante du verset et son échéance : on voit d'un coup d'œil où il en est.
+                    Box(modifier = Modifier.size(width = 44.dp, height = 56.dp), contentAlignment = Alignment.BottomCenter) {
+                        PlantImage(stage = plant.stage, scale = SHEET_PLANT_SCALE, isThirsty = plant.isThirsty)
+                    }
+                    Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                        Text(plant.reference, style = MaterialTheme.typography.titleLarge)
+                        Text(
+                            text = "${stageName(plant.stage)} · ${verseDueText(plant)}",
+                            style = MaterialTheme.typography.labelMedium,
+                            color = MaterialTheme.colorScheme.primary,
+                        )
+                        if (plant.text.isNotEmpty()) Text("« ${plant.text} »", style = AppTextStyles.verseQuote())
+                    }
                 }
+            }
+            // On arrose là où l'on vient de voir qu'un verset a soif, sans refermer la fiche.
+            if (thirstyCount > 0) {
+                PillButton(
+                    text = pluralStringResource(Res.plurals.garden_water_count, thirstyCount, thirstyCount),
+                    onClick = onWaterClick,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm),
+                )
             }
         }
     }
@@ -345,6 +374,7 @@ private fun Modifier.tagPosition(fx: Float, fy: Float, margin: Dp = TAG_EDGE_MAR
 }
 
 private val TAG_EDGE_MARGIN = 12.dp
+private const val SHEET_PLANT_SCALE = 0.17f
 
 /** Hauteur d'une étiquette : le bas de chaque élément tombe là, quelle que soit la taille de la plante. */
 private val TAG_BASELINE = 30.dp

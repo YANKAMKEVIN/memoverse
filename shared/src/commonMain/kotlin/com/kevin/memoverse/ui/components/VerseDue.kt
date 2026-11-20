@@ -11,7 +11,7 @@ import com.kevin.memoverse.resources.verse_due_now
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
-/** « À arroser demain », « À arroser dans 3 h »… ou « A soif » quand c'est maintenant. */
+/** « à arroser demain », « à arroser dans 3 h »… ou « a soif » quand c'est maintenant (en minuscule, pour suivre un stade). */
 @Composable
 fun verseDueText(plant: GardenPlantUi): String = when (val next = plant.nextWatering) {
     null -> stringResource(Res.string.verse_due_now)

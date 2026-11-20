@@ -212,7 +212,7 @@ private fun VerseProgressRow(plant: GardenPlantUi) {
             Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
                 Text(plant.reference, style = MaterialTheme.typography.titleLarge)
                 Text(
-                    text = verseDueText(plant),
+                    text = verseDueText(plant).replaceFirstChar { it.uppercase() },
                     style = MaterialTheme.typography.bodySmall,
                     color = if (plant.isThirsty) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
                 )
