@@ -51,6 +51,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -73,6 +76,8 @@ import com.kevin.memoverse.resources.session_empty_subtitle
 import com.kevin.memoverse.resources.session_empty_title
 import com.kevin.memoverse.resources.session_error_message
 import com.kevin.memoverse.resources.session_error_title
+import com.kevin.memoverse.resources.session_progress
+import com.kevin.memoverse.resources.session_progress_label
 import com.kevin.memoverse.resources.session_quit_cancel
 import com.kevin.memoverse.resources.session_quit_confirm
 import com.kevin.memoverse.resources.session_quit_message
@@ -299,11 +304,15 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(Spacing.md),
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // Une croix et non une flèche : le bouton quitte la séance, il ne revient pas à l'exercice précédent.
+        // Cible de 48 dp (le rond visible garde 40 dp) avec un rôle de bouton pour les lecteurs d'écran.
         Box(
-            modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.7f), CircleShape).clickable(onClick = onClose),
+            modifier = Modifier.size(48.dp).clickable(role = Role.Button, onClick = onClose),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(AppIcons.Back, contentDescription = stringResource(Res.string.session_close), tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
+            Box(modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.7f), CircleShape), contentAlignment = Alignment.Center) {
+                Icon(AppIcons.Cross, contentDescription = stringResource(Res.string.session_close), tint = MaterialTheme.colorScheme.onSurface, modifier = Modifier.size(20.dp))
+            }
         }
         Row(modifier = Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(Spacing.xs)) {
             repeat(total) { index ->
@@ -320,6 +329,20 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
                         .background(MaterialTheme.colorScheme.primary.copy(alpha = alpha), RoundedCornerShape(2.dp)),
                 )
             }
+        }
+        // « 2 / 6 » : on sait combien d'exercices il reste.
+        if (total > 0) {
+            val position = (step + 1).coerceAtMost(total)
+            val description = stringResource(Res.string.session_progress_label, position, total)
+            Text(
+                text = stringResource(Res.string.session_progress, position, total),
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier
+                    .background(Color.White.copy(alpha = 0.7f), RoundedCornerShape(percent = 50))
+                    .padding(horizontal = Spacing.sm, vertical = Spacing.xxs)
+                    .semantics { contentDescription = description },
+            )
         }
     }
 }

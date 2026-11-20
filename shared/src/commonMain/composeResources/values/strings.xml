@@ -93,6 +93,8 @@
 
     <!-- Séance d'arrosage -->
     <string name="session_close">Fermer la séance</string>
+    <string name="session_progress">%1$d / %2$d</string>
+    <string name="session_progress_label">Exercice %1$d sur %2$d</string>
     <string name="session_check">Valider</string>
     <string name="session_continue">Continuer</string>
     <string name="session_title_reference">Retrouve la référence</string>
