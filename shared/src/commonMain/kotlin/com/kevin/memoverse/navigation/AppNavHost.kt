@@ -4,11 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -37,6 +34,7 @@ import com.kevin.memoverse.resources.reminder_prompt_message
 import com.kevin.memoverse.resources.reminder_prompt_title
 import com.kevin.memoverse.ui.components.AppTab
 import com.kevin.memoverse.ui.components.AppTabBar
+import com.kevin.memoverse.ui.components.GardenDialog
 import com.kevin.memoverse.ui.explorer.ExplorerScreen
 import com.kevin.memoverse.ui.garden.GardenScreen
 import com.kevin.memoverse.ui.onboarding.OnboardingScreen
@@ -124,19 +122,16 @@ private fun MainNavHost() {
         }
     }
     if (isReminderPromptShown) {
-        AlertDialog(
-            onDismissRequest = { isReminderPromptShown = false },
-            title = { Text(stringResource(Res.string.reminder_prompt_title)) },
-            text = { Text(stringResource(Res.string.reminder_prompt_message)) },
-            confirmButton = {
-                TextButton(onClick = {
-                    isReminderPromptShown = false
-                    requestNotificationPermission()
-                }) { Text(stringResource(Res.string.reminder_prompt_confirm)) }
+        GardenDialog(
+            title = stringResource(Res.string.reminder_prompt_title),
+            message = stringResource(Res.string.reminder_prompt_message),
+            confirmText = stringResource(Res.string.reminder_prompt_confirm),
+            onConfirm = {
+                isReminderPromptShown = false
+                requestNotificationPermission()
             },
-            dismissButton = {
-                TextButton(onClick = { isReminderPromptShown = false }) { Text(stringResource(Res.string.reminder_prompt_later)) }
-            },
+            dismissText = stringResource(Res.string.reminder_prompt_later),
+            onDismiss = { isReminderPromptShown = false },
         )
     }
 }

@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -50,6 +49,7 @@ import com.kevin.memoverse.resources.profile_translation_value
 import com.kevin.memoverse.resources.profile_version_label
 import com.kevin.memoverse.resources.profile_version_value
 import com.kevin.memoverse.resources.start_error_save_failed
+import com.kevin.memoverse.ui.components.GardenDialog
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.permission.rememberNotificationSettings
 import com.kevin.memoverse.ui.theme.AppTheme
@@ -128,18 +128,14 @@ fun ProfileScreenContent(
         }
     }
     if (state.isConfirmingReset) {
-        AlertDialog(
-            onDismissRequest = { onEvent(ProfileEvent.ResetCancelled) },
-            title = { Text(stringResource(Res.string.profile_reset_title)) },
-            text = { Text(stringResource(Res.string.profile_reset_message)) },
-            confirmButton = {
-                TextButton(onClick = { onEvent(ProfileEvent.ResetConfirmed) }) {
-                    Text(stringResource(Res.string.profile_reset_confirm), color = MaterialTheme.colorScheme.error)
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { onEvent(ProfileEvent.ResetCancelled) }) { Text(stringResource(Res.string.profile_reset_cancel)) }
-            },
+        GardenDialog(
+            title = stringResource(Res.string.profile_reset_title),
+            message = stringResource(Res.string.profile_reset_message),
+            confirmText = stringResource(Res.string.profile_reset_confirm),
+            onConfirm = { onEvent(ProfileEvent.ResetConfirmed) },
+            dismissText = stringResource(Res.string.profile_reset_cancel),
+            onDismiss = { onEvent(ProfileEvent.ResetCancelled) },
+            isDestructive = true,
         )
     }
 }

@@ -36,11 +36,9 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -97,6 +95,7 @@ import com.kevin.memoverse.resources.session_title_type_start
 import com.kevin.memoverse.resources.vignette_exercice
 import com.kevin.memoverse.ui.ceremony.GardenCeremony
 import com.kevin.memoverse.ui.components.ErrorState
+import com.kevin.memoverse.ui.components.GardenDialog
 import com.kevin.memoverse.ui.components.LoadingState
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.icons.AppIcons
@@ -158,16 +157,13 @@ fun SessionScreenContent(
         else -> ExerciseLayout(state = state, onEvent = onEvent)
     }
     if (state.isConfirmingQuit) {
-        AlertDialog(
-            onDismissRequest = { onEvent(SessionEvent.QuitCancelled) },
-            title = { Text(stringResource(Res.string.session_quit_title)) },
-            text = { Text(stringResource(Res.string.session_quit_message)) },
-            confirmButton = {
-                TextButton(onClick = { onEvent(SessionEvent.QuitConfirmed) }) { Text(stringResource(Res.string.session_quit_confirm)) }
-            },
-            dismissButton = {
-                TextButton(onClick = { onEvent(SessionEvent.QuitCancelled) }) { Text(stringResource(Res.string.session_quit_cancel)) }
-            },
+        GardenDialog(
+            title = stringResource(Res.string.session_quit_title),
+            message = stringResource(Res.string.session_quit_message),
+            confirmText = stringResource(Res.string.session_quit_confirm),
+            onConfirm = { onEvent(SessionEvent.QuitConfirmed) },
+            dismissText = stringResource(Res.string.session_quit_cancel),
+            onDismiss = { onEvent(SessionEvent.QuitCancelled) },
         )
     }
 }
