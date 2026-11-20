@@ -1,5 +1,7 @@
 package com.kevin.memoverse.ui.session
 
+import androidx.compose.animation.core.animateIntAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -11,17 +13,26 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.kevin.memoverse.presentation.common.StageUi
 import com.kevin.memoverse.presentation.session.GrownVerseUi
 import com.kevin.memoverse.presentation.session.SessionSummaryUi
 import com.kevin.memoverse.resources.Res
@@ -41,6 +52,7 @@ import com.kevin.memoverse.resources.session_summary_xp_label
 import com.kevin.memoverse.resources.session_summary_streak
 import com.kevin.memoverse.resources.session_summary_xp_total
 import com.kevin.memoverse.ui.components.PillButton
+import com.kevin.memoverse.ui.components.PlantImage
 import com.kevin.memoverse.ui.components.stageName
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Radius
@@ -58,6 +70,11 @@ fun SessionSummary(
     onContinue: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // Les deux chiffres défilent de 0 à leur valeur : la récompense se regarde.
+    var isRevealed by remember { mutableStateOf(false) }
+    LaunchedEffect(Unit) { isRevealed = true }
+    val shownXp by animateIntAsState(if (isRevealed) summary.xp else 0, tween(COUNT_UP_MILLIS), label = "xp")
+    val shownAccuracy by animateIntAsState(if (isRevealed) summary.accuracyPercent else 0, tween(COUNT_UP_MILLIS), label = "précision")
     Box(modifier = modifier.fillMaxSize().background(Sand)) {
         Image(painterResource(Res.drawable.scene_reussite), contentDescription = null, contentScale = ContentScale.Crop, modifier = Modifier.fillMaxSize())
         Column(
@@ -84,8 +101,8 @@ fun SessionSummary(
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm)) {
                 // Le cumul donne un sens aux points gagnés : « +60 XP · 420 au total ».
                 val xpLabel = summary.totalXp?.let { stringResource(Res.string.session_summary_xp_total, it) } ?: stringResource(Res.string.session_summary_xp_label)
-                StatTile(stringResource(Res.string.session_summary_xp, summary.xp), xpLabel, Modifier.weight(1f))
-                StatTile(stringResource(Res.string.session_summary_accuracy, summary.accuracyPercent), stringResource(Res.string.session_summary_accuracy_label), Modifier.weight(1f))
+                StatTile(stringResource(Res.string.session_summary_xp, shownXp), xpLabel, Modifier.weight(1f))
+                StatTile(stringResource(Res.string.session_summary_accuracy, shownAccuracy), stringResource(Res.string.session_summary_accuracy_label), Modifier.weight(1f))
             }
             if (summary.streakDays > 0) {
                 Text(
@@ -115,13 +132,30 @@ private fun StageChanges(title: StringResource, changes: List<GrownVerseUi>) {
     ) {
         Text(stringResource(title), style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         changes.forEach { change ->
-            Text(
-                text = stringResource(Res.string.session_summary_grown, change.reference, stageName(change.from), stageName(change.to)),
-                style = MaterialTheme.typography.titleLarge,
-            )
+            // La plante d'avant, la référence, la plante d'après ; lu « Jean 3:16 · Graine → Racine ».
+            val description = stringResource(Res.string.session_summary_grown, change.reference, stageName(change.from), stageName(change.to))
+            Row(
+                modifier = Modifier.fillMaxWidth().clearAndSetSemantics { contentDescription = description },
+                horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                StageThumb(change.from)
+                Text(change.reference, style = MaterialTheme.typography.titleLarge, textAlign = TextAlign.Center, modifier = Modifier.weight(1f))
+                StageThumb(change.to)
+            }
         }
     }
 }
+
+@Composable
+private fun StageThumb(stage: StageUi) {
+    Box(modifier = Modifier.size(width = 48.dp, height = 64.dp), contentAlignment = Alignment.BottomCenter) {
+        PlantImage(stage = stage, scale = THUMB_SCALE)
+    }
+}
+
+private const val COUNT_UP_MILLIS = 600
+private const val THUMB_SCALE = 0.2f
 
 @Composable
 private fun StatTile(value: String, label: String, modifier: Modifier = Modifier) {
