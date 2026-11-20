@@ -1,6 +1,30 @@
 package com.kevin.memoverse.ui.progression
 
 import androidx.compose.foundation.Image
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.text.style.TextAlign
+import com.kevin.memoverse.presentation.common.StageUi
+import com.kevin.memoverse.presentation.garden.GardenPlantUi
+import com.kevin.memoverse.presentation.garden.NextWateringUi
+import com.kevin.memoverse.presentation.progression.StageGroupUi
+import com.kevin.memoverse.resources.garden_plant_first
+import com.kevin.memoverse.resources.progression_empty_subtitle
+import com.kevin.memoverse.resources.progression_empty_title
+import com.kevin.memoverse.resources.progression_hide_text
+import com.kevin.memoverse.resources.progression_list_title
+import com.kevin.memoverse.resources.progression_show_text
+import com.kevin.memoverse.ui.components.PillButton
+import com.kevin.memoverse.ui.components.PlantImage
+import com.kevin.memoverse.ui.components.stageName
+import com.kevin.memoverse.ui.components.verseDueText
+import com.kevin.memoverse.ui.theme.AppTextStyles
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -62,16 +86,18 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun ProgressionScreen(
     contentPadding: PaddingValues,
+    onPlantClick: () -> Unit,
     viewModel: ProgressionViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ProgressionScreenContent(state = state, contentPadding = contentPadding)
+    ProgressionScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick)
 }
 
 @Composable
 fun ProgressionScreenContent(
     state: ProgressionUiState,
     contentPadding: PaddingValues,
+    onPlantClick: () -> Unit = {},
 ) {
     Column(
         modifier = Modifier
@@ -87,17 +113,106 @@ fun ProgressionScreenContent(
         Wordmark()
         Text(stringResource(Res.string.progression_title), style = MaterialTheme.typography.displayMedium, modifier = Modifier.padding(top = Spacing.sm))
         Text(stringResource(Res.string.progression_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm).height(IntrinsicSize.Min)) {
-            StageCard(Res.string.stage_seed, state.seedCount, Res.string.progression_seed_caption, Res.drawable.stade_graine, Modifier.weight(1f).fillMaxHeight())
-            StageCard(Res.string.stage_root, state.rootCount, Res.string.progression_root_caption, Res.drawable.stade_racine, Modifier.weight(1f).fillMaxHeight())
+        // Jardin vide : une invitation à planter plutôt que quatre « 0 ».
+        if (!state.isLoading && state.totalCount == 0) {
+            EmptyProgression(onPlantClick = onPlantClick)
+        } else {
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm).height(IntrinsicSize.Min)) {
+                StageCard(Res.string.stage_seed, state.seedCount, Res.string.progression_seed_caption, Res.drawable.stade_graine, Modifier.weight(1f).fillMaxHeight())
+                StageCard(Res.string.stage_root, state.rootCount, Res.string.progression_root_caption, Res.drawable.stade_racine, Modifier.weight(1f).fillMaxHeight())
+            }
+            Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
+                StageCard(Res.string.stage_tree, state.treeCount, Res.string.progression_tree_caption, Res.drawable.stade_arbre, Modifier.weight(1f).fillMaxHeight())
+                StageCard(Res.string.stage_fruit, state.fruitCount, Res.string.progression_fruit_caption, Res.drawable.stade_fruit, Modifier.weight(1f).fillMaxHeight())
+            }
+            TotalCard(total = state.totalCount)
+            if (state.groups.isNotEmpty()) {
+                Text(
+                    text = stringResource(Res.string.progression_list_title),
+                    style = MaterialTheme.typography.headlineMedium,
+                    modifier = Modifier.fillMaxWidth().padding(top = Spacing.md),
+                )
+            }
+            state.groups.forEach { group -> StageGroup(group) }
         }
-        Row(modifier = Modifier.height(IntrinsicSize.Min), horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
-            StageCard(Res.string.stage_tree, state.treeCount, Res.string.progression_tree_caption, Res.drawable.stade_arbre, Modifier.weight(1f).fillMaxHeight())
-            StageCard(Res.string.stage_fruit, state.fruitCount, Res.string.progression_fruit_caption, Res.drawable.stade_fruit, Modifier.weight(1f).fillMaxHeight())
-        }
-        TotalCard(total = state.totalCount)
     }
 }
+
+@Composable
+private fun EmptyProgression(onPlantClick: () -> Unit) {
+    Column(
+        modifier = Modifier.fillMaxWidth().padding(top = Spacing.xxl, start = Spacing.md, end = Spacing.md),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(Spacing.md),
+    ) {
+        PlantImage(stage = StageUi.SEED, scale = EMPTY_PLANT_SCALE)
+        Text(stringResource(Res.string.progression_empty_title), style = MaterialTheme.typography.headlineMedium, textAlign = TextAlign.Center)
+        Text(
+            text = stringResource(Res.string.progression_empty_subtitle),
+            style = MaterialTheme.typography.bodyMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            textAlign = TextAlign.Center,
+        )
+        PillButton(text = stringResource(Res.string.garden_plant_first), onClick = onPlantClick, modifier = Modifier.fillMaxWidth().padding(top = Spacing.sm))
+    }
+}
+
+/** Un stade et ses versets ; chaque ligne s'ouvre sur le texte complet. */
+@Composable
+private fun StageGroup(group: StageGroupUi) {
+    val shape = RoundedCornerShape(Radius.card)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface, shape)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+    ) {
+        Text(
+            text = stageName(group.stage),
+            style = MaterialTheme.typography.titleSmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            modifier = Modifier.padding(vertical = Spacing.xs),
+        )
+        group.plants.forEachIndexed { index, plant ->
+            if (index > 0) HorizontalDivider(color = MaterialTheme.colorScheme.outline)
+            VerseProgressRow(plant)
+        }
+    }
+}
+
+@Composable
+private fun VerseProgressRow(plant: GardenPlantUi) {
+    var isExpanded by rememberSaveable(plant.verseId) { mutableStateOf(false) }
+    val toggleLabel = stringResource(if (isExpanded) Res.string.progression_hide_text else Res.string.progression_show_text)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClickLabel = toggleLabel, role = Role.Button) { isExpanded = !isExpanded }
+            .padding(vertical = Spacing.sm),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xs),
+    ) {
+        Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), verticalAlignment = Alignment.CenterVertically) {
+            Box(modifier = Modifier.size(width = 40.dp, height = 48.dp), contentAlignment = Alignment.BottomCenter) {
+                PlantImage(stage = plant.stage, scale = ROW_PLANT_SCALE, isThirsty = plant.isThirsty)
+            }
+            Column(modifier = Modifier.weight(1f), verticalArrangement = Arrangement.spacedBy(Spacing.xxs)) {
+                Text(plant.reference, style = MaterialTheme.typography.titleLarge)
+                Text(
+                    text = verseDueText(plant),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = if (plant.isThirsty) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+            }
+        }
+        AnimatedVisibility(visible = isExpanded && plant.text.isNotEmpty()) {
+            Text("« ${plant.text} »", style = AppTextStyles.verseQuote(), modifier = Modifier.padding(top = Spacing.xs))
+        }
+    }
+}
+
+private const val EMPTY_PLANT_SCALE = 0.7f
+private const val ROW_PLANT_SCALE = 0.15f
 
 @Composable
 private fun StageCard(
@@ -158,7 +273,13 @@ private fun TotalCard(total: Int) {
 private fun ProgressionScreenPreview() {
     AppTheme {
         ProgressionScreenContent(
-            state = ProgressionUiState(isLoading = false, seedCount = 2, rootCount = 4, treeCount = 4, fruitCount = 2),
+            state = ProgressionUiState(
+                isLoading = false,
+                groups = listOf(
+                    StageGroupUi(StageUi.SEED, listOf(GardenPlantUi("hebreux-11-1", "Hébreux 11:1", StageUi.SEED, isThirsty = true, text = "Or la foi est une ferme assurance des choses qu’on espère."))),
+                    StageGroupUi(StageUi.ROOT, listOf(GardenPlantUi("jean-3-16", "Jean 3:16", StageUi.ROOT, nextWatering = NextWateringUi.InDays(2)))),
+                ),
+            ),
             contentPadding = PaddingValues(),
         )
     }

@@ -97,7 +97,9 @@ private fun MainNavHost() {
             composable<ExplorerRoute> {
                 ExplorerScreen(contentPadding = innerPadding, onThemeClick = { navController.navigate(ThemeDetailRoute(it)) })
             }
-            composable<ProgressionRoute> { ProgressionScreen(contentPadding = innerPadding) }
+            composable<ProgressionRoute> {
+                ProgressionScreen(contentPadding = innerPadding, onPlantClick = { navController.navigateToTab(AppTab.EXPLORER) })
+            }
             composable<ProfileRoute> { ProfileScreen(contentPadding = innerPadding) }
             composable<SessionRoute> { SessionScreen(onClose = { navController.popBackStack() }) }
             composable<ThemeDetailRoute> { entry ->

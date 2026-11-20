@@ -69,6 +69,19 @@
     <string name="theme_garden_full_short">Jardin plein</string>
     <string name="theme_go_water">Aller arroser</string>
     <string name="garden_plant_more">Planter de nouveaux versets</string>
+    <string name="verse_due_now">A soif · à arroser maintenant</string>
+    <plurals name="verse_due_minutes">
+        <item quantity="one">À arroser dans %1$d min</item>
+        <item quantity="other">À arroser dans %1$d min</item>
+    </plurals>
+    <plurals name="verse_due_hours">
+        <item quantity="one">À arroser dans %1$d h</item>
+        <item quantity="other">À arroser dans %1$d h</item>
+    </plurals>
+    <plurals name="verse_due_days">
+        <item quantity="one">À arroser demain</item>
+        <item quantity="other">À arroser dans %1$d jours</item>
+    </plurals>
 
     <!-- Notifications -->
     <string name="notification_single_thirsty">%1$s a soif. Te souviens-tu %2$s ?</string>
@@ -196,6 +209,11 @@
     <string name="progression_tree_caption">Tu progresses.</string>
     <string name="progression_fruit_caption">Tu portes du fruit.</string>
     <string name="progression_total_label">Dans ton jardin</string>
+    <string name="progression_list_title">Tes versets</string>
+    <string name="progression_empty_title">Ton jardin est encore vide</string>
+    <string name="progression_empty_subtitle">Plante tes premiers versets : tu suivras ici leur croissance, de Graine à Fruit.</string>
+    <string name="progression_show_text">Afficher le verset</string>
+    <string name="progression_hide_text">Masquer le verset</string>
     <plurals name="progression_total_value">
         <item quantity="one">%1$d verset</item>
         <item quantity="other">%1$d versets</item>

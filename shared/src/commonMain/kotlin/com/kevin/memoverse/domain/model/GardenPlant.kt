@@ -7,4 +7,6 @@ data class GardenPlant(
     val stage: MasteryStage,
     val isThirsty: Boolean = false,
     val text: String = "",
+    /** Délai avant qu'il ait soif (0 s'il a déjà soif). */
+    val millisUntilThirsty: Long = 0,
 )
