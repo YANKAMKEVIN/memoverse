@@ -11,7 +11,8 @@ import com.kevin.memoverse.presentation.common.toUi
 internal const val XP_PER_CORRECT_ANSWER = 10
 
 internal fun SessionModel.toUiState(): SessionUiState {
-    if (isLoading) return SessionUiState(isLoading = true)
+    // La croix reste active pendant le chargement : personne ne reste bloqué (iOS n'a pas de bouton retour).
+    if (isLoading) return SessionUiState(isLoading = true, shouldClose = shouldClose)
     if (hasError) return SessionUiState(isLoading = false, hasError = true, shouldClose = shouldClose)
     if (exercises.isEmpty()) return SessionUiState(isLoading = false, isEmpty = true, shouldClose = shouldClose)
     if (isFinished) {

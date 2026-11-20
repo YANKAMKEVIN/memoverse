@@ -9,6 +9,7 @@
     <string name="tab_profile">Profil</string>
 
     <!-- Communs -->
+    <string name="loading">Chargement</string>
     <string name="loading_error">Impossible de charger les versets.</string>
     <string name="retry">Réessayer</string>
     <string name="back">Retour</string>
@@ -136,6 +137,8 @@
     <string name="session_empty_title">Ton jardin est arrosé</string>
     <string name="session_empty_subtitle">Aucun verset n’a soif pour l’instant. Reviens quand une plante aura besoin d’eau.</string>
     <string name="session_back_to_garden">Retour au jardin</string>
+    <string name="session_error_title">La séance ne s’ouvre pas</string>
+    <string name="session_error_message">Tes versets et leur progression sont intacts. Réessaie dans un instant, ou reviens plus tard.</string>
     <string name="session_summary_title">Ton jardin est arrosé</string>
     <string name="session_summary_subtitle">Sa Parole grandit en toi.</string>
     <string name="session_summary_xp">+%1$d XP</string>

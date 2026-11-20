@@ -71,6 +71,8 @@ import com.kevin.memoverse.resources.session_check
 import com.kevin.memoverse.resources.session_close
 import com.kevin.memoverse.resources.session_empty_subtitle
 import com.kevin.memoverse.resources.session_empty_title
+import com.kevin.memoverse.resources.session_error_message
+import com.kevin.memoverse.resources.session_error_title
 import com.kevin.memoverse.resources.session_quit_cancel
 import com.kevin.memoverse.resources.session_quit_confirm
 import com.kevin.memoverse.resources.session_quit_message
@@ -134,8 +136,16 @@ fun SessionScreenContent(
     val summary = state.summary
     val ceremony = state.ceremony
     when {
-        state.isLoading -> LoadingState(Modifier.background(Sand))
-        state.hasError -> ErrorState(onRetry = { onEvent(SessionEvent.RetryClicked) }, modifier = Modifier.background(Sand))
+        // Chargement et erreur gardent la barre du haut et sa croix : personne ne reste bloqué (iOS n'a pas de retour).
+        state.isLoading -> SessionStatusLayout(onClose = { onEvent(SessionEvent.CloseClicked) }) { LoadingState() }
+        state.hasError -> SessionStatusLayout(onClose = { onEvent(SessionEvent.CloseClicked) }) {
+            ErrorState(
+                onRetry = { onEvent(SessionEvent.RetryClicked) },
+                title = stringResource(Res.string.session_error_title),
+                message = stringResource(Res.string.session_error_message),
+                secondaryAction = stringResource(Res.string.session_back_to_garden) to { onEvent(SessionEvent.CloseClicked) },
+            )
+        }
         // Le moment fort de la séance : l'eau versée et la plante qui grandit, juste avant le bilan.
         ceremony != null -> GardenCeremony(ceremony = ceremony, onFinished = { onEvent(SessionEvent.CeremonyFinished) })
         summary != null -> SessionSummary(summary = summary, onContinue = { onEvent(SessionEvent.CloseClicked) })
@@ -311,6 +321,14 @@ private fun SessionTopBar(step: Int, total: Int, onClose: () -> Unit) {
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun SessionStatusLayout(onClose: () -> Unit, content: @Composable () -> Unit) {
+    Column(modifier = Modifier.fillMaxSize().background(Sand)) {
+        SessionTopBar(step = 0, total = 0, onClose = onClose)
+        Box(modifier = Modifier.weight(1f).fillMaxWidth().navigationBarsPadding()) { content() }
     }
 }
 
