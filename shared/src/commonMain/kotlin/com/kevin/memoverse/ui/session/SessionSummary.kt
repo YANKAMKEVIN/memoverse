@@ -38,6 +38,8 @@ import com.kevin.memoverse.resources.session_summary_subtitle
 import com.kevin.memoverse.resources.session_summary_title
 import com.kevin.memoverse.resources.session_summary_xp
 import com.kevin.memoverse.resources.session_summary_xp_label
+import com.kevin.memoverse.resources.session_summary_streak
+import com.kevin.memoverse.resources.session_summary_xp_total
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.stageName
 import com.kevin.memoverse.ui.theme.AppTextStyles
@@ -46,6 +48,7 @@ import com.kevin.memoverse.ui.theme.Sand
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.painterResource
+import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 
 /** Fin de séance : l'olivier en lumière, l'XP gagnée, la précision et les versets qui ont grandi. */
@@ -79,8 +82,17 @@ fun SessionSummary(
                 textAlign = TextAlign.Center,
             )
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm)) {
-                StatTile(stringResource(Res.string.session_summary_xp, summary.xp), stringResource(Res.string.session_summary_xp_label), Modifier.weight(1f))
+                // Le cumul donne un sens aux points gagnés : « +60 XP · 420 au total ».
+                val xpLabel = summary.totalXp?.let { stringResource(Res.string.session_summary_xp_total, it) } ?: stringResource(Res.string.session_summary_xp_label)
+                StatTile(stringResource(Res.string.session_summary_xp, summary.xp), xpLabel, Modifier.weight(1f))
                 StatTile(stringResource(Res.string.session_summary_accuracy, summary.accuracyPercent), stringResource(Res.string.session_summary_accuracy_label), Modifier.weight(1f))
+            }
+            if (summary.streakDays > 0) {
+                Text(
+                    text = pluralStringResource(Res.plurals.session_summary_streak, summary.streakDays, summary.streakDays),
+                    style = MaterialTheme.typography.titleSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
             }
             StageChanges(Res.string.session_summary_grown_title, summary.grownVerses)
             StageChanges(Res.string.session_summary_wilted_title, summary.wiltedVerses)

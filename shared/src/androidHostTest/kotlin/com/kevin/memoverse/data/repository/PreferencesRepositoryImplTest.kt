@@ -3,6 +3,8 @@ package com.kevin.memoverse.data.repository
 import app.cash.sqldelight.driver.jdbc.sqlite.JdbcSqliteDriver
 import com.kevin.memoverse.data.local.db.MemoverseDatabase
 import com.kevin.memoverse.domain.model.DataResult
+import com.kevin.memoverse.domain.model.WateringStats
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.StandardTestDispatcher
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test
@@ -53,5 +55,14 @@ class PreferencesRepositoryImplTest {
 
         assertEquals(true, repository.hasSeenOnboarding())
         assertEquals(false, repository.hasAskedNotificationPermission())
+    }
+
+    @Test
+    fun `garde l'XP cumulée et la série de jours`() = runTest(dispatcher) {
+        assertEquals(WateringStats(), repository.observeWateringStats().first())
+
+        repository.saveWateringStats(WateringStats(totalXp = 420, streakDays = 3, lastSessionEpochDay = 20_000))
+
+        assertEquals(WateringStats(totalXp = 420, streakDays = 3, lastSessionEpochDay = 20_000), repository.observeWateringStats().first())
     }
 }

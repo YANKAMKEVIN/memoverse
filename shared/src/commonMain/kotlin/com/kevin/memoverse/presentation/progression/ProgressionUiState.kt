@@ -7,6 +7,10 @@ data class ProgressionUiState(
     val isLoading: Boolean = true,
     /** Les versets du jardin regroupés par stade, de Graine à Fruit ; les stades vides sont omis. */
     val groups: List<StageGroupUi> = emptyList(),
+    /** XP cumulée par les séances d'arrosage. */
+    val totalXp: Int = 0,
+    /** Jours d'arrosage de suite (0 si la série est rompue). */
+    val streakDays: Int = 0,
 ) {
     val seedCount: Int get() = countOf(StageUi.SEED)
     val rootCount: Int get() = countOf(StageUi.ROOT)

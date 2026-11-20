@@ -63,6 +63,8 @@ private fun SessionModel.summary(): SessionSummaryUi = SessionSummaryUi(
     accuracyPercent = if (exercises.isEmpty()) 0 else (correctCount * 100 + exercises.size / 2) / exercises.size,
     grownVerses = stageChanges { from, to -> to > from },
     wiltedVerses = stageChanges { from, to -> to < from },
+    totalXp = stats?.totalXp,
+    streakDays = stats?.streakDays ?: 0,
 )
 
 /**

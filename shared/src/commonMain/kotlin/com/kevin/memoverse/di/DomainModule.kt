@@ -17,6 +17,8 @@ import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
 import com.kevin.memoverse.domain.usecase.ResetGardenUseCase
 import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
 import com.kevin.memoverse.domain.usecase.ShouldShowOnboardingUseCase
+import com.kevin.memoverse.domain.usecase.RecordWateringSessionUseCase
+import com.kevin.memoverse.domain.usecase.ObserveWateringStatsUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -36,4 +38,6 @@ val domainModule = module {
     factory { MeasureRecitationUseCase() }
     factory { ClaimNotificationPermissionRequestUseCase(get()) }
     factory { ShouldShowOnboardingUseCase(get(), get()) }
+    factory { RecordWateringSessionUseCase(get(), get()) }
+    factory { ObserveWateringStatsUseCase(get(), get()) }
 }

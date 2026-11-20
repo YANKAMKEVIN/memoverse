@@ -111,6 +111,10 @@ data class SessionSummaryUi(
     val accuracyPercent: Int,
     val grownVerses: List<GrownVerseUi>,
     val wiltedVerses: List<GrownVerseUi> = emptyList(),
+    /** XP cumulée, cette séance comprise ; null tant qu'elle n'est pas enregistrée. */
+    val totalXp: Int? = null,
+    /** Jours d'arrosage de suite, aujourd'hui compris. */
+    val streakDays: Int = 0,
 ) {
     /** Moins d'une bonne réponse sur deux : le bilan encourage au lieu de féliciter. */
     val isEncouragement: Boolean get() = accuracyPercent < ENCOURAGEMENT_THRESHOLD_PERCENT

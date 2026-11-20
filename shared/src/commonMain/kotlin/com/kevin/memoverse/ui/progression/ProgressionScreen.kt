@@ -19,6 +19,10 @@ import com.kevin.memoverse.resources.progression_empty_subtitle
 import com.kevin.memoverse.resources.progression_empty_title
 import com.kevin.memoverse.resources.progression_hide_text
 import com.kevin.memoverse.resources.progression_list_title
+import com.kevin.memoverse.resources.progression_streak_label
+import com.kevin.memoverse.resources.progression_streak_value
+import com.kevin.memoverse.resources.progression_xp_label
+import com.kevin.memoverse.resources.progression_xp_value
 import com.kevin.memoverse.resources.progression_show_text
 import com.kevin.memoverse.ui.components.PillButton
 import com.kevin.memoverse.ui.components.PlantImage
@@ -117,7 +121,16 @@ fun ProgressionScreenContent(
         if (!state.isLoading && state.totalCount == 0) {
             EmptyProgression(onPlantClick = onPlantClick)
         } else {
+            // En tête : ce que les arrosages ont rapporté, et la série qui donne envie de revenir demain.
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.padding(top = Spacing.sm).height(IntrinsicSize.Min)) {
+                RewardCard(stringResource(Res.string.progression_xp_value, state.totalXp), stringResource(Res.string.progression_xp_label), Modifier.weight(1f).fillMaxHeight())
+                RewardCard(
+                    value = pluralStringResource(Res.plurals.progression_streak_value, state.streakDays, state.streakDays),
+                    label = stringResource(Res.string.progression_streak_label),
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                )
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md), modifier = Modifier.height(IntrinsicSize.Min)) {
                 StageCard(Res.string.stage_seed, state.seedCount, Res.string.progression_seed_caption, Res.drawable.stade_graine, Modifier.weight(1f).fillMaxHeight())
                 StageCard(Res.string.stage_root, state.rootCount, Res.string.progression_root_caption, Res.drawable.stade_racine, Modifier.weight(1f).fillMaxHeight())
             }
@@ -249,6 +262,21 @@ private fun StageCard(
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
         )
+    }
+}
+
+@Composable
+private fun RewardCard(value: String, label: String, modifier: Modifier = Modifier) {
+    val shape = RoundedCornerShape(Radius.card)
+    Column(
+        modifier = modifier
+            .background(MaterialTheme.colorScheme.surface, shape)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.xxs),
+    ) {
+        Text(label, style = MaterialTheme.typography.titleSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(value, style = MaterialTheme.typography.headlineMedium)
     }
 }
 

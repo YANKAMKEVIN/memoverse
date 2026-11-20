@@ -11,6 +11,7 @@ import com.kevin.memoverse.domain.speech.SpeechEvent
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
 import com.kevin.memoverse.domain.usecase.MeasureRecitationUseCase
 import com.kevin.memoverse.domain.usecase.RecordExerciseResultUseCase
+import com.kevin.memoverse.domain.usecase.RecordWateringSessionUseCase
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -26,6 +27,7 @@ class SessionViewModel(
     private val recordResult: RecordExerciseResultUseCase,
     private val listenToRecitation: ListenToRecitationUseCase,
     private val measureRecitation: MeasureRecitationUseCase,
+    private val recordSession: RecordWateringSessionUseCase,
 ) : ViewModel() {
 
     private val model = MutableStateFlow(SessionModel())
@@ -191,11 +193,22 @@ class SessionViewModel(
     }
 
     private fun next() {
+        val before = model.value
         model.update { m ->
             if (m.lastResult == null) return@update m
             val nextIndex = m.index + 1
             if (nextIndex >= m.exercises.size) m.copy(isFinished = true, lastResult = null, speech = SpeechModel())
             else m.copy(index = nextIndex, draft = null, lastResult = null, speech = SpeechModel())
+        }
+        if (!before.isFinished && model.value.isFinished) recordFinishedSession()
+    }
+
+    /** L'XP de la séance rejoint le cumul et la série de jours ; le bilan affiche alors le total. */
+    private fun recordFinishedSession() {
+        val xp = model.value.correctCount * XP_PER_CORRECT_ANSWER
+        viewModelScope.launch {
+            val result = recordSession(xp)
+            if (result is DataResult.Success) model.update { it.copy(stats = result.data) }
         }
     }
 

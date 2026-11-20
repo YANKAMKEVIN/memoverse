@@ -140,6 +140,11 @@
     <string name="session_summary_subtitle">Sa Parole grandit en toi.</string>
     <string name="session_summary_xp">+%1$d XP</string>
     <string name="session_summary_xp_label">Gagnés</string>
+    <string name="session_summary_xp_total">%1$d au total</string>
+    <plurals name="session_summary_streak">
+        <item quantity="one">%1$d jour d’arrosage</item>
+        <item quantity="other">%1$d jours d’arrosage de suite</item>
+    </plurals>
     <string name="session_summary_accuracy">%1$d %</string>
     <string name="session_summary_accuracy_label">Précision</string>
     <string name="session_summary_grown">%1$s · %2$s → %3$s</string>
@@ -210,6 +215,13 @@
     <string name="progression_fruit_caption">Tu portes du fruit.</string>
     <string name="progression_total_label">Dans ton jardin</string>
     <string name="progression_list_title">Tes versets</string>
+    <string name="progression_xp_value">%1$d XP</string>
+    <string name="progression_xp_label">Gagnés en arrosant</string>
+    <plurals name="progression_streak_value">
+        <item quantity="one">%1$d jour</item>
+        <item quantity="other">%1$d jours</item>
+    </plurals>
+    <string name="progression_streak_label">D’arrosage de suite</string>
     <string name="progression_empty_title">Ton jardin est encore vide</string>
     <string name="progression_empty_subtitle">Plante tes premiers versets : tu suivras ici leur croissance, de Graine à Fruit.</string>
     <string name="progression_show_text">Afficher le verset</string>
