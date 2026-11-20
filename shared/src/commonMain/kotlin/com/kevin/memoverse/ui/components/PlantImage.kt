@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.ColorMatrix
@@ -22,7 +23,7 @@ import org.jetbrains.compose.resources.painterResource
 /**
  * La plante d'un verset à son stade, détourée (miniatures tirées des illustrations stade_*).
  * Toutes partagent la même échelle : le socle a la même largeur, seule la plante grandit.
- * [scale] = dp par pixel de l'image ; une plante qui a soif penche et pâlit.
+ * [scale] = dp par pixel de l'image ; une plante qui a soif penche et pâlit ; la nuit, elle prend la lumière bleutée de la scène.
  */
 @Composable
 fun PlantImage(
@@ -30,12 +31,14 @@ fun PlantImage(
     modifier: Modifier = Modifier,
     scale: Float = DEFAULT_SCALE,
     isThirsty: Boolean = false,
+    isNight: Boolean = false,
 ) {
     val art = stage.plantArt()
+    val colorFilter = remember(isThirsty, isNight) { plantFilter(isThirsty, isNight) }
     Image(
         painter = painterResource(art.drawable),
         contentDescription = null,
-        colorFilter = if (isThirsty) ThirstyFilter else null,
+        colorFilter = colorFilter,
         modifier = modifier
             .width((art.widthPx * scale).dp)
             .height((art.heightPx * scale).dp)
@@ -62,4 +65,15 @@ private const val DEFAULT_SCALE = 0.3f
 private const val THIRSTY_TILT_DEGREES = -8f
 private const val THIRSTY_ALPHA = 0.88f
 private const val THIRSTY_SATURATION = 0.35f
-private val ThirstyFilter = ColorFilter.colorMatrix(ColorMatrix().apply { setToSaturation(THIRSTY_SATURATION) })
+
+private fun plantFilter(isThirsty: Boolean, isNight: Boolean): ColorFilter? {
+    if (!isThirsty && !isNight) return null
+    val matrix = ColorMatrix()
+    if (isThirsty) matrix.setToSaturation(THIRSTY_SATURATION)
+    if (isNight) matrix.timesAssign(ColorMatrix().apply { setToScale(NIGHT_RED, NIGHT_GREEN, NIGHT_BLUE, 1f) })
+    return ColorFilter.colorMatrix(matrix)
+}
+
+private const val NIGHT_RED = 0.62f
+private const val NIGHT_GREEN = 0.68f
+private const val NIGHT_BLUE = 0.85f
