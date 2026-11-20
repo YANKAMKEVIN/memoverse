@@ -233,7 +233,7 @@ private fun SelectionBar(state: ThemeDetailUiState, onStartClick: () -> Unit, on
     val shape = RoundedCornerShape(percent = 50)
     val error = state.startError
     val message = when {
-        error is StartErrorUi.TooManyActiveVerses -> stringResource(Res.string.start_error_too_many_active, error.freeSlots, error.maxActive)
+        error is StartErrorUi.TooManyActiveVerses -> pluralStringResource(Res.plurals.start_error_too_many_active, error.freeSlots, error.freeSlots, error.maxActive)
         error == StartErrorUi.SaveFailed -> stringResource(Res.string.start_error_save_failed)
         state.isLimitReached -> stringResource(Res.string.selection_limit_reached, state.maxSelection)
         state.isGardenFull -> stringResource(Res.string.theme_garden_full_short)

@@ -219,7 +219,7 @@ private fun VerseProgressRow(plant: GardenPlantUi) {
             }
         }
         AnimatedVisibility(visible = isExpanded && plant.text.isNotEmpty()) {
-            Text("« ${plant.text} »", style = AppTextStyles.verseQuote(), modifier = Modifier.padding(top = Spacing.xs))
+            Text("«\u202F${plant.text}\u202F»", style = AppTextStyles.verseQuote(), modifier = Modifier.padding(top = Spacing.xs))
         }
     }
 }

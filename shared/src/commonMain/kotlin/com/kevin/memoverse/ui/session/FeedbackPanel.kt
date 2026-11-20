@@ -105,7 +105,7 @@ fun FeedbackPanel(
             }
             // L'exercice affiche déjà le verset après validation ; on ne le répète que s'il est la correction.
             if (!feedback.isCorrect && feedback.expectedAnswer == null) {
-                Text("« ${feedback.verseText} »", style = AppTextStyles.verseQuote())
+                Text("«\u202F${feedback.verseText}\u202F»", style = AppTextStyles.verseQuote())
                 Text(feedback.reference, style = MaterialTheme.typography.labelSmall, color = colors.onSurfaceVariant)
             }
         }

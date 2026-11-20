@@ -276,7 +276,7 @@ private fun GardenVersesSheet(
                             style = MaterialTheme.typography.labelMedium,
                             color = MaterialTheme.colorScheme.primary,
                         )
-                        if (plant.text.isNotEmpty()) Text("« ${plant.text} »", style = AppTextStyles.verseQuote())
+                        if (plant.text.isNotEmpty()) Text("«\u202F${plant.text}\u202F»", style = AppTextStyles.verseQuote())
                     }
                 }
             }

@@ -28,9 +28,9 @@
     <string name="onboarding_plant_title">Plante quelques versets</string>
     <string name="onboarding_plant_body">Choisis un thème dans Explorer et plantes-en 3 ou 4. Jusqu’à 5 versets grandissent en même temps, pour ne pas te disperser.</string>
     <string name="onboarding_water_title">Arrose-les quand ils ont soif</string>
-    <string name="onboarding_water_body">Un verset qui a soif t’attend dans ton jardin. Une courte séance d’exercices l’arrose : retrouver, compléter, réciter.</string>
+    <string name="onboarding_water_body">Un verset qui a soif t’attend dans ton jardin. Une courte séance d’exercices l’arrose : retrouver, compléter, réciter.</string>
     <string name="onboarding_grow_title">Regarde-les grandir</string>
-    <string name="onboarding_grow_body">Chaque arrosage réussi les fait grandir, de Graine à Racine, puis Arbre et Fruit. Plusieurs erreurs de suite les font un peu faner : il suffit de les arroser à nouveau.</string>
+    <string name="onboarding_grow_body">Chaque arrosage réussi les fait grandir, de Graine à Racine, puis Arbre et Fruit. Plusieurs erreurs de suite les font un peu faner : il suffit de les arroser à nouveau.</string>
     <string name="onboarding_page">Étape %1$d sur %2$d</string>
 
     <!-- Jardin -->
@@ -85,7 +85,7 @@
     </plurals>
 
     <!-- Notifications -->
-    <string name="notification_single_thirsty">%1$s a soif. Te souviens-tu %2$s ?</string>
+    <string name="notification_single_thirsty">%1$s a soif. Te souviens-tu %2$s ?</string>
     <string name="notification_several_thirsty">%1$d versets ont soif dans ton jardin.</string>
     <string name="notification_part_start">du début du verset</string>
     <string name="notification_part_middle">du milieu du verset</string>
@@ -111,13 +111,13 @@
     <string name="session_title_recite_aloud">Récite le verset à voix haute</string>
     <string name="session_blank_hint">%1$d lettres</string>
     <string name="session_mic_button">Micro</string>
-    <string name="session_drop_idle">Récite : chaque mot dit remplit la goutte.</string>
+    <string name="session_drop_idle">Récite : chaque mot dit remplit la goutte.</string>
     <string name="session_drop_listening">Je t’écoute…</string>
     <string name="session_drop_paused">Touche la goutte pour reprendre.</string>
-    <string name="session_drop_full">La goutte est pleine : valide pour arroser.</string>
+    <string name="session_drop_full">La goutte est pleine : valide pour arroser.</string>
     <string name="session_drop_start">Réciter</string>
     <string name="session_drop_stop">J’ai fini</string>
-    <string name="session_drop_label">Goutte remplie à %1$d %</string>
+    <string name="session_drop_label">Goutte remplie à %1$d %</string>
     <string name="session_type_instead">Écrire plutôt</string>
     <string name="session_speak_instead">Réciter à voix haute plutôt</string>
     <string name="session_open_settings">Ouvrir les réglages</string>
@@ -132,10 +132,10 @@
     <string name="session_feedback_incorrect">Presque.</string>
     <string name="session_option_correct">Bonne réponse</string>
     <string name="session_option_wrong">Ton choix, incorrect</string>
-    <string name="session_feedback_answer">La bonne réponse :</string>
+    <string name="session_feedback_answer">La bonne réponse :</string>
     <string name="session_feedback_grew">%1$s passe au stade %2$s.</string>
-    <string name="session_feedback_wilted">%1$s a besoin d’eau : retour au stade %2$s.</string>
-    <string name="session_feedback_not_saved">Réponse non enregistrée : elle ne compte pas dans le bilan.</string>
+    <string name="session_feedback_wilted">%1$s a besoin d’eau : retour au stade %2$s.</string>
+    <string name="session_feedback_not_saved">Réponse non enregistrée : elle ne compte pas dans le bilan.</string>
     <string name="session_empty_title">Ton jardin est arrosé</string>
     <string name="session_empty_subtitle">Aucun verset n’a soif pour l’instant. Reviens quand une plante aura besoin d’eau.</string>
     <string name="session_back_to_garden">Retour au jardin</string>
@@ -150,14 +150,14 @@
         <item quantity="one">%1$d jour d’arrosage</item>
         <item quantity="other">%1$d jours d’arrosage de suite</item>
     </plurals>
-    <string name="session_summary_accuracy">%1$d %</string>
+    <string name="session_summary_accuracy">%1$d %</string>
     <string name="session_summary_accuracy_label">Précision</string>
     <string name="session_summary_grown">%1$s · %2$s → %3$s</string>
     <string name="session_summary_grown_title">Ont grandi</string>
     <string name="session_summary_wilted_title">Ont besoin d’eau</string>
     <string name="session_summary_encourage_title">Séance terminée</string>
     <string name="session_summary_encourage_subtitle">Chaque arrosage compte. Ces versets reviendront bientôt.</string>
-    <string name="session_quit_title">Quitter l’arrosage ?</string>
+    <string name="session_quit_title">Quitter l’arrosage ?</string>
     <string name="session_quit_message">Ce que tu as déjà fait est gardé. Les versets restants attendront la prochaine séance.</string>
     <string name="session_quit_confirm">Quitter</string>
     <string name="session_quit_cancel">Continuer l’arrosage</string>
@@ -208,7 +208,10 @@
     <string name="start_learning">Planter</string>
     <string name="verse_selected">Sélectionné</string>
     <string name="verse_learning">En cours</string>
-    <string name="start_error_too_many_active">Il ne reste que %1$d place(s) : %2$d versets en cours au maximum.</string>
+    <plurals name="start_error_too_many_active">
+        <item quantity="one">Il ne reste que %1$d place : %2$d versets en cours au maximum.</item>
+        <item quantity="other">Il ne reste que %1$d places : %2$d versets en cours au maximum.</item>
+    </plurals>
     <string name="start_error_save_failed">Enregistrement impossible. Réessaie.</string>
 
     <!-- Progression -->
@@ -228,7 +231,7 @@
     </plurals>
     <string name="progression_streak_label">D’arrosage de suite</string>
     <string name="progression_empty_title">Ton jardin est encore vide</string>
-    <string name="progression_empty_subtitle">Plante tes premiers versets : tu suivras ici leur croissance, de Graine à Fruit.</string>
+    <string name="progression_empty_subtitle">Plante tes premiers versets : tu suivras ici leur croissance, de Graine à Fruit.</string>
     <string name="progression_show_text">Afficher le verset</string>
     <string name="progression_hide_text">Masquer le verset</string>
     <plurals name="progression_total_value">
@@ -243,19 +246,19 @@
     <string name="profile_version_label">Version</string>
     <string name="profile_version_value">0.1.0</string>
     <string name="profile_reset">Réinitialiser mon jardin</string>
-    <string name="profile_reset_title">Réinitialiser ton jardin ?</string>
+    <string name="profile_reset_title">Réinitialiser ton jardin ?</string>
     <string name="profile_reset_message">Tous les versets plantés et leur progression seront effacés. Cette action est définitive.</string>
     <string name="profile_reset_confirm">Réinitialiser</string>
     <string name="profile_reset_cancel">Annuler</string>
     <string name="profile_reset_done">Ton jardin est vide. Tu peux planter de nouveaux versets.</string>
     <string name="profile_reminders_title">Rappels d’arrosage</string>
-    <string name="profile_reminders_on">Activés : on te prévient quand tes versets ont soif.</string>
-    <string name="profile_reminders_off">Désactivés : aucun rappel quand tes versets ont soif.</string>
+    <string name="profile_reminders_on">Activés : on te prévient quand tes versets ont soif.</string>
+    <string name="profile_reminders_off">Désactivés : aucun rappel quand tes versets ont soif.</string>
     <string name="profile_reminders_enable">Activer</string>
     <string name="profile_reminders_manage">Réglages</string>
-    <string name="reminder_prompt_title">Un rappel pour arroser ?</string>
+    <string name="reminder_prompt_title">Un rappel pour arroser ?</string>
     <string name="reminder_prompt_message">MEMOVERSE peut te prévenir quand tes versets ont soif. Tu pourras changer d’avis dans le Profil.</string>
     <string name="reminder_prompt_confirm">Activer les rappels</string>
     <string name="reminder_prompt_later">Plus tard</string>
-    <string name="profile_offline">Tout reste sur ton téléphone : pas de compte, pas de collecte de données.</string>
+    <string name="profile_offline">Tout reste sur ton téléphone : pas de compte, pas de collecte de données.</string>
 </resources>
