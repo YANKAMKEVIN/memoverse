@@ -1,0 +1,9 @@
+<resources>
+    <!-- Android 12+ : écran de lancement système (API SplashScreen de la plateforme, sans dépendance). -->
+    <style name="Theme.Memoverse" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/memoverse_cream</item>
+        <item name="android:windowSplashScreenBackground">@color/memoverse_cream</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/ic_launcher_foreground</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">@color/memoverse_olive</item>
+    </style>
+</resources>
