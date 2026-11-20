@@ -16,6 +16,7 @@ import com.kevin.memoverse.domain.speech.SpeechRecognitionService
 import com.kevin.memoverse.domain.usecase.ListenToRecitationUseCase
 import com.kevin.memoverse.domain.usecase.ResetGardenUseCase
 import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
+import com.kevin.memoverse.domain.usecase.ShouldShowOnboardingUseCase
 import org.koin.dsl.module
 
 val domainModule = module {
@@ -34,4 +35,5 @@ val domainModule = module {
     factory { CheckAnswerUseCase() }
     factory { MeasureRecitationUseCase() }
     factory { ClaimNotificationPermissionRequestUseCase(get()) }
+    factory { ShouldShowOnboardingUseCase(get(), get()) }
 }

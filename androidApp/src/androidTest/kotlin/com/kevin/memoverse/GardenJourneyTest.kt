@@ -58,6 +58,7 @@ class GardenJourneyTest {
         }
         loadKoinModules(module { factory { ExerciseFactory(Random(SEED), isSpeechAvailable = false) } })
         clearGarden()
+        robot.skipOnboardingIfShown()
         robot.waitForText("Ton jardin attend")
     }
 

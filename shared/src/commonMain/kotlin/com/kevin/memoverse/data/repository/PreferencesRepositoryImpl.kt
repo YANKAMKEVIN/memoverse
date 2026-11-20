@@ -27,6 +27,17 @@ class PreferencesRepositoryImpl(
 
     override suspend fun setNotificationPermissionAsked(): DataResult<Unit> = write(NOTIFICATION_ASKED_KEY, TRUE)
 
+    override suspend fun hasSeenOnboarding(): Boolean = try {
+        withContext(ioDispatcher) { queries.selectValue(ONBOARDING_SEEN_KEY).executeAsOneOrNull() == TRUE }
+    } catch (e: CancellationException) {
+        throw e
+    } catch (e: Exception) {
+        // Base illisible : on ne bloque pas l'entrée dans l'app derrière l'accueil.
+        true
+    }
+
+    override suspend fun setOnboardingSeen(): DataResult<Unit> = write(ONBOARDING_SEEN_KEY, TRUE)
+
     private suspend fun write(key: String, value: String): DataResult<Unit> = try {
         withContext(ioDispatcher) { queries.upsert(key, value) }
         DataResult.Success(Unit)
@@ -38,6 +49,7 @@ class PreferencesRepositoryImpl(
 
     private companion object {
         const val NOTIFICATION_ASKED_KEY = "notification_permission_asked"
+        const val ONBOARDING_SEEN_KEY = "onboarding_seen"
         const val TRUE = "true"
     }
 }

@@ -7,4 +7,9 @@ interface PreferencesRepository {
     suspend fun hasAskedNotificationPermission(): Boolean
 
     suspend fun setNotificationPermissionAsked(): DataResult<Unit>
+
+    /** L'accueil du premier lancement a déjà été vu (ou passé). */
+    suspend fun hasSeenOnboarding(): Boolean
+
+    suspend fun setOnboardingSeen(): DataResult<Unit>
 }

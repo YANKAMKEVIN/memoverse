@@ -13,4 +13,13 @@ class FakePreferencesRepository : PreferencesRepository {
         notificationPermissionAsked = true
         return DataResult.Success(Unit)
     }
+
+    var onboardingSeen = false
+
+    override suspend fun hasSeenOnboarding(): Boolean = onboardingSeen
+
+    override suspend fun setOnboardingSeen(): DataResult<Unit> {
+        onboardingSeen = true
+        return DataResult.Success(Unit)
+    }
 }

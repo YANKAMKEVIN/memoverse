@@ -1,5 +1,7 @@
 package com.kevin.memoverse.navigation
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.AlertDialog
@@ -24,8 +26,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.toRoute
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.kevin.memoverse.data.notification.NotificationEntry
 import com.kevin.memoverse.domain.usecase.ClaimNotificationPermissionRequestUseCase
+import com.kevin.memoverse.presentation.onboarding.OnboardingViewModel
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.reminder_prompt_confirm
 import com.kevin.memoverse.resources.reminder_prompt_later
@@ -35,6 +39,7 @@ import com.kevin.memoverse.ui.components.AppTab
 import com.kevin.memoverse.ui.components.AppTabBar
 import com.kevin.memoverse.ui.explorer.ExplorerScreen
 import com.kevin.memoverse.ui.garden.GardenScreen
+import com.kevin.memoverse.ui.onboarding.OnboardingScreen
 import com.kevin.memoverse.ui.permission.rememberNotificationPermissionRequest
 import com.kevin.memoverse.ui.profile.ProfileScreen
 import com.kevin.memoverse.ui.progression.ProgressionScreen
@@ -43,9 +48,22 @@ import com.kevin.memoverse.ui.themedetail.ThemeDetailScreen
 import kotlinx.coroutines.launch
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.koinInject
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun AppNavHost() {
+    // Premier lancement : l'accueil en trois volets passe avant le jardin, une seule fois.
+    val onboarding = koinViewModel<OnboardingViewModel>()
+    val showOnboarding by onboarding.showOnboarding.collectAsStateWithLifecycle()
+    when (showOnboarding) {
+        null -> Box(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background))
+        true -> OnboardingScreen(onFinished = onboarding::onFinished)
+        false -> MainNavHost()
+    }
+}
+
+@Composable
+private fun MainNavHost() {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentTab = backStackEntry?.destination?.toTab()

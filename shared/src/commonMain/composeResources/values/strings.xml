@@ -20,6 +20,18 @@
     <string name="stage_tree">Arbre</string>
     <string name="stage_fruit">Fruit</string>
 
+    <!-- Accueil du premier lancement -->
+    <string name="onboarding_skip">Passer</string>
+    <string name="onboarding_next">Suivant</string>
+    <string name="onboarding_start">Commencer</string>
+    <string name="onboarding_plant_title">Plante quelques versets</string>
+    <string name="onboarding_plant_body">Choisis un thème dans Explorer et plantes-en 3 ou 4. Jusqu’à 5 versets grandissent en même temps, pour ne pas te disperser.</string>
+    <string name="onboarding_water_title">Arrose-les quand ils ont soif</string>
+    <string name="onboarding_water_body">Un verset qui a soif t’attend dans ton jardin. Une courte séance d’exercices l’arrose : retrouver, compléter, réciter.</string>
+    <string name="onboarding_grow_title">Regarde-les grandir</string>
+    <string name="onboarding_grow_body">Chaque arrosage réussi les fait grandir, de Graine à Racine, puis Arbre et Fruit. Plusieurs erreurs de suite les font un peu faner : il suffit de les arroser à nouveau.</string>
+    <string name="onboarding_page">Étape %1$d sur %2$d</string>
+
     <!-- Jardin -->
     <plurals name="garden_growing_count">
         <item quantity="one">%1$d verset</item>

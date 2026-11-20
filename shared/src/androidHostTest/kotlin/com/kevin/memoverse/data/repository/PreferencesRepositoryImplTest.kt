@@ -44,4 +44,14 @@ class PreferencesRepositoryImplTest {
 
         assertEquals(false, repository.hasAskedNotificationPermission())
     }
+
+    @Test
+    fun `retient que l'accueil du premier lancement a été vu`() = runTest(dispatcher) {
+        assertEquals(false, repository.hasSeenOnboarding())
+
+        repository.setOnboardingSeen()
+
+        assertEquals(true, repository.hasSeenOnboarding())
+        assertEquals(false, repository.hasAskedNotificationPermission())
+    }
 }
