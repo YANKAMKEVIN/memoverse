@@ -15,6 +15,8 @@ private val JardinColors = lightColorScheme(
     background = Sand,
     onBackground = Ink,
     surface = Cream,
+    // Fond par défaut des boîtes de dialogue et menus Material : crème plutôt que le lavande de Material.
+    surfaceContainerHigh = Cream,
     onSurface = Ink,
     surfaceVariant = IllustrationBackground,
     onSurfaceVariant = InkMuted,

@@ -28,6 +28,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.ime
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -173,7 +175,10 @@ private fun ExerciseLayout(state: SessionUiState, onEvent: (SessionEvent) -> Uni
     val exercise = state.exercise ?: return
     val feedback = state.feedback
     // Grande police : l'illustration se réduit à la barre du haut, pour laisser voir les propositions.
-    val headerSpace = if (LocalDensity.current.fontScale >= LARGE_FONT_SCALE) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
+    // Clavier ouvert : même chose, sur petit écran il ne resterait presque rien pour l'exercice.
+    val density = LocalDensity.current
+    val isImeOpen = WindowInsets.ime.getBottom(density) > 0
+    val headerSpace = if (density.fontScale >= LARGE_FONT_SCALE || isImeOpen) 0.dp else HEADER_HEIGHT - TOP_BAR_ALLOWANCE
     // imePadding : avec adjustResize, le contenu et la barre du bas remontent au-dessus du clavier.
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface).imePadding()) {
         Box(modifier = Modifier.fillMaxWidth().height(HEADER_HEIGHT)) {

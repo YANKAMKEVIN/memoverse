@@ -25,7 +25,6 @@ import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.presentation.themedetail.DifficultyUi
 import com.kevin.memoverse.resources.Res
 import com.kevin.memoverse.resources.verse_learning
-import com.kevin.memoverse.resources.verse_selected
 import com.kevin.memoverse.ui.icons.AppIcons
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
@@ -96,7 +95,8 @@ private fun SelectionMark(isSelected: Boolean, isLearning: Boolean) {
             modifier = Modifier.size(28.dp).background(colors.primary, CircleShape),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(AppIcons.Check, contentDescription = stringResource(Res.string.verse_selected), tint = colors.onPrimary, modifier = Modifier.size(16.dp))
+            // La case est déjà annoncée « cochée » : pas de second « Sélectionné ».
+            Icon(AppIcons.Check, contentDescription = null, tint = colors.onPrimary, modifier = Modifier.size(16.dp))
         }
         else -> Box(modifier = Modifier.size(28.dp).border(1.5.dp, colors.onSurfaceVariant.copy(alpha = 0.5f), CircleShape))
     }

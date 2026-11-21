@@ -61,6 +61,7 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import androidx.compose.ui.semantics.Role
 
 @Composable
 fun ExplorerScreen(
@@ -172,7 +173,7 @@ private fun ThemeChip(theme: ThemeItemUi, onClick: () -> Unit) {
         modifier = Modifier
             .background(colors.surface.copy(alpha = 0.9f), shape)
             .border(1.dp, colors.outline, shape)
-            .clickable(onClick = onClick)
+            .clickable(role = Role.Button, onClick = onClick)
             .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         verticalAlignment = Alignment.CenterVertically,

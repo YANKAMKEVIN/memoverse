@@ -62,10 +62,18 @@ class SessionViewModel(
             SessionEvent.MicPermissionDenied -> model.update { it.copy(speech = it.speech.copy(isListening = false, error = SpeechErrorUi.PERMISSION_DENIED)) }
             SessionEvent.TypeInsteadClicked -> {
                 stopListening()
-                model.update { it.copy(speech = it.speech.copy(isTyping = true, error = null)) }
+                model.update { m ->
+                    val restored = m.speech.typedText.takeIf { it.isNotBlank() && (m.draft as? AnswerDraft.Typed)?.text.isNullOrBlank() }
+                    m.copy(
+                        draft = restored?.let { AnswerDraft.Typed(text = it) } ?: m.draft,
+                        speech = m.speech.copy(isTyping = true, error = null, typedText = ""),
+                    )
+                }
             }
-            // Ce qui avait été écrit ne compte pas comme récité : on repart d'une goutte vide.
-            SessionEvent.SpeakInsteadClicked -> model.update { if (it.lastResult != null) it else it.copy(draft = null, speech = SpeechModel()) }
+            // Ce qui avait été écrit ne compte pas comme récité : on repart d'une goutte vide, le texte est mis de côté.
+            SessionEvent.SpeakInsteadClicked -> model.update { m ->
+                if (m.lastResult != null) m else m.copy(draft = null, speech = SpeechModel(typedText = (m.draft as? AnswerDraft.Typed)?.takeUnless { it.fromSpeech }?.text.orEmpty()))
+            }
             SessionEvent.CheckClicked -> check()
             SessionEvent.ContinueClicked -> next()
             SessionEvent.CeremonyFinished -> model.update { it.copy(isCeremonyDone = true) }
@@ -96,7 +104,7 @@ class SessionViewModel(
         }
         listeningJob?.cancel()
         val previous = (model.value.draft as? AnswerDraft.Typed)?.takeIf { it.fromSpeech }?.text.orEmpty()
-        model.update { it.copy(speech = SpeechModel(isListening = true, committedText = previous)) }
+        model.update { it.copy(speech = SpeechModel(isListening = true, committedText = previous, typedText = it.speech.typedText)) }
         listeningJob = viewModelScope.launch {
             listenToRecitation().collect { event ->
                 when (event) {

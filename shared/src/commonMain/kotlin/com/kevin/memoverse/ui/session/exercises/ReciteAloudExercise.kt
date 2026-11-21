@@ -55,6 +55,8 @@ import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.stringResource
 import kotlin.math.roundToInt
+import com.kevin.memoverse.ui.components.rememberReduceMotion
+import com.kevin.memoverse.ui.components.textAction
 
 /**
  * Récitation orale « La goutte » : le verset se révèle mot à mot pendant qu'on le dit,
@@ -79,7 +81,7 @@ fun ReciteAloudExercise(
                     text = stringResource(Res.string.session_speak_instead),
                     style = MaterialTheme.typography.titleMedium,
                     color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.clickable { onEvent(SessionEvent.SpeakInsteadClicked) }.padding(Spacing.sm),
+                    modifier = Modifier.textAction { onEvent(SessionEvent.SpeakInsteadClicked) }.padding(horizontal = Spacing.sm),
                 )
             }
         }
@@ -129,7 +131,7 @@ fun ReciteAloudExercise(
                         text = stringResource(Res.string.session_type_instead),
                         style = MaterialTheme.typography.titleMedium,
                         color = colors.primary,
-                        modifier = Modifier.clickable { onEvent(SessionEvent.TypeInsteadClicked) }.padding(vertical = Spacing.xs),
+                        modifier = Modifier.textAction { onEvent(SessionEvent.TypeInsteadClicked) },
                     )
                 }
             }
@@ -179,6 +181,7 @@ private fun ErrorMessage(error: SpeechErrorUi) {
 @Composable
 private fun ListenButton(isListening: Boolean, onClick: () -> Unit) {
     val colors = MaterialTheme.colorScheme
+    val reduceMotion = rememberReduceMotion()
     val pulse by rememberInfiniteTransition(label = "enregistrement").animateFloat(
         initialValue = 1f,
         targetValue = PULSE_ALPHA,
@@ -195,7 +198,7 @@ private fun ListenButton(isListening: Boolean, onClick: () -> Unit) {
         horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
     ) {
         if (isListening) {
-            Box(Modifier.size(10.dp).alpha(pulse).background(colors.error, CircleShape))
+            Box(Modifier.size(10.dp).alpha(if (reduceMotion) 1f else pulse).background(colors.error, CircleShape))
         } else {
             Icon(AppIcons.Microphone, contentDescription = stringResource(Res.string.session_mic_button), tint = colors.onPrimary, modifier = Modifier.size(20.dp))
         }

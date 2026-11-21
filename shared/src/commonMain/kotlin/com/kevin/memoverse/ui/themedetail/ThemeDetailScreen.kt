@@ -77,6 +77,8 @@ import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.parameter.parametersOf
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.semantics.Role
 
 @Composable
 fun ThemeDetailScreen(
@@ -141,14 +143,17 @@ private fun TopBar(onBack: () -> Unit, isOverImage: Boolean) {
             .statusBarsPadding()
             .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
     ) {
+        // Cible de 48 dp autour du rond de 40 dp.
         Box(
             modifier = Modifier
-                .size(40.dp)
-                .background(Color.White.copy(alpha = 0.6f), CircleShape)
-                .clickable(onClick = onBack),
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable(role = Role.Button, onClick = onBack),
             contentAlignment = Alignment.Center,
         ) {
-            Icon(AppIcons.Back, contentDescription = stringResource(Res.string.back), tint = tint, modifier = Modifier.size(20.dp))
+            Box(modifier = Modifier.size(40.dp).background(Color.White.copy(alpha = 0.6f), CircleShape), contentAlignment = Alignment.Center) {
+                Icon(AppIcons.Back, contentDescription = stringResource(Res.string.back), tint = tint, modifier = Modifier.size(20.dp))
+            }
         }
         Wordmark(color = tint, modifier = Modifier.align(Alignment.Center))
     }

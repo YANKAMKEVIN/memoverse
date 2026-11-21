@@ -76,6 +76,7 @@ import com.kevin.memoverse.resources.stage_fruit
 import com.kevin.memoverse.resources.stage_root
 import com.kevin.memoverse.resources.stage_seed
 import com.kevin.memoverse.resources.stage_tree
+import com.kevin.memoverse.ui.components.ErrorState
 import com.kevin.memoverse.ui.components.Wordmark
 import com.kevin.memoverse.ui.theme.AppTheme
 import com.kevin.memoverse.ui.theme.Radius
@@ -86,6 +87,12 @@ import org.jetbrains.compose.resources.painterResource
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.kevin.memoverse.domain.model.LearningVerse
+import com.kevin.memoverse.resources.progression_help_limit
+import com.kevin.memoverse.resources.progression_help_stages
+import com.kevin.memoverse.resources.progression_help_thirst
+import com.kevin.memoverse.resources.progression_help_title
+import com.kevin.memoverse.resources.progression_help_xp
 
 @Composable
 fun ProgressionScreen(
@@ -94,7 +101,7 @@ fun ProgressionScreen(
     viewModel: ProgressionViewModel = koinViewModel(),
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    ProgressionScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick)
+    ProgressionScreenContent(state = state, contentPadding = contentPadding, onPlantClick = onPlantClick, onRetry = viewModel::onRetry)
 }
 
 @Composable
@@ -102,7 +109,13 @@ fun ProgressionScreenContent(
     state: ProgressionUiState,
     contentPadding: PaddingValues,
     onPlantClick: () -> Unit = {},
+    onRetry: () -> Unit = {},
 ) {
+    if (state.hasError) {
+        // Une erreur de lecture ne doit pas se présenter comme un jardin vide.
+        ErrorState(onRetry = onRetry, modifier = Modifier.background(MaterialTheme.colorScheme.background).statusBarsPadding())
+        return
+    }
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -147,6 +160,32 @@ fun ProgressionScreenContent(
                 )
             }
             state.groups.forEach { group -> StageGroup(group) }
+        }
+        if (!state.isLoading) HelpCard()
+    }
+}
+
+/** Les mots du jardin (stades, soif, limite, XP), expliqués une fois pour toutes. */
+@Composable
+private fun HelpCard() {
+    val shape = RoundedCornerShape(Radius.card)
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = Spacing.md)
+            .background(MaterialTheme.colorScheme.surface, shape)
+            .border(1.dp, MaterialTheme.colorScheme.outline, shape)
+            .padding(Spacing.lg),
+        verticalArrangement = Arrangement.spacedBy(Spacing.sm),
+    ) {
+        Text(stringResource(Res.string.progression_help_title), style = MaterialTheme.typography.titleMedium)
+        listOf(
+            stringResource(Res.string.progression_help_stages),
+            stringResource(Res.string.progression_help_thirst),
+            stringResource(Res.string.progression_help_limit, LearningVerse.MAX_ACTIVE_VERSES),
+            stringResource(Res.string.progression_help_xp),
+        ).forEach { line ->
+            Text(line, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
     }
 }

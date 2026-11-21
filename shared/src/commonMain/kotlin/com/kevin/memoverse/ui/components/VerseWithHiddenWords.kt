@@ -19,6 +19,9 @@ import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
+import com.kevin.memoverse.resources.Res
+import com.kevin.memoverse.resources.session_hidden_word
+import org.jetbrains.compose.resources.stringResource
 
 /**
  * Verset dont une partie est cachée sous des « galets de brume » : une forme par mot, de la
@@ -31,7 +34,7 @@ fun VerseWithHiddenWords(
     hidden: String,
     after: String,
     modifier: Modifier = Modifier,
-    hiddenDescription: String = "",
+    hiddenDescription: String = stringResource(Res.string.session_hidden_word),
 ) {
     val style = AppTextStyles.verse()
     FlowRow(

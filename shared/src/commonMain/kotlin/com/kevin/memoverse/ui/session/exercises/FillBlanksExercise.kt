@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -26,6 +25,14 @@ import com.kevin.memoverse.ui.components.WordPebble
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.kevin.memoverse.resources.Res
+import com.kevin.memoverse.resources.session_blank_empty
+import com.kevin.memoverse.resources.session_blank_filled
+import org.jetbrains.compose.resources.stringResource
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -46,19 +53,25 @@ fun FillBlanksExercise(
             exercise.segments.forEach { segment ->
                 when (segment) {
                     is SegmentUi.Word -> Text(segment.text, style = style)
-                    is SegmentUi.Blank -> Box(
+                    is SegmentUi.Blank -> {
+                    // Le lecteur d'écran dit quel trou c'est et ce qu'il contient.
+                    val label = segment.filledWord?.let { stringResource(Res.string.session_blank_filled, segment.slot + 1, it) }
+                        ?: stringResource(Res.string.session_blank_empty, segment.slot + 1)
+                    Box(
                         modifier = Modifier
                             .widthIn(min = 72.dp)
-                            .height(34.dp)
+                            .heightIn(min = 48.dp)
                             .background(colors.primaryContainer.copy(alpha = if (segment.filledWord != null) 1f else 0.4f), RoundedCornerShape(Radius.chip))
                             .drawBehind {
                                 drawLine(colors.secondary, Offset(0f, size.height), Offset(size.width, size.height), 2.dp.toPx())
                             }
-                            .clickable(enabled = !isLocked && segment.filledWord != null) { onEvent(SessionEvent.BlankTapped(segment.slot)) }
+                            .clickable(enabled = !isLocked && segment.filledWord != null, role = Role.Button) { onEvent(SessionEvent.BlankTapped(segment.slot)) }
+                            .semantics { contentDescription = label }
                             .padding(horizontal = Spacing.sm),
                         contentAlignment = Alignment.Center,
                     ) {
                         segment.filledWord?.let { Text(it, style = style, color = colors.primary) }
+                    }
                     }
                 }
             }

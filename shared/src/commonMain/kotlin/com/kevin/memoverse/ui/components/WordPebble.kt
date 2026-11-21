@@ -18,6 +18,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.unit.dp
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Spacing
+import androidx.compose.ui.semantics.Role
 
 /** Galet gravé d'un mot (exercices « remettre en ordre » et « mots manquants »). */
 @Composable
@@ -38,11 +39,11 @@ fun WordPebble(
             .background(Brush.verticalGradient(listOf(PebbleTop, PebbleBottom)), shape)
             .border(1.dp, Color.White.copy(alpha = 0.7f), shape)
             // Un tic léger quand le galet est posé ou retiré : la séance se sent sous le doigt.
-            .clickable(enabled = enabled) {
+            .clickable(enabled = enabled, role = Role.Button) {
                 haptic.performHapticFeedback(HapticFeedbackType.SegmentTick)
                 onClick()
             }
-            .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
     )
 }
 

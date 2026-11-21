@@ -39,6 +39,7 @@ import com.kevin.memoverse.ui.theme.Water
 import com.kevin.memoverse.ui.theme.WaterLight
 import kotlin.math.PI
 import kotlin.math.sin
+import com.kevin.memoverse.ui.components.rememberReduceMotion
 
 /**
  * La goutte de l'oral : elle se remplit d'eau à chaque mot récité ([fill] de 0 à 1).
@@ -58,7 +59,8 @@ fun WaterDrop(
     val transition = rememberInfiniteTransition(label = "eau")
     val phase by transition.animateFloat(0f, 2f * PI.toFloat(), infiniteRepeatable(tween(WAVE_MILLIS, easing = LinearEasing)), label = "vague")
     val breath by transition.animateFloat(1f, BREATH_SCALE, infiniteRepeatable(tween(BREATH_MILLIS), androidx.compose.animation.core.RepeatMode.Reverse), label = "souffle")
-    val amplitude by animateFloatAsState(if (isListening) LISTENING_AMPLITUDE else IDLE_AMPLITUDE, label = "amplitude")
+    val reduceMotion = rememberReduceMotion()
+    val amplitude by animateFloatAsState(if (reduceMotion) 0f else if (isListening) LISTENING_AMPLITUDE else IDLE_AMPLITUDE, label = "amplitude")
     // Une impulsion quand la goutte devient pleine : la récitation est réussie.
     val haptic = LocalHapticFeedback.current
     val isFull = fill >= 1f
@@ -71,7 +73,7 @@ fun WaterDrop(
     Canvas(
         modifier = modifier
             .size(DROP_WIDTH, DROP_HEIGHT)
-            .scale(if (isListening) breath else 1f)
+            .scale(if (isListening && !reduceMotion) breath else 1f)
             .semantics { contentDescription = label }
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
