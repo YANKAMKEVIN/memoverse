@@ -11,6 +11,8 @@ data class ProgressionUiState(
     val totalXp: Int = 0,
     /** Jours d'arrosage de suite (0 si la série est rompue). */
     val streakDays: Int = 0,
+    /** La lecture du jardin a échoué : à ne pas confondre avec un jardin vide. */
+    val hasError: Boolean = false,
 ) {
     val seedCount: Int get() = countOf(StageUi.SEED)
     val rootCount: Int get() = countOf(StageUi.ROOT)

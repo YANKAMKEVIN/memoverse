@@ -50,6 +50,8 @@ import com.kevin.memoverse.ui.theme.Cream
 import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.pluralStringResource
 import org.jetbrains.compose.resources.stringResource
+import com.kevin.memoverse.ui.components.rememberReduceMotion
+import kotlinx.coroutines.delay
 
 /**
  * Scène plein écran du jardin de ton cœur (plantation, arrosage ou verset qui fane), de 3 à 5 s.
@@ -69,7 +71,15 @@ fun GardenCeremony(
         state = rememberNavigationEventState(NavigationEventInfo.None),
         onBackCompleted = { finish() },
     )
+    val reduceMotion = rememberReduceMotion()
     LaunchedEffect(ceremony) {
+        if (reduceMotion) {
+            // Réglage « réduire les animations » : la dernière image, le temps de la lire.
+            clock.snapTo(timeline.totalMillis.toFloat())
+            delay(REDUCED_MOTION_HOLD_MILLIS)
+            finish()
+            return@LaunchedEffect
+        }
         // Une seule horloge, cadencée par les images : chaque étape lit le temps écoulé.
         clock.animateTo(timeline.totalMillis.toFloat(), tween(timeline.totalMillis, easing = LinearEasing))
         finish()
@@ -170,6 +180,7 @@ private fun CeremonyUi.texts(): CeremonyTexts = when (this) {
 }
 
 private val SCENE_MAX_WIDTH = 360.dp
+private const val REDUCED_MOTION_HOLD_MILLIS = 2_000L
 
 /** Aperçu figé à un instant donné de la scène (par défaut, sa dernière image). */
 @Composable

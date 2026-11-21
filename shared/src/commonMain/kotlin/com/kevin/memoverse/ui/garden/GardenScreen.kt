@@ -107,6 +107,7 @@ import kotlinx.datetime.TimeZone
 import kotlinx.datetime.toLocalDateTime
 import kotlin.time.Clock
 import kotlin.time.ExperimentalTime
+import com.kevin.memoverse.ui.components.textAction
 
 @Composable
 fun GardenScreen(
@@ -197,8 +198,8 @@ fun GardenScreenContent(
                     color = MaterialTheme.colorScheme.primary,
                     modifier = Modifier
                         .background(Color.White.copy(alpha = 0.75f), RoundedCornerShape(percent = 50))
-                        .clickable(onClick = onPlantClick)
-                        .padding(horizontal = Spacing.lg, vertical = Spacing.sm),
+                        .textAction(onClick = onPlantClick)
+                        .padding(horizontal = Spacing.lg),
                 )
             }
             if (state.thirstyCount > 0) {

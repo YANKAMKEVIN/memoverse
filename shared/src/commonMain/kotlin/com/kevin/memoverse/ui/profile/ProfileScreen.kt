@@ -2,7 +2,6 @@ package com.kevin.memoverse.ui.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -58,6 +57,7 @@ import com.kevin.memoverse.ui.theme.Spacing
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
+import com.kevin.memoverse.ui.components.textAction
 
 /** Profil V1 : informations sur l'app et réinitialisation du jardin (pas de compte en V1). */
 @Composable
@@ -120,7 +120,7 @@ fun ProfileScreenContent(
             text = stringResource(Res.string.profile_reset),
             style = MaterialTheme.typography.titleMedium,
             color = MaterialTheme.colorScheme.error,
-            modifier = Modifier.clickable { onEvent(ProfileEvent.ResetClicked) }.padding(Spacing.md),
+            modifier = Modifier.textAction { onEvent(ProfileEvent.ResetClicked) }.padding(horizontal = Spacing.md),
         )
         when {
             state.isResetDone -> Text(stringResource(Res.string.profile_reset_done), style = MaterialTheme.typography.bodySmall, textAlign = TextAlign.Center)

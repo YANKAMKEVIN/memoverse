@@ -40,6 +40,8 @@ internal data class SpeechModel(
     val committedText: String = "",
     val error: SpeechErrorUi? = null,
     val isTyping: Boolean = false,
+    /** Texte écrit avant de repasser à l'oral : il revient si on réécrit. */
+    val typedText: String = "",
 )
 
 internal data class ExerciseResult(

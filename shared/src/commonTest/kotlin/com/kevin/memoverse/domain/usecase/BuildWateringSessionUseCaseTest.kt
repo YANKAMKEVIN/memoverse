@@ -31,6 +31,15 @@ class BuildWateringSessionUseCaseTest {
     }
 
     @Test
+    fun `alterne les deux tours d'exercices sans repeter un verset de suite`() = runTest {
+        val learning = FakeLearningRepository(initial = listOf(learningVerse("v1"), learningVerse("v2"), learningVerse("v3")))
+
+        val session = (useCase(learning)() as DataResult.Success).data
+
+        assertEquals(listOf("v1", "v2", "v1", "v3", "v2", "v3"), session.exercises.map { it.verse.id })
+    }
+
+    @Test
     fun `n'arrose que les versets qui ont soif`() = runTest {
         val learning = FakeLearningRepository(
             initial = listOf(learningVerse("v1").copy(dueAtEpochMillis = NOW + 1), learningVerse("v2", MasteryStage.FRUIT)),

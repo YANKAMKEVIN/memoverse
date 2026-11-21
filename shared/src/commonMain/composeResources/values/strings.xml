@@ -121,7 +121,7 @@
     <string name="session_type_instead">Écrire plutôt</string>
     <string name="session_speak_instead">Réciter à voix haute plutôt</string>
     <string name="session_open_settings">Ouvrir les réglages</string>
-    <string name="session_speech_permission">Autorise le micro pour réciter à voix haute, ou écris le verset.</string>
+    <string name="session_speech_permission">Pour réciter à voix haute, autorise le micro et la reconnaissance vocale. Sinon, écris le verset.</string>
     <string name="session_speech_unavailable">La reconnaissance vocale en français n’est pas prête sur ce téléphone (connexion ou pack de langue à télécharger). Réessaie plus tard, ou écris le verset.</string>
     <string name="session_speech_language_pack">Le français n’est pas encore installé pour la voix sur ce téléphone. Accepte le téléchargement proposé par Android, puis réessaie.</string>
     <string name="session_speech_no_match">Je n’ai pas bien entendu. Réessaie, ou écris le verset.</string>
@@ -206,7 +206,6 @@
     </plurals>
     <string name="selection_limit_reached">%1$d versets au maximum.</string>
     <string name="start_learning">Planter</string>
-    <string name="verse_selected">Sélectionné</string>
     <string name="verse_learning">En cours</string>
     <plurals name="start_error_too_many_active">
         <item quantity="one">Il ne reste que %1$d place : %2$d versets en cours au maximum.</item>
@@ -261,4 +260,13 @@
     <string name="reminder_prompt_confirm">Activer les rappels</string>
     <string name="reminder_prompt_later">Plus tard</string>
     <string name="profile_offline">Tout reste sur ton téléphone : pas de compte, pas de collecte de données.</string>
+    <string name="session_hidden_word">Mot caché</string>
+    <string name="session_blank_empty">Mot manquant %1$d, vide</string>
+    <string name="session_blank_filled">Mot manquant %1$d : %2$s</string>
+    <string name="session_blank_typed">Mot manquant %1$d, %2$d lettres</string>
+    <string name="progression_help_title">Comment pousse ton jardin</string>
+    <string name="progression_help_stages">Chaque verset passe par quatre stades : Graine, Racine, Arbre, Fruit.</string>
+    <string name="progression_help_thirst">Un verset a soif quand il est temps de le réviser : arrose-le pour qu’il grandisse.</string>
+    <string name="progression_help_limit">Au plus %1$d versets sont en apprentissage en même temps.</string>
+    <string name="progression_help_xp">Chaque bonne réponse te rapporte de l’XP pendant la séance.</string>
 </resources>

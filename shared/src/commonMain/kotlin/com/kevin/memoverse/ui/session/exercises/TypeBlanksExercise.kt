@@ -28,6 +28,12 @@ import com.kevin.memoverse.presentation.session.TypedSegmentUi
 import com.kevin.memoverse.ui.theme.AppTextStyles
 import com.kevin.memoverse.ui.theme.Radius
 import com.kevin.memoverse.ui.theme.Spacing
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import com.kevin.memoverse.resources.Res
+import com.kevin.memoverse.resources.session_blank_typed
+import org.jetbrains.compose.resources.stringResource
 
 /** Le verset avec des trous à remplir au clavier, sans propositions. */
 @OptIn(ExperimentalLayoutApi::class)
@@ -40,6 +46,7 @@ fun TypeBlanksExercise(
 ) {
     val style = AppTextStyles.verse()
     val colors = MaterialTheme.colorScheme
+    val lastSlot = exercise.segments.filterIsInstance<TypedSegmentUi.Blank>().maxOfOrNull { it.slot }
     FlowRow(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(5.dp),
@@ -49,7 +56,9 @@ fun TypeBlanksExercise(
         exercise.segments.forEach { segment ->
             when (segment) {
                 is TypedSegmentUi.Word -> Text(segment.text, style = style)
-                is TypedSegmentUi.Blank -> BasicTextField(
+                is TypedSegmentUi.Blank -> {
+                    val label = stringResource(Res.string.session_blank_typed, segment.slot + 1, segment.length)
+                    BasicTextField(
                     value = segment.value,
                     onValueChange = { onEvent(SessionEvent.BlankTextChanged(segment.slot, it)) },
                     enabled = !isLocked,
@@ -59,10 +68,12 @@ fun TypeBlanksExercise(
                     keyboardOptions = KeyboardOptions(
                         capitalization = KeyboardCapitalization.None,
                         autoCorrectEnabled = false,
-                        imeAction = ImeAction.Next,
+                        imeAction = if (segment.slot == lastSlot) ImeAction.Done else ImeAction.Next,
                     ),
                     modifier = Modifier
                         .width((BLANK_WIDTH_PER_LETTER * segment.length).coerceAtLeast(MIN_BLANK_WIDTH))
+                        .semantics { contentDescription = label }
+                        .heightIn(min = 48.dp)
                         .background(colors.primaryContainer.copy(alpha = 0.5f), RoundedCornerShape(Radius.chip))
                         .drawBehind {
                             drawLine(colors.secondary, Offset(0f, size.height), Offset(size.width, size.height), 2.dp.toPx())
@@ -70,6 +81,7 @@ fun TypeBlanksExercise(
                         .padding(horizontal = Spacing.xs, vertical = Spacing.xxs),
                     decorationBox = { inner -> Box(contentAlignment = Alignment.Center) { inner() } },
                 )
+                }
             }
         }
     }
