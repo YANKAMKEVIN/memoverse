@@ -23,7 +23,15 @@ Apporté par `claude/suite` (en plus de `main`) :
 - Non repris : « 25 h = demain » (la fiche du jardin de `main` arrondit les jours au-dessus, testé). Le reste de `6e06d17` est déjà dans `main` sous une autre forme.
 - `GardenJourneyTest` sur `androidx.compose.ui.test.junit4.v2.createAndroidComposeRule` (l'ancienne fonction est dépréciée).
 
-Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `claude/suite` (177 sur `main`). `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
+Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 (sur `main` depuis la fusion de `claude/suite`, et sur `claude/ios-simulateur`). `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
+
+## Cible iOS : simulateur seul à 18.5 (décision de Kevin du 21 novembre, branche `claude/ios-simulateur`, **non compilé**)
+
+- Dans les 4 configurations de `iosApp.xcodeproj` (projet et cible, Debug et Release) : `IPHONEOS_DEPLOYMENT_TARGET = 15.3` est gardé pour les appareils, et `IPHONEOS_DEPLOYMENT_TARGET[sdk=iphonesimulator*] = 18.5` est ajouté. Les iPhone sous iOS 15.3 à 18.4 peuvent toujours installer l'app ; seul le simulateur demande iOS 18.5.
+- But : supprimer l'avertissement Xcode « object file (…libicu.icudtl_dat.o) was built for newer iOS-simulator version (18.5) than being linked (15.3) ». Origine : Skiko 0.144.6, tiré par Compose Multiplatform 1.11.0. Dans les en-têtes Mach-O (`LC_BUILD_VERSION`) de `skiko-iosSimulatorArm64Main-0.144.6.klib`, `icudtl_dat.o` (données ICU, dans `libicu.a` et `libskunicode_icu.a`) a `minos 18.5`, tous les autres objets `14.0`. Côté appareil (`skiko-iosarm64`), tout est en 12.0 ou 14.0 : pas d'avertissement, donc rien à changer pour les appareils.
+- Aucun réglage KMP / Gradle de cible iOS à aligner (le framework statique garde le minimum par défaut de Kotlin/Native, plus bas, sans avertissement).
+- Le commit `7e9e013` de `claude/suite`, qui montait toute la cible à 18.5, n'est pas repris (Kevin n'en veut pas).
+- À vérifier par Kevin dans Xcode : build simulateur (l'avertissement ICU doit avoir disparu, simulateur iOS 18.5 ou plus requis) et build iPhone (cible 15.3 inchangée).
 
 ## Branches restantes
 
@@ -34,7 +42,7 @@ Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `claude/suite` (
 
 1. Sur téléphone : `connectedDebugAndroidTest` (9 tests, désormais sur l'API v2), grande police (×1,5), TalkBack, réglage « supprimer les animations », exercice oral avec le vrai micro.
 2. Sur iPhone ou simulateur : `./gradlew :shared:allTests`, compilation Xcode, VoiceOver, « Réduire les animations », portrait seul sur iPhone.
-3. Décision produit : avertissement Xcode ICU « built for newer iOS-simulator version ». Il faudrait monter la cible iOS minimale. `appintentsmetadataprocessor` est seulement informatif.
+3. ~~Décision produit : avertissement Xcode ICU~~ : seul le simulateur passe à iOS 18.5, les appareils restent en 15.3 (21 novembre, voir plus haut), **non compilé** : builder dans Xcode (simulateur et iPhone) et vérifier que l'avertissement ICU a disparu. `appintentsmetadataprocessor` est seulement informatif.
 
 ## Pièges connus
 
