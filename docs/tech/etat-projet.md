@@ -1,68 +1,45 @@
 # État du projet MEMOVERSE
 
-Mis à jour le 31 octobre 2026. À lire en premier pour reprendre le travail dans une session neuve.
+Mis à jour le 21 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
 
 ## Où en est le code
 
-- `main` (`3be4cb8`) : app stable, poussée sur GitHub (dépôt privé `YANKAMKEVIN/memoverse`).
-- `chantier/validation` : **tout le travail en cours, réuni en une seule branche**, en attente des derniers contrôles sur téléphone avant fusion dans `main` par la pull request en brouillon https://github.com/YANKAMKEVIN/memoverse/pull/1.
-- `qa/ui-ux` : corrections de la QA UI/UX de `main` (rapport `docs/qa/2026-10-30-qa-ui-ux-main.md`), **fusionnées dans `chantier/validation` le 30 octobre** (décision de Kevin : tout passe par la PR #1, `main` ne bouge qu'une fois tout vérifié). La PR #2 (`qa/ui-ux` → `main`) est fermée au profit de la PR #1.
+- `main` (`ec91523`, 20 novembre) : app stable, dépôt privé `YANKAMKEVIN/memoverse` (la CI GitHub ne démarre pas : vérifier en local).
+- `claude/suite` : `main` plus l'intégration des deux branches restantes, le test instrumenté sur l'API v2 et ce fichier. À relire par Kevin avant fusion.
 
-Contenu de `chantier/validation` :
+Arrivé dans `main` depuis le 31 octobre :
 
-| Chantier | Résumé |
+| Quand | Contenu |
 |---|---|
-| CI | `.github/workflows/ci.yml` : Android sur ubuntu-latest, iOS sur macos-26 / Xcode 26.6 (arm64 uniquement, le projet ne cible pas x86_64). Environ 8 min. |
-| Police | Fraunces (titres, versets) · Figtree (interface), seule police de l'app. Le sélecteur du Profil et 23 fichiers .ttf ont été retirés. |
-| Animations | « Jardin de ton cœur » en Compose Canvas (`ui/ceremony/`, `presentation/ceremony/`) : plantation (graines qui tombent dans un cœur de terre) et arrosage en fin de session, juste avant le bilan (cruche, pousse jusqu'au stade, variante sobre quand un verset fane). 3 à 5 s, passable d'un tap. |
-| Notifications iOS | Demandées après la première plantation, comme sur Android ; logique extraite dans `AuthorizationGatedNotifier` (commonMain), testée. |
-| Correctifs QA | Chaque exercice repart en haut de l'écran (le défilement de l'exercice précédent était repris, titre caché). Jardin plein : le rond de sélection des versets pâlit. |
-| QA UI/UX (`qa/ui-ux`) | Les 7 points majeurs du rapport : en-tête de séance réduit (supprimé en grande police) ; panneau de correction sous l'exercice, plafonné à 55 %, réponse choisie ramenée à l'écran ; grande police (onglets, slogan, cartes de Progression) ; étiquettes du jardin cliquables (fiche « Tes versets ») ; explication avant la demande de notifications et ligne « Rappels d'arrosage » dans le Profil ; jardin plein : « Aller arroser ». Points 8 à 15 (accessibilité, contrastes, micro…) non traités. |
-| Xcode | Phase « Compile Kotlin Framework » marquée « exécutée à chaque build » (`alwaysOutOfDate`), comme le recommande la doc Kotlin. |
+| 3 nov. | PR #1 (`chantier/validation`, avec `qa/ui-ux`) en fast-forward jusqu'à `748bbd4` : CI, police Fraunces · Figtree, scènes du jardin (plantation, arrosage), notifications iOS, 7 points majeurs de la QA du 30 octobre, correctif du plantage sur « Continuer ». |
+| 15 nov. | Jours de croissance dans le fuseau de l'utilisateur ; « Je t'écoute… » remis à zéro à l'arrêt ; une réponse mal enregistrée ne compte pas. |
+| 19 nov. | Verdict annoncé au lecteur d'écran et pas seulement par la couleur ; contrastes WCAG AA ; erreur de lecture du jardin avec « Réessayer » ; « Ouvrir les réglages » après un refus du micro. |
+| 20 nov. (`claude/ux15`) | Plantes qui poussent dans la scène, accueil en 3 étapes, retours haptiques, Progression qui liste les versets, XP et série d'arrosages, transition entre exercices, prochain arrosage dans la fiche du jardin, sorties des écrans de chargement et d'erreur de séance, croix et « 2 / 6 », boîtes de dialogue crème (dont « Réinitialiser ton jardin ? »), îles des thèmes, icône et écran de lancement olive, jardin de nuit le soir, bilan animé, typographie française (espaces fines insécables). |
 
-Tests : `./gradlew :shared:allTests` → iOS 147/147, Android 153/153 (au 31 octobre, après le correctif du plantage sur « Continuer »).
+Apporté par `claude/suite` (en plus de `main`) :
 
-## Validation sur appareil
+- Portrait verrouillé sur téléphone (décision de Kevin du 8 novembre, commit `a883ee2`) : manifeste Android et `Info.plist` côté iPhone ; l'iPad garde ses 4 orientations.
+- La part des 30 améliorations de `ui/ameliorations-qa` (`6e06d17`) qui manquait encore à `main` : erreur de lecture de Progression avec « Réessayer », carte « Comment pousse ton jardin », tours d'exercices alternés (1 1 2 1 2 2), texte écrit retrouvé après un passage par l'oral, en-tête masqué clavier ouvert, « Terminé » sur le dernier trou, réglage « réduire les animations » respecté (scènes, goutte, pulsation), mots cachés et trous nommés pour le lecteur d'écran, liens texte en boutons de 48 dp, iOS forcé en clair.
+- Non repris : « 25 h = demain » (la fiche du jardin de `main` arrondit les jours au-dessus, testé). Le reste de `6e06d17` est déjà dans `main` sous une autre forme.
+- `GardenJourneyTest` sur `androidx.compose.ui.test.junit4.v2.createAndroidComposeRule` (l'ancienne fonction est dépréciée).
 
-QA du 30 octobre sur Galaxy S24 (SM-S921B, version debug), pilotée par adb :
+Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `claude/suite` (177 sur `main`). `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
 
-- ✅ Séance d'arrosage complète (3 versets, 6 exercices, une erreur volontaire) jusqu'à la scène et au bilan : aucun plantage, bilan juste (+50 XP, 83 %, 3 versets Graine → Racine).
-- ✅ Scène d'arrosage : cruche, gouttes et pousse bien dessinées, environ 3 s, fluide (232 images, 1,3 % de saccades, médiane 17 ms).
-- ✅ Démarrage à froid en 0,5 s ; la toute première image met 250 à 300 ms (normal en debug).
-- 🐛→✅ Défilement repris d'un exercice à l'autre : corrigé dans `SessionScreen` (un défilement neuf par exercice).
-- 🐛→✅ Jardin plein : les ronds de sélection paraissaient actifs alors que la liste est verrouillée : corrigé (`VerseRow`).
+## Branches restantes
 
-Corrections `qa/ui-ux` vérifiées sur le S24 (police ×1,0) : étiquettes et fiche du jardin, thème avec jardin plein, ligne « Rappels », séance avec une mauvaise réponse (voir le rapport de QA). Branche fusionnée (`8c08bfd`) revue le 31 octobre sur un **Galaxy A17** (SM-A175F, police ×1,0, installation neuve) :
+- `chantier/validation` (2 commits hors `main`) et `ui/ameliorations-qa` (3 commits) : leur contenu utile est dans `claude/suite`. On peut les supprimer une fois `claude/suite` fusionnée.
+- `qa/ui-ux` et les branches `claude/*` sont entièrement dans `main` : on peut les supprimer.
 
-- ✅ Scène de **plantation** (3 versets, graines dans le cœur de terre, « 3 paroles plantées »).
-- ✅ Boîte « Un rappel pour arroser ? » juste après, puis demande système ; ligne « Rappels d'arrosage » du Profil à « Activés ».
-- ✅ Étiquettes du jardin bien placées, fiche « Tes versets » (stade, « a soif », texte).
-- ✅ Séance, mauvaise réponse : panneau sous l'exercice, réponse choisie visible, pas de blanc.
-- ✅ Séance en **paysage**, bonne réponse : la réponse choisie reste visible au-dessus du panneau.
-- 🐛 **Paysage** : l'en-tête de séance (190 dp) et la barre « Valider » ne laissent qu'une bande d'environ 300 px pour l'exercice ; il faut faire défiler pour voir les réponses, et la dernière passe sous la barre. L'app n'est pas verrouillée en portrait (pas de `screenOrientation` dans le manifeste). Décision à prendre : verrouiller en portrait, ou réduire l'en-tête en paysage comme en grande police.
-- 🐛→✅ **Plantage sur « Continuer »** après chaque exercice (NullPointerException dans Compose, `LayoutNode.onChildRemoved`). Il n'existait que dans la branche fusionnée : `key(state.step)` (défilement remis à zéro, `chantier/validation`) et l'échange panneau ↔ barre « Valider » (`qa/ui-ux`) dans la même `Column` cassaient le suivi des nœuds de Compose. Corrigé par `remember(state.step) { ScrollState(0) }` dans `SessionScreen`. Le plantage renvoyait à l'app précédente, ce qui avait d'abord fait croire à une autre session qui reprenait le téléphone.
-- ✅ Après correctif, `GardenJourneyTest` sur l'A17 : 9/9, dont séance complète jusqu'à la scène d'arrosage et au bilan (+60 XP, 100 %), mauvaise réponse, quitter une séance, clavier ouvert, jardin plein. Le test du jardin plein attend maintenant « Jardin plein » et « Aller arroser » (il cherchait encore un « Planter » grisé).
-- Astuce : `Composer.setDiagnosticStackTraceEnabled(true)` dans `MainActivity` (ligne temporaire, à ne pas commiter) ajoute aux plantages Compose la pile des composables en cause.
+## Reste à faire par Kevin
 
-Reste à faire par Kevin (impossible à piloter à distance ou sans changer un réglage du téléphone) :
-
-1. ~~Scène de plantation~~ : vue sur l'A17 le 31 octobre.
-2. Exercice oral « goutte » avec le vrai micro.
-3. Grande police (×1,5) : onglets, en-tête du jardin, cartes de Progression, séance.
-4. iOS : ligne « Rappels » et boîte d'explication (simulateur).
-5. Avis à l'œil sur le feuillage de l'olivier.
-
-Si ces points vont : fusionner la PR #1 dans `main`.
-
-## Petits sujets en attente
-
-- La boîte « Réinitialiser ton jardin ? » a un fond lavande (couleur Material par défaut), hors palette sable.
-- Avertissement existant : `createAndroidComposeRule` déprécié dans `GardenJourneyTest` (androidTest).
-- Avertissements Xcode connus, sans correction simple : objet ICU « built for newer iOS-simulator version » (il faudrait monter la cible iOS minimale, décision produit) et `appintentsmetadataprocessor` (informatif).
-- Pas d'option « animations réduites » (aucune API commune pour la détecter).
+1. Sur téléphone : `connectedDebugAndroidTest` (9 tests, désormais sur l'API v2), grande police (×1,5), TalkBack, réglage « supprimer les animations », exercice oral avec le vrai micro.
+2. Sur iPhone ou simulateur : `./gradlew :shared:allTests`, compilation Xcode, VoiceOver, « Réduire les animations », portrait seul sur iPhone.
+3. Décision produit : avertissement Xcode ICU « built for newer iOS-simulator version ». Il faudrait monter la cible iOS minimale. `appintentsmetadataprocessor` est seulement informatif.
 
 ## Pièges connus
 
 - Noms de tests entre backticks dans `commonTest` : ni `,` ni `%` ni `. ; : / < > [ ] \`, sinon les tests iOS ne compilent plus (Kotlin/Native).
-- Lancer `./gradlew :shared:allTests`, pas seulement `testAndroidHostTest` : seul le premier compile pour iOS.
+- Lancer `./gradlew :shared:allTests` sur Mac, pas seulement `testAndroidHostTest` : seul le premier compile pour iOS.
+- Textes : espace fine insécable (U+202F) avant `? ! : ; %`.
 - Sur iOS, iOS retient la réponse à la demande de notifications : désinstaller l'app du simulateur pour rejouer le parcours d'un nouvel utilisateur.
+- Débogage Compose : `Composer.setDiagnosticStackTraceEnabled(true)` dans `MainActivity` (ligne temporaire, à ne pas commiter) ajoute aux plantages la pile des composables.
