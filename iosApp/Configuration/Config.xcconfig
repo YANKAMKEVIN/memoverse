@@ -2,5 +2,9 @@ TEAM_ID=
 BUNDLE_ID=com.kevin.memoverse
 APP_NAME=MEMOVERSE
 
+// Version affichée (CFBundleShortVersionString dans Info.plist). Xcode ne lit pas gradle.properties :
+// garder la même valeur que memoverse.versionName (vérifié par IosVersionTest dans shared).
+MARKETING_VERSION = 0.1.0
+
 // Le framework Kotlin est statique : l'app doit lier SQLite elle-même (driver SQLDelight natif).
 OTHER_LDFLAGS = $(inherited) -lsqlite3

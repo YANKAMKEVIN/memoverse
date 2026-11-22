@@ -36,6 +36,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -104,8 +105,10 @@ fun ThemeDetailScreenContent(
 ) {
     val listState = rememberLazyListState()
     // Une fois l'image dépassée, la barre du haut devient opaque pour rester lisible au-dessus des versets.
-    val isHeaderScrolledAway by remember {
-        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > HEADER_SCROLL_THRESHOLD }
+    // Seuil en dp (et non en pixels) : même moment de bascule quelle que soit la densité de l'écran.
+    val thresholdPx = with(LocalDensity.current) { HEADER_SCROLL_THRESHOLD.roundToPx() }
+    val isHeaderScrolledAway by remember(thresholdPx) {
+        derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > thresholdPx }
     }
     Box(modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.surface)) {
         when {
@@ -275,7 +278,8 @@ private val HEADER_HEIGHT = 400.dp
 private val ISLAND_SIZE = 240.dp
 private val ISLAND_OFFSET_X = 28.dp
 private val ISLAND_OFFSET_Y = (-20).dp
-private const val HEADER_SCROLL_THRESHOLD = 600
+/** ≈ les 600 px d'origine sur le Galaxy S24 (densité 2,625). */
+private val HEADER_SCROLL_THRESHOLD = 230.dp
 private val BarShadow = Color(0x44402E1A)
 
 private val previewVerses = listOf(

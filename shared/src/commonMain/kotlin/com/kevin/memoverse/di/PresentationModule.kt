@@ -16,6 +16,7 @@ val presentationModule = module {
     viewModel { OnboardingViewModel(get(), get()) }
     viewModel { ProgressionViewModel(get(), get()) }
     viewModel { ProfileViewModel(get()) }
-    viewModel { SessionViewModel(get(), get(), get(), get(), get(), get()) }
+    // Le dernier get() est le SavedStateHandle de l'entrée de navigation, fourni par koinViewModel().
+    viewModel { SessionViewModel(get(), get(), get(), get(), get(), get(), get()) }
     viewModel { (themeId: String) -> ThemeDetailViewModel(themeId, get(), get(), get(), get()) }
 }
