@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.kevin.memoverse.AppVersion
 import com.kevin.memoverse.presentation.profile.ProfileEvent
 import com.kevin.memoverse.presentation.profile.ProfileUiState
 import com.kevin.memoverse.presentation.profile.ProfileViewModel
@@ -46,7 +47,6 @@ import com.kevin.memoverse.resources.profile_title
 import com.kevin.memoverse.resources.profile_translation_label
 import com.kevin.memoverse.resources.profile_translation_value
 import com.kevin.memoverse.resources.profile_version_label
-import com.kevin.memoverse.resources.profile_version_value
 import com.kevin.memoverse.resources.start_error_save_failed
 import com.kevin.memoverse.ui.components.GardenDialog
 import com.kevin.memoverse.ui.components.Wordmark
@@ -105,9 +105,9 @@ fun ProfileScreenContent(
                 .border(1.dp, MaterialTheme.colorScheme.outline, shape)
                 .padding(horizontal = Spacing.lg),
         ) {
-            InfoRow(Res.string.profile_translation_label, Res.string.profile_translation_value)
+            InfoRow(Res.string.profile_translation_label, stringResource(Res.string.profile_translation_value))
             HorizontalDivider(color = MaterialTheme.colorScheme.outline)
-            InfoRow(Res.string.profile_version_label, Res.string.profile_version_value)
+            InfoRow(Res.string.profile_version_label, AppVersion.NAME)
         }
         RemindersRow(isEnabled = remindersEnabled, onClick = onRemindersClick, shape = shape)
         Text(
@@ -166,7 +166,7 @@ private fun RemindersRow(isEnabled: Boolean, onClick: () -> Unit, shape: Shape) 
 }
 
 @Composable
-private fun InfoRow(label: StringResource, value: StringResource) {
+private fun InfoRow(label: StringResource, value: String) {
     // Écart minimal entre libellé et valeur : sur écran étroit ou en grande police, « Traduction » ne se colle plus
     // à « Louis Segond 1910… », la valeur passe à la ligne, alignée à droite.
     Row(
@@ -176,7 +176,7 @@ private fun InfoRow(label: StringResource, value: StringResource) {
     ) {
         Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Text(
-            text = stringResource(value),
+            text = value,
             style = MaterialTheme.typography.titleMedium,
             textAlign = TextAlign.End,
             modifier = Modifier.weight(1f),

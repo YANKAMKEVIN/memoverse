@@ -243,7 +243,6 @@
     <string name="profile_translation_label">Traduction</string>
     <string name="profile_translation_value">Louis Segond 1910 · domaine public</string>
     <string name="profile_version_label">Version</string>
-    <string name="profile_version_value">0.1.0</string>
     <string name="profile_reset">Réinitialiser mon jardin</string>
     <string name="profile_reset_title">Réinitialiser ton jardin ?</string>
     <string name="profile_reset_message">Tous les versets plantés et leur progression seront effacés. Cette action est définitive.</string>

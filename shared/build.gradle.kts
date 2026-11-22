@@ -76,6 +76,33 @@ kotlin {
     }
 }
 
+// AppVersion.NAME, généré depuis la propriété memoverse.versionName (gradle.properties), comme versionName de l'APK :
+// l'écran Profil n'a plus de version écrite en dur.
+val generateAppVersion = tasks.register("generateAppVersion") {
+    val versionName = providers.gradleProperty("memoverse.versionName")
+    val outputDir = layout.buildDirectory.dir("generated/appVersion/commonMain/kotlin")
+    inputs.property("versionName", versionName)
+    outputs.dir(outputDir)
+    doLast {
+        val file = outputDir.get().file("com/kevin/memoverse/AppVersion.kt").asFile
+        file.parentFile.mkdirs()
+        file.writeText(
+            """
+            |// Fichier généré par la tâche generateAppVersion : ne pas modifier.
+            |package com.kevin.memoverse
+            |
+            |internal object AppVersion {
+            |    const val NAME: String = "${versionName.get()}"
+            |}
+            |""".trimMargin(),
+        )
+    }
+}
+
+kotlin.sourceSets.commonMain {
+    kotlin.srcDir(generateAppVersion)
+}
+
 sqldelight {
     databases {
         create("MemoverseDatabase") {
