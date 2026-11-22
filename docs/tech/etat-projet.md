@@ -1,11 +1,11 @@
 # État du projet MEMOVERSE
 
-Mis à jour le 21 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
+Mis à jour le 22 novembre 2026. À lire en premier pour reprendre le travail dans une session neuve.
 
 ## Où en est le code
 
-- `main` (`ec91523`, 20 novembre) : app stable, dépôt privé `YANKAMKEVIN/memoverse` (la CI GitHub ne démarre pas : vérifier en local).
-- `claude/suite` : `main` plus l'intégration des deux branches restantes, le test instrumenté sur l'API v2 et ce fichier. À relire par Kevin avant fusion.
+- `main` (`24fe9a9`, 21 novembre) : app stable, dépôt privé `YANKAMKEVIN/memoverse` (la CI GitHub ne démarre pas : vérifier en local). `claude/suite` (sans son commit `7e9e013`) et `claude/ios-simulateur` y sont fusionnées.
+- `claude/suite-3` : `main` plus les petits restes de la QA du 30 octobre (voir plus bas). À relire par Kevin avant fusion.
 
 Arrivé dans `main` depuis le 31 octobre :
 
@@ -16,14 +16,21 @@ Arrivé dans `main` depuis le 31 octobre :
 | 19 nov. | Verdict annoncé au lecteur d'écran et pas seulement par la couleur ; contrastes WCAG AA ; erreur de lecture du jardin avec « Réessayer » ; « Ouvrir les réglages » après un refus du micro. |
 | 20 nov. (`claude/ux15`) | Plantes qui poussent dans la scène, accueil en 3 étapes, retours haptiques, Progression qui liste les versets, XP et série d'arrosages, transition entre exercices, prochain arrosage dans la fiche du jardin, sorties des écrans de chargement et d'erreur de séance, croix et « 2 / 6 », boîtes de dialogue crème (dont « Réinitialiser ton jardin ? »), îles des thèmes, icône et écran de lancement olive, jardin de nuit le soir, bilan animé, typographie française (espaces fines insécables). |
 
-Apporté par `claude/suite` (en plus de `main`) :
+Apporté par `claude/suite` (fusionnée le 21 novembre) :
 
 - Portrait verrouillé sur téléphone (décision de Kevin du 8 novembre, commit `a883ee2`) : manifeste Android et `Info.plist` côté iPhone ; l'iPad garde ses 4 orientations.
 - La part des 30 améliorations de `ui/ameliorations-qa` (`6e06d17`) qui manquait encore à `main` : erreur de lecture de Progression avec « Réessayer », carte « Comment pousse ton jardin », tours d'exercices alternés (1 1 2 1 2 2), texte écrit retrouvé après un passage par l'oral, en-tête masqué clavier ouvert, « Terminé » sur le dernier trou, réglage « réduire les animations » respecté (scènes, goutte, pulsation), mots cachés et trous nommés pour le lecteur d'écran, liens texte en boutons de 48 dp, iOS forcé en clair.
 - Non repris : « 25 h = demain » (la fiche du jardin de `main` arrondit les jours au-dessus, testé). Le reste de `6e06d17` est déjà dans `main` sous une autre forme.
 - `GardenJourneyTest` sur `androidx.compose.ui.test.junit4.v2.createAndroidComposeRule` (l'ancienne fonction est dépréciée).
 
-Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 (sur `main` depuis la fusion de `claude/suite`, et sur `claude/ios-simulateur`). `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
+Apporté par `claude/suite-3` (en plus de `main`) :
+
+- Profil : un écart minimal sépare le libellé de sa valeur (« Traduction » ne se colle plus à « Louis Segond 1910… » ; la valeur passe à la ligne, alignée à droite).
+- Version : source unique `memoverse.versionName` dans `gradle.properties`, utilisée par `versionName` de l'APK et par l'écran Profil (`AppVersion.NAME`, généré par la tâche `generateAppVersion` de `shared`). Le `CFBundleShortVersionString` d'iOS reste à `1.0` dans `Info.plist` (à aligner par Kevin, voir « Reste à faire »).
+- Détail d'un thème : seuil de bascule de la barre du haut en dp (230 dp ≈ les 600 px d'avant sur le S24) au lieu de pixels.
+- Jardin : fond des étiquettes sur le jeton `Cream` au lieu d'une couleur recopiée.
+
+Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 182/182 sur `claude/suite-3`. `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
 
 ## Cible iOS : simulateur seul à 18.5 (décision de Kevin du 21 novembre, branche `claude/ios-simulateur`, **non compilé**)
 
@@ -35,14 +42,17 @@ Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 (sur `main` depuis l
 
 ## Branches restantes
 
-- `chantier/validation` (2 commits hors `main`) et `ui/ameliorations-qa` (3 commits) : leur contenu utile est dans `claude/suite`. On peut les supprimer une fois `claude/suite` fusionnée.
-- `qa/ui-ux` et les branches `claude/*` sont entièrement dans `main` : on peut les supprimer.
+- `claude/suite` : seul `7e9e013` (toute la cible iOS à 18.5) n'est pas dans `main` ; remplacé par `claude/ios-simulateur`. À supprimer.
+- `chantier/validation` (2 commits hors `main`) et `ui/ameliorations-qa` (3 commits) : leur contenu utile est arrivé dans `main` avec `claude/suite`. À supprimer.
+- `qa/ui-ux` et les autres branches `claude/*` sont entièrement dans `main` : on peut les supprimer.
 
 ## Reste à faire par Kevin
 
 1. Sur téléphone : `connectedDebugAndroidTest` (9 tests, désormais sur l'API v2), grande police (×1,5), TalkBack, réglage « supprimer les animations », exercice oral avec le vrai micro.
 2. Sur iPhone ou simulateur : `./gradlew :shared:allTests`, compilation Xcode, VoiceOver, « Réduire les animations », portrait seul sur iPhone.
 3. ~~Décision produit : avertissement Xcode ICU~~ : seul le simulateur passe à iOS 18.5, les appareils restent en 15.3 (21 novembre, voir plus haut), **non compilé** : builder dans Xcode (simulateur et iPhone) et vérifier que l'avertissement ICU a disparu. `appintentsmetadataprocessor` est seulement informatif.
+4. Version iOS : `Info.plist` annonce `1.0`, Android et l'écran Profil `0.1.0`. Choisir la version et l'aligner (par exemple `CFBundleShortVersionString = 0.1.0`, ou monter `memoverse.versionName`).
+5. QA du 30 octobre, point mineur encore ouvert : une séance en cours est perdue si Android tue le processus (pas de `SavedStateHandle`). Décision à prendre avant de coder.
 
 ## Pièges connus
 
