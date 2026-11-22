@@ -167,9 +167,20 @@ private fun RemindersRow(isEnabled: Boolean, onClick: () -> Unit, shape: Shape) 
 
 @Composable
 private fun InfoRow(label: StringResource, value: StringResource) {
-    Row(modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.lg), horizontalArrangement = Arrangement.SpaceBetween) {
+    // Écart minimal entre libellé et valeur : sur écran étroit ou en grande police, « Traduction » ne se colle plus
+    // à « Louis Segond 1910… », la valeur passe à la ligne, alignée à droite.
+    Row(
+        modifier = Modifier.fillMaxWidth().padding(vertical = Spacing.lg),
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
         Text(stringResource(label), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
-        Text(stringResource(value), style = MaterialTheme.typography.titleMedium)
+        Text(
+            text = stringResource(value),
+            style = MaterialTheme.typography.titleMedium,
+            textAlign = TextAlign.End,
+            modifier = Modifier.weight(1f),
+        )
     }
 }
 
