@@ -1,5 +1,6 @@
 package com.kevin.memoverse.presentation.session
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kevin.memoverse.domain.model.DataResult
@@ -28,6 +29,8 @@ class SessionViewModel(
     private val listenToRecitation: ListenToRecitationUseCase,
     private val measureRecitation: MeasureRecitationUseCase,
     private val recordSession: RecordWateringSessionUseCase,
+    /** Garde la séance en cours quand Android recrée l'app après avoir tué son processus. */
+    private val savedState: SavedStateHandle = SavedStateHandle(),
 ) : ViewModel() {
 
     private val model = MutableStateFlow(SessionModel())
@@ -38,7 +41,14 @@ class SessionViewModel(
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_TIMEOUT_MILLIS), SessionUiState())
 
     init {
-        load()
+        val restored = SessionSnapshotCodec.decode(savedState.get<String>(SAVED_SESSION_KEY))
+        if (restored != null) model.value = restored else load()
+        viewModelScope.launch {
+            model.collect { current ->
+                val snapshot = SessionSnapshotCodec.encode(current)
+                if (snapshot != null) savedState[SAVED_SESSION_KEY] = snapshot else savedState.remove<String>(SAVED_SESSION_KEY)
+            }
+        }
     }
 
     fun onEvent(event: SessionEvent) {
@@ -235,7 +245,8 @@ class SessionViewModel(
         }
     }
 
-    private companion object {
-        const val STOP_TIMEOUT_MILLIS = 5_000L
+    internal companion object {
+        private const val STOP_TIMEOUT_MILLIS = 5_000L
+        const val SAVED_SESSION_KEY = "session"
     }
 }

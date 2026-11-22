@@ -29,8 +29,9 @@ Apporté par `claude/suite-3` (en plus de `main`) :
 - Version : source unique `memoverse.versionName` dans `gradle.properties`, utilisée par `versionName` de l'APK et par l'écran Profil (`AppVersion.NAME`, généré par la tâche `generateAppVersion` de `shared`). iOS annonce aussi `0.1.0` (décision de Kevin du 22 novembre) : `CFBundleShortVersionString = $(MARKETING_VERSION)` dans `Info.plist`, et `MARKETING_VERSION = 0.1.0` dans `iosApp/Configuration/Config.xcconfig`. Xcode ne lit pas `gradle.properties` : la valeur est recopiée, et `IosVersionTest` (host) échoue si elle diverge de `memoverse.versionName`. Pour changer de version : modifier les deux fichiers. **Non compilé** (pas de macOS).
 - Détail d'un thème : seuil de bascule de la barre du haut en dp (230 dp ≈ les 600 px d'avant sur le S24) au lieu de pixels.
 - Jardin : fond des étiquettes sur le jeton `Cream` au lieu d'une couleur recopiée.
+- Séance en cours retrouvée quand Android recrée l'app après avoir tué son processus (décision de Kevin du 22 novembre) : `SessionViewModel` reçoit le `SavedStateHandle` de l'entrée de navigation (Koin, `koinViewModel()`) et y garde à chaque changement toute la séance en JSON (`SessionSnapshotCodec`) : exercices tirés au hasard, position, réponse en cours, verdict affiché, bilan partiel, texte dicté ou écrit. Le micro repart éteint. Rien n'est gardé pendant le chargement, après une erreur ou une sortie ; une sauvegarde illisible relance une séance neuve. Les modèles du domaine restent sans annotation de sérialisation (copies dédiées dans `SessionSnapshot.kt`). Testé sur la JVM (11 tests) ; **pas essayé sur téléphone** (Options pour les développeurs → « Ne pas conserver les activités », ou `adb shell am kill` app en arrière-plan).
 
-Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 184/184 sur `claude/suite-3`. `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
+Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 195/195 sur `claude/suite-3`. `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
 
 ## Cible iOS : simulateur seul à 18.5 (décision de Kevin du 21 novembre, branche `claude/ios-simulateur`, **non compilé**)
 
@@ -52,7 +53,7 @@ Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 184/184 
 2. Sur iPhone ou simulateur : `./gradlew :shared:allTests`, compilation Xcode, VoiceOver, « Réduire les animations », portrait seul sur iPhone.
 3. ~~Décision produit : avertissement Xcode ICU~~ : seul le simulateur passe à iOS 18.5, les appareils restent en 15.3 (21 novembre, voir plus haut), **non compilé** : builder dans Xcode (simulateur et iPhone) et vérifier que l'avertissement ICU a disparu. `appintentsmetadataprocessor` est seulement informatif.
 4. ~~Version iOS~~ : alignée sur `0.1.0` (22 novembre, voir plus haut), **non compilé** : vérifier dans Xcode que l'app annonce bien 0.1.0 (Général → Identity).
-5. QA du 30 octobre, point mineur encore ouvert : une séance en cours est perdue si Android tue le processus (pas de `SavedStateHandle`). Décision à prendre avant de coder.
+5. ~~Séance perdue si Android tue le processus~~ : sauvegardée et restaurée (22 novembre, voir plus haut). À essayer sur téléphone : commencer une séance, répondre, passer l'app en arrière-plan, `adb shell am kill com.kevin.memoverse`, revenir : même exercice, même réponse.
 
 ## Pièges connus
 

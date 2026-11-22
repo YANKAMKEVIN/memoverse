@@ -1,5 +1,6 @@
 package com.kevin.memoverse.presentation.session
 
+import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.kevin.memoverse.domain.exercise.ExerciseFactory
 import com.kevin.memoverse.domain.model.MasteryStage
@@ -52,13 +53,14 @@ class SessionViewModelTest {
 
     private val speech = FakeSpeechRecognitionService()
 
-    private fun viewModel(learning: FakeLearningRepository) = SessionViewModel(
+    private fun viewModel(learning: FakeLearningRepository, savedState: SavedStateHandle = SavedStateHandle()) = SessionViewModel(
         buildSession = BuildWateringSessionUseCase(learning, bank, ExerciseFactory(Random(3))) { 20_000L * 86_400_000L },
         checkAnswer = CheckAnswerUseCase(),
         recordResult = RecordExerciseResultUseCase(learning, { 20_000L * 86_400_000L }),
         listenToRecitation = ListenToRecitationUseCase(speech),
         measureRecitation = MeasureRecitationUseCase(),
         recordSession = RecordWateringSessionUseCase(preferences, { 20_000L * 86_400_000L }, { TimeZone.UTC }),
+        savedState = savedState,
     )
 
     private val preferences = FakePreferencesRepository()
@@ -510,6 +512,91 @@ class SessionViewModelTest {
             val summary = assertNotNull(expectMostRecentItem().summary)
             assertEquals(0, summary.xp)
             assertEquals(0, summary.accuracyPercent)
+        }
+    }
+
+    @Test
+    fun `une séance recréée reprend au même exercice avec la réponse en cours`() = runTest(dispatcher) {
+        val savedState = SavedStateHandle()
+        val vm = viewModel(FakeLearningRepository(initial = listOf(learningVerse("v1"))), savedState)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.OptionSelected("Référence v1"))
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            val reorder = assertIs<ExerciseUi.Reorder>(expectMostRecentItem().exercise)
+            vm.onEvent(SessionEvent.ChunkPlaced(reorder.available.first().index))
+            dispatcher.scheduler.advanceUntilIdle()
+            cancelAndIgnoreRemainingEvents()
+        }
+        val before = vm.state.value
+
+        // Processus tué puis recréé : seul l'état sauvegardé survit. Un jardin vide prouve que rien n'est retiré.
+        val restored = viewModel(FakeLearningRepository(initial = emptyList()), SavedStateHandle(mapOf(SessionViewModel.SAVED_SESSION_KEY to savedState.get<String>(SessionViewModel.SAVED_SESSION_KEY))))
+        restored.state.test {
+            dispatcher.scheduler.advanceUntilIdle()
+            val after = expectMostRecentItem()
+            assertEquals(1, after.step)
+            assertEquals(2, after.totalSteps)
+            val exercise = assertIs<ExerciseUi.Reorder>(after.exercise)
+            assertEquals((before.exercise as ExerciseUi.Reorder).placed, exercise.placed)
+            assertEquals(1, exercise.placed.size)
+            assertFalse(after.isConfirmingQuit)
+            assertNull(after.feedback)
+        }
+    }
+
+    @Test
+    fun `le verdict affiché et le bilan partiel survivent à la recréation`() = runTest(dispatcher) {
+        val savedState = SavedStateHandle()
+        val vm = viewModel(FakeLearningRepository(initial = listOf(learningVerse("v1"))), savedState)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            vm.onEvent(SessionEvent.OptionSelected("Référence v1"))
+            vm.onEvent(SessionEvent.CheckClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            cancelAndIgnoreRemainingEvents()
+        }
+        val restored = viewModel(FakeLearningRepository(initial = emptyList()), SavedStateHandle(mapOf(SessionViewModel.SAVED_SESSION_KEY to savedState.get<String>(SessionViewModel.SAVED_SESSION_KEY))))
+        restored.state.test {
+            dispatcher.scheduler.advanceUntilIdle()
+            assertTrue(assertNotNull(expectMostRecentItem().feedback).isCorrect)
+            restored.onEvent(SessionEvent.ContinueClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertIs<ExerciseUi.Reorder>(expectMostRecentItem().exercise)
+        }
+    }
+
+    @Test
+    fun `une sauvegarde illisible relance une séance neuve`() = runTest(dispatcher) {
+        val vm = viewModel(
+            FakeLearningRepository(initial = listOf(learningVerse("v1"))),
+            SavedStateHandle(mapOf(SessionViewModel.SAVED_SESSION_KEY to "{pas une séance")),
+        )
+        vm.state.test {
+            dispatcher.scheduler.advanceUntilIdle()
+            val state = expectMostRecentItem()
+            assertEquals(0, state.step)
+            assertIs<ExerciseUi.ChooseReference>(state.exercise)
+        }
+    }
+
+    @Test
+    fun `quitter la séance efface la sauvegarde`() = runTest(dispatcher) {
+        val savedState = SavedStateHandle()
+        val vm = viewModel(FakeLearningRepository(initial = listOf(learningVerse("v1"))), savedState)
+        vm.state.test {
+            skipItems(1)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertNotNull(savedState.get<String>(SessionViewModel.SAVED_SESSION_KEY))
+            vm.onEvent(SessionEvent.CloseClicked)
+            dispatcher.scheduler.advanceUntilIdle()
+            assertTrue(expectMostRecentItem().shouldClose)
+            assertNull(savedState.get<String>(SessionViewModel.SAVED_SESSION_KEY))
         }
     }
 }
