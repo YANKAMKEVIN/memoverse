@@ -26,11 +26,11 @@ Apporté par `claude/suite` (fusionnée le 21 novembre) :
 Apporté par `claude/suite-3` (en plus de `main`) :
 
 - Profil : un écart minimal sépare le libellé de sa valeur (« Traduction » ne se colle plus à « Louis Segond 1910… » ; la valeur passe à la ligne, alignée à droite).
-- Version : source unique `memoverse.versionName` dans `gradle.properties`, utilisée par `versionName` de l'APK et par l'écran Profil (`AppVersion.NAME`, généré par la tâche `generateAppVersion` de `shared`). Le `CFBundleShortVersionString` d'iOS reste à `1.0` dans `Info.plist` (à aligner par Kevin, voir « Reste à faire »).
+- Version : source unique `memoverse.versionName` dans `gradle.properties`, utilisée par `versionName` de l'APK et par l'écran Profil (`AppVersion.NAME`, généré par la tâche `generateAppVersion` de `shared`). iOS annonce aussi `0.1.0` (décision de Kevin du 22 novembre) : `CFBundleShortVersionString = $(MARKETING_VERSION)` dans `Info.plist`, et `MARKETING_VERSION = 0.1.0` dans `iosApp/Configuration/Config.xcconfig`. Xcode ne lit pas `gradle.properties` : la valeur est recopiée, et `IosVersionTest` (host) échoue si elle diverge de `memoverse.versionName`. Pour changer de version : modifier les deux fichiers. **Non compilé** (pas de macOS).
 - Détail d'un thème : seuil de bascule de la barre du haut en dp (230 dp ≈ les 600 px d'avant sur le S24) au lieu de pixels.
 - Jardin : fond des étiquettes sur le jeton `Cream` au lieu d'une couleur recopiée.
 
-Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 182/182 sur `claude/suite-3`. `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
+Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 184/184 sur `claude/suite-3`. `:androidApp:assembleDebug` et `:androidApp:compileDebugAndroidTestKotlin` passent. Côté iOS, non compilé depuis Linux : `ReduceMotion.ios.kt` (repris tel quel de `6e06d17`) et `Info.plist`.
 
 ## Cible iOS : simulateur seul à 18.5 (décision de Kevin du 21 novembre, branche `claude/ios-simulateur`, **non compilé**)
 
@@ -51,7 +51,7 @@ Tests : `./gradlew :shared:testAndroidHostTest` → 181/181 sur `main`, 182/182 
 1. Sur téléphone : `connectedDebugAndroidTest` (9 tests, désormais sur l'API v2), grande police (×1,5), TalkBack, réglage « supprimer les animations », exercice oral avec le vrai micro.
 2. Sur iPhone ou simulateur : `./gradlew :shared:allTests`, compilation Xcode, VoiceOver, « Réduire les animations », portrait seul sur iPhone.
 3. ~~Décision produit : avertissement Xcode ICU~~ : seul le simulateur passe à iOS 18.5, les appareils restent en 15.3 (21 novembre, voir plus haut), **non compilé** : builder dans Xcode (simulateur et iPhone) et vérifier que l'avertissement ICU a disparu. `appintentsmetadataprocessor` est seulement informatif.
-4. Version iOS : `Info.plist` annonce `1.0`, Android et l'écran Profil `0.1.0`. Choisir la version et l'aligner (par exemple `CFBundleShortVersionString = 0.1.0`, ou monter `memoverse.versionName`).
+4. ~~Version iOS~~ : alignée sur `0.1.0` (22 novembre, voir plus haut), **non compilé** : vérifier dans Xcode que l'app annonce bien 0.1.0 (Général → Identity).
 5. QA du 30 octobre, point mineur encore ouvert : une séance en cours est perdue si Android tue le processus (pas de `SavedStateHandle`). Décision à prendre avant de coder.
 
 ## Pièges connus
