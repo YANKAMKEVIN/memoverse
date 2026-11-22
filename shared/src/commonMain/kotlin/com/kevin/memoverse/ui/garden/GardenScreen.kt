@@ -394,7 +394,7 @@ private fun PlantTag(text: String, isThirsty: Boolean, modifier: Modifier = Modi
         maxLines = 1,
         modifier = modifier
             .shadow(6.dp, RoundedCornerShape(Radius.chip))
-            .background((if (isThirsty) Gold else Color(0xFFFBF7F0)).copy(alpha = 0.94f), RoundedCornerShape(Radius.chip))
+            .background((if (isThirsty) Gold else Cream).copy(alpha = 0.94f), RoundedCornerShape(Radius.chip))
             .border(1.dp, Color.White.copy(alpha = 0.7f), RoundedCornerShape(Radius.chip))
             .padding(horizontal = Spacing.sm + Spacing.xxs, vertical = Spacing.xs),
     )
